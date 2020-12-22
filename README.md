@@ -1,4 +1,4 @@
-# my-app
+# pms
 
 ## Project setup
 ```

@@ -1,99 +1,91 @@
 var router = require("express").Router();
 var database = require("../database");
+var { responseByStatus } = require("../utilities/functions");
 
-// get Comment
+// GET ALL
 router.get("/", (req, res) => {
-  var data = req.body;
-  if (Object.entries(data).length == 0) {
-    database.query(
-      "SELECT * FROM FormComment AS FC " +
-        "LEFT JOIN Form AS F ON FC.Comment_FormID=F.Form_ID " +
-        "LEFT JOIN UserTeacher AS T ON FC.Comment_TeacherID=T.Teacher_ID ",
-      (err, rows) => {
-        if (err) res.status(400).send({ success: false, data: err.sqlMessage });
-        else res.status(200).send({ success: true, data: rows });
-      }
-    );
-  } else {
-    var condition = "";
-    Object.entries(data).forEach(([key, value], index) => {
-      if (Object.entries(data).length != index + 1) {
-        condition += `${key} = '${value}' AND `;
-      } else {
-        condition += `${key} = '${value}'`;
-      }
-    });
-    database.query(
-      "SELECT * FROM FormComment AS FC " +
-        "LEFT JOIN Form AS F ON FC.Comment_FormID=F.Form_ID " +
-        "LEFT JOIN UserTeacher AS T ON FC.Comment_TeacherID=T.Teacher_ID " +
-        `WHERE ${condition}`,
-      (err, rows) => {
-        if (err) res.status(400).send({ success: false, data: err.sqlMessage });
-        else {
-          if (rows.length == 0)
-            res.status(404).send({ success: false, data: "404 Not found" });
-          else res.status(200).send({ success: true, data: rows });
-        }
-      }
-    );
-  }
+  database.query(
+    "SELECT * FROM form_comment AS FC " +
+      "LEFT JOIN form AS F ON FC.Comment_FormID = F.Form_ID " +
+      "LEFT JOIN user_student AS US ON FC.Comment_StudentID = US.Student_ID " +
+      "LEFT JOIN user_teacher AS UT ON FC.Comment_TeacherID = UT.Teacher_ID ",
+    (err, rows) => {
+      if (err) responseByStatus(res, err, 400, rows);
+      else responseByStatus(res, err, 200, rows);
+    }
+  );
 });
 
-// get single Comment
-router.get("/:id", (req, res) => {
+// GET BY CONDITION
+router.post("/", (req, res) => {
+  var reqBodyStr = req.body;
+  var whereStr = "";
+  Object.entries(reqBodyStr).forEach(([key, value], index) => {
+    whereStr += `${key} = '${value}'`;
+    if (Object.entries(reqBodyStr).length != index + 1) whereStr += ` AND `;
+  });
   database.query(
-    "SELECT * FROM FormComment AS FC " +
-      "LEFT JOIN Form AS F ON FC.Comment_FormID=F.Form_ID " +
-      "LEFT JOIN UserTeacher AS T ON FC.Comment_TeacherID=T.Teacher_ID " +
-      "WHERE Comment_ID = ?",
-    [req.params.id],
+    "SELECT * FROM form_comment AS FC " +
+      "LEFT JOIN form AS F ON FC.Comment_FormID = F.Form_ID " +
+      "LEFT JOIN user_student AS US ON FC.Comment_StudentID = US.Student_ID " +
+      "LEFT JOIN user_teacher AS UT ON FC.Comment_TeacherID = UT.Teacher_ID " +
+      `WHERE ${whereStr}`,
     (err, rows) => {
-      if (err) res.status(400).send({ success: false, data: err.sqlMessage });
+      if (err) responseByStatus(res, err, 400, rows);
       else {
-        if (rows.length == 0)
-          res.status(404).send({ success: false, data: "404 Not found" });
-        else res.status(200).send({ success: true, data: rows[0] });
+        if (rows.length == 0) responseByStatus(res, err, 404, rows);
+        else responseByStatus(res, err, 200, rows);
       }
     }
   );
 });
 
-// add Comment
-router.post("/", (req, res) => {
-  const data = {
-    Comment_Text: req.body.Comment_Text,
-    Comment_FormID: req.body.Comment_FormID,
-    Comment_DateTime: req.body.Comment_DateTime,
-    Comment_TeacherID: req.body.Comment_TeacherID,
-  };
-  database.query("INSERT INTO FormComment SET ?", data, (err) => {
-    if (err) res.status(400).send({ success: false, data: err.sqlMessage });
-    else res.status(200).send({ success: true, data: "Created successfully" });
+// GET BY ID
+router.get("/:id", (req, res) => {
+  var reqParamStr = req.params;
+  database.query(
+    "SELECT * FROM form_comment AS FC " +
+      "LEFT JOIN form AS F ON FC.Comment_FormID = F.Form_ID " +
+      "LEFT JOIN user_student AS US ON FC.Comment_StudentID = US.Student_ID " +
+      "LEFT JOIN user_teacher AS UT ON FC.Comment_TeacherID = UT.Teacher_ID " +
+      "WHERE Comment_ID = ?",
+    [reqParamStr.id],
+    (err, rows) => {
+      if (err) responseByStatus(res, err, 400, rows);
+      else {
+        if (rows.length == 0) responseByStatus(res, err, 404, rows);
+        else responseByStatus(res, err, 200, rows);
+      }
+    }
+  );
+});
+
+// CREATE
+router.post("/create", (req, res) => {
+  var reqBodyStr = req.body;
+  database.query("INSERT INTO form_comment SET ?", reqBodyStr, (err, rows) => {
+    if (err) responseByStatus(res, err, 400, rows);
+    else responseByStatus(res, err, 200, rows);
   });
 });
 
-// update Comment
+// UPDATE
 router.put("/:id", (req, res) => {
+  var reqParamStr = req.params;
+  var reqBodyStr = req.body;
   database.query(
-    "SELECT * FROM FormComment WHERE Comment_ID = ?",
-    req.params.id,
+    "SELECT * FROM form_comment WHERE Comment_ID = ?",
+    reqParamStr.id,
     (err, rows) => {
-      if (err) res.status(400).send({ success: false, data: err.sqlMessage });
-      else if (rows.length == 0)
-        res.status(404).send({ success: false, data: "404 Not found" });
+      if (err) responseByStatus(res, err, 400, rows);
+      else if (rows.length == 0) responseByStatus(res, err, 404, rows);
       else {
         database.query(
-          "UPDATE FormComment SET ? WHERE Comment_ID = ?",
-          [req.body, req.params.id],
-          (err) => {
-            if (err)
-              res.status(400).send({ success: false, data: err.sqlMessage });
-            else
-              res.status(200).send({
-                success: true,
-                data: "Updated successfully",
-              });
+          "UPDATE form_comment SET ? WHERE Comment_ID = ?",
+          [reqBodyStr, reqParamStr.id],
+          (err, rows) => {
+            if (err) responseByStatus(res, err, 400, rows);
+            else responseByStatus(res, err, 200, rows);
           }
         );
       }
@@ -101,27 +93,22 @@ router.put("/:id", (req, res) => {
   );
 });
 
-// delete Comment
+// DELETE
 router.delete("/:id", (req, res) => {
+  var reqParamStr = req.params;
   database.query(
-    "SELECT * FROM FormComment WHERE Comment_ID = ?",
-    [req.params.id],
+    "SELECT * FROM form_comment WHERE Comment_ID = ?",
+    [reqParamStr.id],
     (err, rows) => {
-      if (err) res.status(400).send({ success: false, data: err.sqlMessage });
-      else if (rows.length == 0)
-        res.status(404).send({ success: false, data: "404 Not found" });
+      if (err) responseByStatus(res, err, 400, rows);
+      else if (rows.length == 0) responseByStatus(res, err, 404, rows);
       else {
         database.query(
-          "DELETE FROM FormComment WHERE Comment_ID = ?",
-          req.params.id,
-          (err) => {
-            if (err)
-              res.status(400).send({ success: false, data: err.sqlMessage });
-            else
-              res.status(200).send({
-                success: true,
-                data: "Deleted successfully",
-              });
+          "DELETE FROM form_comment WHERE Comment_ID = ?",
+          reqParamStr.id,
+          (err, rows) => {
+            if (err) responseByStatus(res, err, 400, rows);
+            else responseByStatus(res, err, 200, rows);
           }
         );
       }

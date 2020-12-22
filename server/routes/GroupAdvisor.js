@@ -9,7 +9,7 @@ router.get("/", (req, res) => {
       "SELECT * FROM GroupAdvisor AS A " +
         "LEFT JOIN GroupProject AS G ON A.Advisor_GroupID=G.Project_ID " +
         "LEFT JOIN UserTeacher AS T ON A.Advisor_TeacherID=T.Teacher_ID " +
-        "LEFT JOIN GroupAdvisorRequestStatus AS S ON A.Advisor_RequestStatusID=S.RequestStatus_ID",
+        "LEFT JOIN RequestStatus AS S ON A.Advisor_RequestStatusID=S.RequestStatus_ID",
       (err, rows) => {
         if (err) res.status(400).send({ success: false, data: err.sqlMessage });
         else res.status(200).send({ success: true, data: rows });

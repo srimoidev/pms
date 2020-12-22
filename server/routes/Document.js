@@ -1,94 +1,82 @@
 var router = require("express").Router();
 var database = require("../database");
+var { responseByStatus } = require("../utilities/functions");
 
-// get document
+// GET ALL
 router.get("/", (req, res) => {
-  var data = req.body;
-  if (Object.entries(data).length == 0) {
-    database.query("SELECT * FROM Document", (err, rows) => {
-      if (err) res.status(400).send({ success: false, data: err.sqlMessage });
-      else res.status(200).send({ success: true, data: rows });
-    });
-  } else {
-    var condition = "";
-    Object.entries(data).forEach(([key, value], index) => {
-      if (Object.entries(data).length != index + 1) {
-        condition += `${key} = '${value}' AND `;
-      } else {
-        condition += `${key} = '${value}'`;
-      }
-    });
-    database.query(
-      `SELECT * FROM Document WHERE ${condition}`,
-      (err, rows) => {
-        if (err) res.status(400).send({ success: false, data: err.sqlMessage });
-        else {
-          if (rows.length == 0)
-            res
-              .status(404)
-              .send({ success: false, data: "404 Not found" });
-          else res.status(200).send({ success: true, data: rows });
-        }
-      }
-    );
-  }
+  database.query(
+    "SELECT * FROM document AS D ",
+    (err, rows) => {
+      if (err) responseByStatus(res, err, 400, rows);
+      else responseByStatus(res, err, 200, rows);
+    }
+  );
 });
 
-// get single document
-router.get("/:id", (req, res) => {
+// GET BY CONDITION
+router.post("/", (req, res) => {
+  var reqBodyStr = req.body;
+  var whereStr = "";
+  Object.entries(reqBodyStr).forEach(([key, value], index) => {
+    whereStr += `${key} = '${value}'`;
+    if (Object.entries(reqBodyStr).length != index + 1) whereStr += ` AND `;
+  });
   database.query(
-    "SELECT * FROM Document WHERE Document_ID = ?",
-    [req.params.id],
+    "SELECT * FROM document AS D " +
+      `WHERE ${whereStr}`,
     (err, rows) => {
-      if (err) res.status(400).send({ success: false, data: err.sqlMessage });
+      if (err) responseByStatus(res, err, 400, rows);
       else {
-        if (rows.length == 0)
-          res
-            .status(404)
-            .send({ success: false, data: "404 Not found" });
-        else res.status(200).send({ success: true, data: rows[0] });
+        if (rows.length == 0) responseByStatus(res, err, 404, rows);
+        else responseByStatus(res, err, 200, rows);
       }
     }
   );
 });
 
-// add document
-router.post("/", (req, res) => {
-  const data = {
-    Document_Name: req.body.Document_Name,
-    Document_FileName: req.body.Document_FileName,
-    Document_DateTime: req.body.Document_DateTime,
-  };
-  database.query("INSERT INTO Document SET ?", data, (err) => {
-    if (err) res.status(400).send({ success: false, data: err.sqlMessage });
-    else
-      res
-        .status(200)
-        .send({ success: true, data: "Created successfully" });
+// GET BY ID
+router.get("/:id", (req, res) => {
+  var reqParamStr = req.params;
+  database.query(
+    "SELECT * FROM document AS D " +
+      "WHERE Document_ID = ?",
+    [reqParamStr.id],
+    (err, rows) => {
+      if (err) responseByStatus(res, err, 400, rows);
+      else {
+        if (rows.length == 0) responseByStatus(res, err, 404, rows);
+        else responseByStatus(res, err, 200, rows);
+      }
+    }
+  );
+});
+
+// CREATE
+router.post("/create", (req, res) => {
+  var reqBodyStr = req.body;
+  database.query("INSERT INTO document SET ?", reqBodyStr, (err, rows) => {
+    if (err) responseByStatus(res, err, 400, rows);
+    else responseByStatus(res, err, 200, rows);
   });
 });
 
-// update document
+// UPDATE
 router.put("/:id", (req, res) => {
+  var reqParamStr = req.params;
+  var reqBodyStr = req.body;
   database.query(
-    "SELECT * FROM Document WHERE Document_ID = ?",
-    req.params.id,
+    "SELECT * FROM document WHERE Document_ID = ?",
+    reqParamStr.id,
     (err, rows) => {
-      if (err) res.status(400).send({ success: false, data: err.sqlMessage });
-      else if (rows.length == 0)
-        res.status(404).send({ success: false, data: "404 Not found" });
+      if (err) responseByStatus(res, err, 400, rows);
+      else if (rows.length == 0) responseByStatus(res, err, 404, rows);
       else {
         database.query(
-          "UPDATE Document SET ? WHERE Document_ID = ?",
-          [req.body, req.params.id],
-          (err) => {
-            if (err)
-              res.status(400).send({ success: false, data: err.sqlMessage });
-            else
-              res.status(200).send({
-                success: true,
-                data: "Updated successfully",
-              });
+          "UPDATE document SET ? WHERE Document_ID = ?",
+          [reqBodyStr, reqParamStr.id],
+          (err, rows) => {
+            if (err) responseByStatus(res, err, 400, rows);
+            else responseByStatus(res, err, 200, rows);
           }
         );
       }
@@ -96,27 +84,22 @@ router.put("/:id", (req, res) => {
   );
 });
 
-// delete document
+// DELETE
 router.delete("/:id", (req, res) => {
+  var reqParamStr = req.params;
   database.query(
-    "SELECT * FROM Document WHERE Document_ID = ?",
-    [req.params.id],
+    "SELECT * FROM document WHERE Document_ID = ?",
+    [reqParamStr.id],
     (err, rows) => {
-      if (err) res.status(400).send({ success: false, data: err.sqlMessage });
-      else if (rows.length == 0)
-        res.status(404).send({ success: false, data: "404 Not found" });
+      if (err) responseByStatus(res, err, 400, rows);
+      else if (rows.length == 0) responseByStatus(res, err, 404, rows);
       else {
         database.query(
-          "DELETE FROM Document WHERE Document_ID = ?",
-          req.params.id,
-          (err) => {
-            if (err)
-              res.status(400).send({ success: false, data: err.sqlMessage });
-            else
-              res.status(200).send({
-                success: true,
-                data: "Deleted successfully",
-              });
+          "DELETE FROM document WHERE Document_ID = ?",
+          reqParamStr.id,
+          (err, rows) => {
+            if (err) responseByStatus(res, err, 400, rows);
+            else responseByStatus(res, err, 200, rows);
           }
         );
       }

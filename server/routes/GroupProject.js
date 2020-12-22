@@ -1,6 +1,6 @@
 var router = require("express").Router();
 var database = require("../database");
-
+var eNumStatus = require("../enum/eNumStatus");
 // get group
 router.get("/", (req, res) => {
   var data = req.body;
