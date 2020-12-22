@@ -1,108 +1,94 @@
 var router = require("express").Router();
 var database = require("../database");
+var { responseByStatus } = require("../utilities/functions");
 
-// get
+// GET ALL
 router.get("/", (req, res) => {
-  var data = req.body;
-  if (Object.entries(data).length == 0) {
-    database.query(
-      "SELECT * FROM Meeting AS M " +
-        "LEFT JOIN GroupProject AS P ON M.Meeting_GroupID=P.Project_ID " +
-        "LEFT JOIN UserTeacher AS T ON M.Meeting_TeacherID=T.Teacher_ID " +
-        "LEFT JOIN RequestStatus AS R ON M.Meeting_RequestStatusID=R.RequestStatus_ID " +
-        "LEFT JOIN MeetingType AS MT ON M.Meeting_TypeID=MT.MeetingType_ID",
-      (err, rows) => {
-        if (err) res.status(400).send({ success: false, data: err.sqlMessage });
-        else res.status(200).send({ success: true, data: rows });
-      }
-    );
-  } else {
-    var condition = "";
-    Object.entries(data).forEach(([key, value], index) => {
-      if (Object.entries(data).length != index + 1) {
-        condition += `${key} = '${value}' AND `;
-      } else {
-        condition += `${key} = '${value}'`;
-      }
-    });
-    database.query(
-      "SELECT * FROM Meeting AS M " +
-        "LEFT JOIN GroupProject AS P ON M.Meeting_GroupID=P.Project_ID " +
-        "LEFT JOIN UserTeacher AS T ON M.Meeting_TeacherID=T.Teacher_ID " +
-        "LEFT JOIN RequestStatus AS R ON M.Meeting_RequestStatusID=R.RequestStatus_ID " +
-        "LEFT JOIN MeetingType AS MT ON M.Meeting_TypeID=MT.MeetingType_ID " +
-        `WHERE ${condition}`,
-      (err, rows) => {
-        if (err) res.status(400).send({ success: false, data: err.sqlMessage });
-        else {
-          if (rows.length == 0)
-            res.status(404).send({ success: false, data: "404 Not found" });
-          else res.status(200).send({ success: true, data: rows });
-        }
-      }
-    );
-  }
+  database.query(
+    "SELECT * FROM meeting AS M " +
+      "LEFT JOIN group_project AS GP ON M.Meeting_GroupID=GP.Project_ID " +
+      "LEFT JOIN user_teacher AS UT ON M.Meeting_TeacherID=UT.Teacher_ID " +
+      "LEFT JOIN meeting_type AS MT ON M.Meeting_TypeID=MT.MeetingType_ID " +
+      "LEFT JOIN request_status AS RS ON M.Meeting_RequestStatusID=RS.RequestStatus_ID ",
+    (err, rows) => {
+      if (err) responseByStatus(res, err, 400, rows);
+      else responseByStatus(res, err, 200, rows);
+    }
+  );
 });
 
-// get single
-router.get("/:id", (req, res) => {
+// GET BY CONDITION
+router.post("/", (req, res) => {
+  var reqBodyStr = req.body;
+  var whereStr = "";
+  Object.entries(reqBodyStr).forEach(([key, value], index) => {
+    whereStr += `${key} = '${value}'`;
+    if (Object.entries(reqBodyStr).length != index + 1) whereStr += ` AND `;
+  });
   database.query(
-    "SELECT * FROM Meeting AS M " +
-      "LEFT JOIN GroupProject AS P ON M.Meeting_GroupID=P.Project_ID " +
-      "LEFT JOIN UserTeacher AS T ON M.Meeting_TeacherID=T.Teacher_ID " +
-      "LEFT JOIN RequestStatus AS R ON M.Meeting_RequestStatusID=R.RequestStatus_ID " +
-      "LEFT JOIN MeetingType AS MT ON M.Meeting_TypeID=MT.MeetingType_ID " +
-      "WHERE Meeting_ID = ?",
-    [req.params.id],
+    "SELECT * FROM meeting AS M " +
+      "LEFT JOIN group_project AS GP ON M.Meeting_GroupID=GP.Project_ID " +
+      "LEFT JOIN user_teacher AS UT ON M.Meeting_TeacherID=UT.Teacher_ID " +
+      "LEFT JOIN meeting_type AS MT ON M.Meeting_TypeID=MT.MeetingType_ID " +
+      "LEFT JOIN request_status AS RS ON M.Meeting_RequestStatusID=RS.RequestStatus_ID " +
+      `WHERE ${whereStr}`,
     (err, rows) => {
-      if (err) res.status(400).send({ success: false, data: err.sqlMessage });
+      if (err) responseByStatus(res, err, 400, rows);
       else {
-        if (rows.length == 0)
-          res.status(404).send({ success: false, data: "404 Not found" });
-        else res.status(200).send({ success: true, data: rows[0] });
+        if (rows.length == 0) responseByStatus(res, err, 404, rows);
+        else responseByStatus(res, err, 200, rows);
       }
     }
   );
 });
 
-// add
-router.post("/", (req, res) => {
-  const data = {
-    Meeting_Name: req.body.Meeting_Name,
-    Meeting_Detail: req.body.Meeting_Detail,
-    Meeting_GroupID: req.body.Meeting_GroupID,
-    Meeting_TeacherID: req.body.Meeting_TeacherID,
-    Meeting_DateTime: req.body.Meeting_DateTime,
-    Meeting_RequestStatusID: req.body.Meeting_RequestStatusID,
-    Meeting_TypeID: req.body.Meeting_TypeID,
-  };
-  database.query("INSERT INTO Meeting SET ?", data, (err) => {
-    if (err) res.status(400).send({ success: false, data: err.sqlMessage });
-    else res.status(200).send({ success: true, data: "Created successfully" });
+// GET BY ID
+router.get("/:id", (req, res) => {
+  var reqParamStr = req.params;
+  database.query(
+    "SELECT * FROM meeting AS M " +
+      "LEFT JOIN group_project AS GP ON M.Meeting_GroupID=GP.Project_ID " +
+      "LEFT JOIN user_teacher AS UT ON M.Meeting_TeacherID=UT.Teacher_ID " +
+      "LEFT JOIN meeting_type AS MT ON M.Meeting_TypeID=MT.MeetingType_ID " +
+      "LEFT JOIN request_status AS RS ON M.Meeting_RequestStatusID=RS.RequestStatus_ID " +
+      "WHERE Meeting_ID = ?",
+    [reqParamStr.id],
+    (err, rows) => {
+      if (err) responseByStatus(res, err, 400, rows);
+      else {
+        if (rows.length == 0) responseByStatus(res, err, 404, rows);
+        else responseByStatus(res, err, 200, rows);
+      }
+    }
+  );
+});
+
+// CREATE
+router.post("/create", (req, res) => {
+  var reqBodyStr = req.body;
+  database.query("INSERT INTO meeting SET ?", reqBodyStr, (err, rows) => {
+    if (err) responseByStatus(res, err, 400, rows);
+    else responseByStatus(res, err, 200, rows);
   });
 });
 
-// update
+// UPDATE
 router.put("/:id", (req, res) => {
+  var reqParamStr = req.params;
+  var reqBodyStr = req.body;
   database.query(
-    "SELECT * FROM Meeting WHERE Meeting_ID = ?",
-    req.params.id,
+    "SELECT * FROM meeting WHERE Meeting_ID = ?",
+    reqParamStr.id,
     (err, rows) => {
-      if (err) res.status(400).send({ success: false, data: err.sqlMessage });
-      else if (rows.length == 0)
-        res.status(404).send({ success: false, data: "404 Not found" });
+      if (err) responseByStatus(res, err, 400, rows);
+      else if (rows.length == 0) responseByStatus(res, err, 404, rows);
       else {
         database.query(
-          "UPDATE Meeting SET ? WHERE Meeting_ID = ?",
-          [req.body, req.params.id],
-          (err) => {
-            if (err)
-              res.status(400).send({ success: false, data: err.sqlMessage });
-            else
-              res.status(200).send({
-                success: true,
-                data: "Updated successfully",
-              });
+          "UPDATE meeting SET ? WHERE Meeting_ID = ?",
+          [reqBodyStr, reqParamStr.id],
+          (err, rows) => {
+            if (err) responseByStatus(res, err, 400, rows);
+            else responseByStatus(res, err, 200, rows);
           }
         );
       }
@@ -110,27 +96,22 @@ router.put("/:id", (req, res) => {
   );
 });
 
-// delete
+// DELETE
 router.delete("/:id", (req, res) => {
+  var reqParamStr = req.params;
   database.query(
-    "SELECT * FROM Meeting WHERE Meeting_ID = ?",
-    [req.params.id],
+    "SELECT * FROM meeting WHERE Meeting_ID = ?",
+    [reqParamStr.id],
     (err, rows) => {
-      if (err) res.status(400).send({ success: false, data: err.sqlMessage });
-      else if (rows.length == 0)
-        res.status(404).send({ success: false, data: "404 Not found" });
+      if (err) responseByStatus(res, err, 400, rows);
+      else if (rows.length == 0) responseByStatus(res, err, 404, rows);
       else {
         database.query(
-          "DELETE FROM Meeting WHERE Meeting_ID = ?",
-          req.params.id,
-          (err) => {
-            if (err)
-              res.status(400).send({ success: false, data: err.sqlMessage });
-            else
-              res.status(200).send({
-                success: true,
-                data: "Deleted successfully",
-              });
+          "DELETE FROM meeting WHERE Meeting_ID = ?",
+          reqParamStr.id,
+          (err, rows) => {
+            if (err) responseByStatus(res, err, 400, rows);
+            else responseByStatus(res, err, 200, rows);
           }
         );
       }

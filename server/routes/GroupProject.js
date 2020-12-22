@@ -1,108 +1,97 @@
 var router = require("express").Router();
 var database = require("../database");
-var eNumStatus = require("../enum/eNumStatus");
-// get group
+var { responseByStatus } = require("../utilities/functions");
+
+// GET ALL
 router.get("/", (req, res) => {
-  var data = req.body;
-  if (Object.entries(data).length == 0) {
-    database.query(
-      "SELECT * FROM GroupProject AS GP " +
-        "JOIN GroupProjectType AS PT ON GP.Project_typeID=PT.ProjectType_ID " +
-        "JOIN RequestStatus AS RS ON GP.Project_RequestStatusID=RS.RequestStatus_ID " +
-        "JOIN GroupProjectStatus AS PS ON GP.Project_StatusID=PS.ProjectStatus_ID " +
-        "JOIN Section AS S ON GP.Project_SectionID=S.Section_ID",
-      (err, rows) => {
-        if (err) res.status(400).send({ success: false, data: err.sqlMessage });
-        else res.status(200).send({ success: true, data: rows });
-      }
-    );
-  } else {
-    var condition = "";
-    Object.entries(data).forEach(([key, value], index) => {
-      if (Object.entries(data).length != index + 1) {
-        condition += `${key} = '${value}' AND `;
-      } else {
-        condition += `${key} = '${value}'`;
-      }
-    });
-    database.query(
-      "SELECT * FROM GroupProject AS GP " +
-        "JOIN GroupProjectType AS PT ON GP.Project_typeID=PT.ProjectType_ID " +
-        "JOIN RequestStatus AS RS ON GP.Project_RequestStatusID=RS.RequestStatus_ID " +
-        "JOIN GroupProjectStatus AS PS ON GP.Project_StatusID=PS.ProjectStatus_ID " +
-        "JOIN Section AS S ON GP.Project_SectionID=S.Section_ID " +
-        `WHERE ${condition}`,
-      (err, rows) => {
-        if (err) res.status(400).send({ success: false, data: err.sqlMessage });
-        else {
-          if (rows.length == 0)
-            res.status(404).send({ success: false, data: "404 Not found" });
-          else res.status(200).send({ success: true, data: rows });
-        }
-      }
-    );
-  }
+  database.query(
+    "SELECT * FROM group_project AS GP " +
+      "LEFT JOIN group_project_type AS GPT ON GP.Project_TypeID=GPT.ProjectType_ID " +
+      "LEFT JOIN group_project_status AS GPS ON GP.Project_StatusID=GPS.ProjectStatus_ID " +
+      "LEFT JOIN section AS S ON GP.Project_SectionID=S.Section_ID " +
+      "LEFT JOIN request_status AS RS ON GP.Project_RequestStatusID=RS.RequestStatus_ID " +
+      "LEFT JOIN user_teacher AS UT ON GP.Project_TeacherID=UT.Teacher_ID ",
+    (err, rows) => {
+      if (err) responseByStatus(res, err, 400, rows);
+      else responseByStatus(res, err, 200, rows);
+    }
+  );
 });
 
-// get single group
-router.get("/:id", (req, res) => {
+// GET BY CONDITION
+router.post("/", (req, res) => {
+  var reqBodyStr = req.body;
+  var whereStr = "";
+  Object.entries(reqBodyStr).forEach(([key, value], index) => {
+    whereStr += `${key} = '${value}'`;
+    if (Object.entries(reqBodyStr).length != index + 1) whereStr += ` AND `;
+  });
   database.query(
-    "SELECT * FROM GroupProject AS GP " +
-      "JOIN GroupProjectType AS PT ON GP.Project_typeID=PT.ProjectType_ID " +
-      "JOIN RequestStatus AS RS ON GP.Project_RequestStatusID=RS.RequestStatus_ID " +
-      "JOIN GroupProjectStatus AS PS ON GP.Project_StatusID=PS.ProjectStatus_ID " +
-      "JOIN Section AS S ON GP.Project_SectionID=S.Section_ID " +
-      "WHERE Project_ID = ?",
-    [req.params.id],
+    "SELECT * FROM group_project AS GP " +
+      "LEFT JOIN group_project_type AS GPT ON GP.Project_TypeID=GPT.ProjectType_ID " +
+      "LEFT JOIN group_project_status AS GPS ON GP.Project_StatusID=GPS.ProjectStatus_ID " +
+      "LEFT JOIN section AS S ON GP.Project_SectionID=S.Section_ID " +
+      "LEFT JOIN request_status AS RS ON GP.Project_RequestStatusID=RS.RequestStatus_ID " +
+      "LEFT JOIN user_teacher AS UT ON GP.Project_TeacherID=UT.Teacher_ID " +
+      `WHERE ${whereStr}`,
     (err, rows) => {
-      if (err) res.status(400).send({ success: false, data: err.sqlMessage });
+      if (err) responseByStatus(res, err, 400, rows);
       else {
-        if (rows.length == 0)
-          res.status(404).send({ success: false, data: "404 Not found" });
-        else res.status(200).send({ success: true, data: rows[0] });
+        if (rows.length == 0) responseByStatus(res, err, 404, rows);
+        else responseByStatus(res, err, 200, rows);
       }
     }
   );
 });
 
-// add group
-router.post("/", (req, res) => {
-  const data = {
-    Project_Name: req.body.Project_Name,
-    Project_Detail: req.body.Project_Detail,
-    Project_TypeID: req.body.Project_TypeID,
-    Project_MemberNumber: req.body.Project_MemberNumber,
-    Project_SectionID: req.body.Project_SectionID,
-    Project_StatusID: 1,
-    Project_RequestStatusID: 1,
-  };
-  database.query("INSERT INTO GroupProject SET ?", data, (err) => {
-    if (err) res.status(400).send({ success: false, data: err.sqlMessage });
-    else res.status(200).send({ success: true, data: "Created successfully" });
+// GET BY ID
+router.get("/:id", (req, res) => {
+  var reqParamStr = req.params;
+  database.query(
+    "SELECT * FROM group_project AS GP " +
+      "LEFT JOIN group_project_type AS GPT ON GP.Project_TypeID=GPT.ProjectType_ID " +
+      "LEFT JOIN group_project_status AS GPS ON GP.Project_StatusID=GPS.ProjectStatus_ID " +
+      "LEFT JOIN section AS S ON GP.Project_SectionID=S.Section_ID " +
+      "LEFT JOIN request_status AS RS ON GP.Project_RequestStatusID=RS.RequestStatus_ID " +
+      "LEFT JOIN user_teacher AS UT ON GP.Project_TeacherID=UT.Teacher_ID " +
+      "WHERE Project_ID = ?",
+    [reqParamStr.id],
+    (err, rows) => {
+      if (err) responseByStatus(res, err, 400, rows);
+      else {
+        if (rows.length == 0) responseByStatus(res, err, 404, rows);
+        else responseByStatus(res, err, 200, rows);
+      }
+    }
+  );
+});
+
+// CREATE
+router.post("/create", (req, res) => {
+  var reqBodyStr = req.body;
+  database.query("INSERT INTO group_project SET ?", reqBodyStr, (err, rows) => {
+    if (err) responseByStatus(res, err, 400, rows);
+    else responseByStatus(res, err, 200, rows);
   });
 });
 
-// update group
+// UPDATE
 router.put("/:id", (req, res) => {
+  var reqParamStr = req.params;
+  var reqBodyStr = req.body;
   database.query(
-    "SELECT * FROM GroupProject WHERE Project_ID = ?",
-    [req.params.id],
+    "SELECT * FROM group_project WHERE Project_ID = ?",
+    reqParamStr.id,
     (err, rows) => {
-      if (err) res.status(400).send({ success: false, data: err.sqlMessage });
-      else if (rows.length == 0)
-        res.status(404).send({ success: false, data: "404 Not found" });
+      if (err) responseByStatus(res, err, 400, rows);
+      else if (rows.length == 0) responseByStatus(res, err, 404, rows);
       else {
         database.query(
-          "UPDATE GroupProject SET ? WHERE Project_ID = ?",
-          [req.body, req.params.id],
-          (err) => {
-            if (err)
-              res.status(400).send({ success: false, data: err.sqlMessage });
-            else
-              res.status(200).send({
-                success: true,
-                data: "Updated successfully",
-              });
+          "UPDATE group_project SET ? WHERE Project_ID = ?",
+          [reqBodyStr, reqParamStr.id],
+          (err, rows) => {
+            if (err) responseByStatus(res, err, 400, rows);
+            else responseByStatus(res, err, 200, rows);
           }
         );
       }
@@ -110,27 +99,22 @@ router.put("/:id", (req, res) => {
   );
 });
 
-//  delete group
+// DELETE
 router.delete("/:id", (req, res) => {
+  var reqParamStr = req.params;
   database.query(
-    "SELECT * FROM GroupProject WHERE Project_ID = ?",
-    [req.params.id],
+    "SELECT * FROM group_project WHERE Project_ID = ?",
+    [reqParamStr.id],
     (err, rows) => {
-      if (err) res.status(400).send({ success: false, data: err.sqlMessage });
-      else if (rows.length == 0)
-        res.status(404).send({ success: false, data: "404 Not found" });
+      if (err) responseByStatus(res, err, 400, rows);
+      else if (rows.length == 0) responseByStatus(res, err, 404, rows);
       else {
         database.query(
-          "DELETE FROM GroupProject WHERE Project_ID = ?",
-          req.params.id,
-          (err) => {
-            if (err)
-              res.status(400).send({ success: false, data: err.sqlMessage });
-            else
-              res.status(200).send({
-                success: true,
-                data: "Deleted successfully",
-              });
+          "DELETE FROM group_project WHERE Project_ID = ?",
+          reqParamStr.id,
+          (err, rows) => {
+            if (err) responseByStatus(res, err, 400, rows);
+            else responseByStatus(res, err, 200, rows);
           }
         );
       }

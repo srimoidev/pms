@@ -1,102 +1,77 @@
 var router = require("express").Router();
 var database = require("../database");
+var { responseByStatus } = require("../utilities/functions");
 
-// get student
+// GET ALL
 router.get("/", (req, res) => {
-  var data = req.body;
-  if (Object.entries(data).length == 0) {
-    database.query(
-      "LEFT JOIN GroupProject AS GP ON S.Student_GroupID=GP.Project_ID",
-      (err, rows) => {
-        if (err) res.status(400).send({ success: false, data: err.sqlMessage });
-        else res.status(200).send({ success: true, data: rows });
-      }
-    );
-  } else {
-    var condition = "";
-    Object.entries(data).forEach(([key, value], index) => {
-      if (Object.entries(data).length != index + 1) {
-        condition += `${key} = '${value}' AND `;
-      } else {
-        condition += `${key} = '${value}'`;
-      }
-    });
-    database.query(
-      "LEFT JOIN GroupProject AS GP ON S.Student_GroupID=GP.Project_ID " +
-        `WHERE ${condition}`,
-      (err, rows) => {
-        if (err) res.status(400).send({ success: false, data: err.sqlMessage });
-        else {
-          if (rows.length == 0)
-            res.status(404).send({ success: false, data: "404 Not found" });
-          else res.status(200).send({ success: true, data: rows });
-        }
-      }
-    );
-  }
+  database.query("SELECT * FROM user_student AS US ", (err, rows) => {
+    if (err) responseByStatus(res, err, 400, rows);
+    else responseByStatus(res, err, 200, rows);
+  });
 });
 
-// get single student
-router.get("/:id", (req, res) => {
+// GET BY CONDITION
+router.post("/", (req, res) => {
+  var reqBodyStr = req.body;
+  var whereStr = "";
+  Object.entries(reqBodyStr).forEach(([key, value], index) => {
+    whereStr += `${key} = '${value}'`;
+    if (Object.entries(reqBodyStr).length != index + 1) whereStr += ` AND `;
+  });
   database.query(
-    "SELECT * FROM UserStudent AS S " +
-      "LEFT JOIN GroupProject AS GP ON S.Student_GroupID=GP.Project_ID " +
-      "WHERE Student_ID = ?",
-    [req.params.id],
+    "SELECT * FROM user_student AS US " + `WHERE ${whereStr}`,
     (err, rows) => {
-      if (err) res.status(400).send({ success: false, data: err.sqlMessage });
+      if (err) responseByStatus(res, err, 400, rows);
       else {
-        if (rows.length == 0)
-          res.status(404).send({ success: false, data: "404 Not found" });
-        else res.status(200).send({ success: true, data: rows[0] });
+        if (rows.length == 0) responseByStatus(res, err, 404, rows);
+        else responseByStatus(res, err, 200, rows);
       }
     }
   );
 });
 
-// add student
-router.post("/", (req, res) => {
-  const data = {
-    Student_Username: req.body.Student_Username,
-    Student_Password: req.body.Student_Password,
-    Student_StudentID: req.body.Student_StudentID,
-    Student_Firstname: req.body.Student_Firstname,
-    Student_Lastname: req.body.Student_Lastname,
-    Student_Email: req.body.Student_Email,
-    Student_TelephoneNumber: req.body.Student_TelephoneNumber,
-    Student_AcademicYear: req.body.Student_AcademicYear,
-    Student_GroupID: -1,
-  };
-  database.query("INSERT INTO UserStudent SET ?", data, (err) => {
-    if (err) res.status(400).send({ success: false, data: err.sqlMessage });
-    else
-      res
-        .status(200)
-        .send({ success: true, data: "Created successfully" });
+// GET BY ID
+router.get("/:id", (req, res) => {
+  var reqParamStr = req.params;
+  database.query(
+    "SELECT * FROM user_student AS US " + "WHERE Student_ID = ?",
+    [reqParamStr.id],
+    (err, rows) => {
+      if (err) responseByStatus(res, err, 400, rows);
+      else {
+        if (rows.length == 0) responseByStatus(res, err, 404, rows);
+        else responseByStatus(res, err, 200, rows);
+      }
+    }
+  );
+});
+
+// CREATE
+router.post("/create", (req, res) => {
+  var reqBodyStr = req.body;
+  database.query("INSERT INTO user_student SET ?", reqBodyStr, (err, rows) => {
+    if (err) responseByStatus(res, err, 400, rows);
+    else responseByStatus(res, err, 200, rows);
   });
 });
 
-// update student
+// UPDATE
 router.put("/:id", (req, res) => {
+  var reqParamStr = req.params;
+  var reqBodyStr = req.body;
   database.query(
-    "SELECT * FROM UserStudent WHERE Student_ID = ?",
-    req.params.id,
+    "SELECT * FROM user_student WHERE Student_ID = ?",
+    reqParamStr.id,
     (err, rows) => {
-      if (err) res.status(400).send({ success: false, data: err.sqlMessage });
-      else if (rows.length == 0)
-        res.status(404).send({ success: false, data: "404 Not found" });
+      if (err) responseByStatus(res, err, 400, rows);
+      else if (rows.length == 0) responseByStatus(res, err, 404, rows);
       else {
         database.query(
-          "UPDATE UserStudent SET ? WHERE Student_ID = ?",
-          [req.body, req.params.id],
-          (err) => {
-            if (err)
-              res.status(400).send({ success: false, data: err.sqlMessage });
-            else
-              res.status(200).send({
-                success: true,
-                data: "Updated successfully",
-              });
+          "UPDATE user_student SET ? WHERE Student_ID = ?",
+          [reqBodyStr, reqParamStr.id],
+          (err, rows) => {
+            if (err) responseByStatus(res, err, 400, rows);
+            else responseByStatus(res, err, 200, rows);
           }
         );
       }
@@ -104,27 +79,22 @@ router.put("/:id", (req, res) => {
   );
 });
 
-// delete student
+// DELETE
 router.delete("/:id", (req, res) => {
+  var reqParamStr = req.params;
   database.query(
-    "SELECT * FROM UserStudent WHERE Student_ID = ?",
-    [req.params.id],
+    "SELECT * FROM user_student WHERE Student_ID = ?",
+    [reqParamStr.id],
     (err, rows) => {
-      if (err) res.status(400).send({ success: false, data: err.sqlMessage });
-      else if (rows.length == 0)
-        res.status(404).send({ success: false, data: "404 Not found" });
+      if (err) responseByStatus(res, err, 400, rows);
+      else if (rows.length == 0) responseByStatus(res, err, 404, rows);
       else {
         database.query(
-          "DELETE FROM UserStudent WHERE Student_ID = ?",
-          req.params.id,
-          (err) => {
-            if (err)
-              res.status(400).send({ success: false, data: err.sqlMessage });
-            else
-              res.status(200).send({
-                success: true,
-                data: "Deleted successfully",
-              });
+          "DELETE FROM user_student WHERE Student_ID = ?",
+          reqParamStr.id,
+          (err, rows) => {
+            if (err) responseByStatus(res, err, 400, rows);
+            else responseByStatus(res, err, 200, rows);
           }
         );
       }

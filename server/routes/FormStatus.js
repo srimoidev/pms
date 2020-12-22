@@ -4,13 +4,10 @@ var { responseByStatus } = require("../utilities/functions");
 
 // GET ALL
 router.get("/", (req, res) => {
-  database.query(
-    "SELECT * FROM form_status AS FS ",
-    (err, rows) => {
-      if (err) responseByStatus(res, err, 400, rows);
-      else responseByStatus(res, err, 200, rows);
-    }
-  );
+  database.query("SELECT * FROM form_status AS FS ", (err, rows) => {
+    if (err) responseByStatus(res, err, 400, rows);
+    else responseByStatus(res, err, 200, rows);
+  });
 });
 
 // GET BY CONDITION
@@ -22,8 +19,7 @@ router.post("/", (req, res) => {
     if (Object.entries(reqBodyStr).length != index + 1) whereStr += ` AND `;
   });
   database.query(
-    "SELECT * FROM form_status AS FS " +
-      `WHERE ${whereStr}`,
+    "SELECT * FROM form_status AS FS " + `WHERE ${whereStr}`,
     (err, rows) => {
       if (err) responseByStatus(res, err, 400, rows);
       else {
@@ -38,8 +34,7 @@ router.post("/", (req, res) => {
 router.get("/:id", (req, res) => {
   var reqParamStr = req.params;
   database.query(
-    "SELECT * FROM form_status AS FS " +
-      "WHERE FormStatus_ID = ?",
+    "SELECT * FROM form_status AS FS " + "WHERE FormStatus_ID = ?",
     [reqParamStr.id],
     (err, rows) => {
       if (err) responseByStatus(res, err, 400, rows);
