@@ -1,6 +1,6 @@
 var router = require("express").Router();
-var database = require("../database");
-var { responseByStatus } = require("../utilities/functions");
+var database = require("../../database");
+var { responseByStatus } = require("../../utilities/functions");
 
 // GET ALL
 router.get("/", (req, res) => {

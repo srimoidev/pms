@@ -1,17 +1,13 @@
 var router = require("express").Router();
-var database = require("../database");
-var { responseByStatus } = require("../utilities/functions");
+var database = require("../../database");
+var { responseByStatus } = require("../../utilities/functions");
 
 // GET ALL
 router.get("/", (req, res) => {
-  database.query(
-    "SELECT * FROM meeting_note AS MT " +
-      "LEFT JOIN meeting AS M ON MT.MeetingNote_MeetingID=M.Meeting_ID ",
-    (err, rows) => {
-      if (err) responseByStatus(res, err, 400, rows);
-      else responseByStatus(res, err, 200, rows);
-    }
-  );
+  database.query("SELECT * FROM meeting_type AS MT ", (err, rows) => {
+    if (err) responseByStatus(res, err, 400, rows);
+    else responseByStatus(res, err, 200, rows);
+  });
 });
 
 // GET BY CONDITION
@@ -23,9 +19,7 @@ router.post("/", (req, res) => {
     if (Object.entries(reqBodyStr).length != index + 1) whereStr += ` AND `;
   });
   database.query(
-    "SELECT * FROM meeting_note AS MT " +
-      "LEFT JOIN meeting AS M ON MT.MeetingNote_MeetingID=M.Meeting_ID " +
-      `WHERE ${whereStr}`,
+    "SELECT * FROM meeting_type AS MT " + `WHERE ${whereStr}`,
     (err, rows) => {
       if (err) responseByStatus(res, err, 400, rows);
       else {
@@ -40,9 +34,7 @@ router.post("/", (req, res) => {
 router.get("/:id", (req, res) => {
   var reqParamStr = req.params;
   database.query(
-    "SELECT * FROM meeting_note AS MT " +
-      "LEFT JOIN meeting AS M ON MT.MeetingNote_MeetingID=M.Meeting_ID " +
-      "WHERE MeetingNote_ID = ?",
+    "SELECT * FROM meeting_type AS MT " + "WHERE MeetingType_ID = ?",
     [reqParamStr.id],
     (err, rows) => {
       if (err) responseByStatus(res, err, 400, rows);
@@ -57,7 +49,7 @@ router.get("/:id", (req, res) => {
 // CREATE
 router.post("/create", (req, res) => {
   var reqBodyStr = req.body;
-  database.query("INSERT INTO meeting_note SET ?", reqBodyStr, (err, rows) => {
+  database.query("INSERT INTO meeting_type SET ?", reqBodyStr, (err, rows) => {
     if (err) responseByStatus(res, err, 400, rows);
     else responseByStatus(res, err, 200, rows);
   });
@@ -68,14 +60,14 @@ router.put("/:id", (req, res) => {
   var reqParamStr = req.params;
   var reqBodyStr = req.body;
   database.query(
-    "SELECT * FROM meeting_note WHERE MeetingNote_ID = ?",
+    "SELECT * FROM meeting_type WHERE MeetingType_ID = ?",
     reqParamStr.id,
     (err, rows) => {
       if (err) responseByStatus(res, err, 400, rows);
       else if (rows.length == 0) responseByStatus(res, err, 404, rows);
       else {
         database.query(
-          "UPDATE meeting_note SET ? WHERE MeetingNote_ID = ?",
+          "UPDATE meeting_type SET ? WHERE MeetingType_ID = ?",
           [reqBodyStr, reqParamStr.id],
           (err, rows) => {
             if (err) responseByStatus(res, err, 400, rows);
@@ -91,14 +83,14 @@ router.put("/:id", (req, res) => {
 router.delete("/:id", (req, res) => {
   var reqParamStr = req.params;
   database.query(
-    "SELECT * FROM meeting_note WHERE MeetingNote_ID = ?",
+    "SELECT * FROM meeting_type WHERE MeetingType_ID = ?",
     [reqParamStr.id],
     (err, rows) => {
       if (err) responseByStatus(res, err, 400, rows);
       else if (rows.length == 0) responseByStatus(res, err, 404, rows);
       else {
         database.query(
-          "DELETE FROM meeting_note WHERE MeetingNote_ID = ?",
+          "DELETE FROM meeting_type WHERE MeetingType_ID = ?",
           reqParamStr.id,
           (err, rows) => {
             if (err) responseByStatus(res, err, 400, rows);

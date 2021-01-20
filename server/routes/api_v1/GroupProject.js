@@ -1,15 +1,16 @@
 var router = require("express").Router();
-var database = require("../database");
-var { responseByStatus } = require("../utilities/functions");
+var database = require("../../database");
+var { responseByStatus } = require("../../utilities/functions");
 
 // GET ALL
 router.get("/", (req, res) => {
   database.query(
-    "SELECT * FROM meeting AS M " +
-      "LEFT JOIN group_project AS GP ON M.Meeting_GroupID=GP.Project_ID " +
-      "LEFT JOIN user_teacher AS UT ON M.Meeting_TeacherID=UT.Teacher_ID " +
-      "LEFT JOIN meeting_type AS MT ON M.Meeting_TypeID=MT.MeetingType_ID " +
-      "LEFT JOIN request_status AS RS ON M.Meeting_RequestStatusID=RS.RequestStatus_ID ",
+    "SELECT * FROM group_project AS GP " +
+      "LEFT JOIN group_project_type AS GPT ON GP.Project_TypeID=GPT.ProjectType_ID " +
+      "LEFT JOIN group_project_status AS GPS ON GP.Project_StatusID=GPS.ProjectStatus_ID " +
+      "LEFT JOIN section AS S ON GP.Project_SectionID=S.Section_ID " +
+      "LEFT JOIN request_status AS RS ON GP.Project_RequestStatusID=RS.RequestStatus_ID " +
+      "LEFT JOIN user_teacher AS UT ON GP.Project_TeacherID=UT.Teacher_ID ",
     (err, rows) => {
       if (err) responseByStatus(res, err, 400, rows);
       else responseByStatus(res, err, 200, rows);
@@ -26,11 +27,12 @@ router.post("/", (req, res) => {
     if (Object.entries(reqBodyStr).length != index + 1) whereStr += ` AND `;
   });
   database.query(
-    "SELECT * FROM meeting AS M " +
-      "LEFT JOIN group_project AS GP ON M.Meeting_GroupID=GP.Project_ID " +
-      "LEFT JOIN user_teacher AS UT ON M.Meeting_TeacherID=UT.Teacher_ID " +
-      "LEFT JOIN meeting_type AS MT ON M.Meeting_TypeID=MT.MeetingType_ID " +
-      "LEFT JOIN request_status AS RS ON M.Meeting_RequestStatusID=RS.RequestStatus_ID " +
+    "SELECT * FROM group_project AS GP " +
+      "LEFT JOIN group_project_type AS GPT ON GP.Project_TypeID=GPT.ProjectType_ID " +
+      "LEFT JOIN group_project_status AS GPS ON GP.Project_StatusID=GPS.ProjectStatus_ID " +
+      "LEFT JOIN section AS S ON GP.Project_SectionID=S.Section_ID " +
+      "LEFT JOIN request_status AS RS ON GP.Project_RequestStatusID=RS.RequestStatus_ID " +
+      "LEFT JOIN user_teacher AS UT ON GP.Project_TeacherID=UT.Teacher_ID " +
       `WHERE ${whereStr}`,
     (err, rows) => {
       if (err) responseByStatus(res, err, 400, rows);
@@ -46,12 +48,13 @@ router.post("/", (req, res) => {
 router.get("/:id", (req, res) => {
   var reqParamStr = req.params;
   database.query(
-    "SELECT * FROM meeting AS M " +
-      "LEFT JOIN group_project AS GP ON M.Meeting_GroupID=GP.Project_ID " +
-      "LEFT JOIN user_teacher AS UT ON M.Meeting_TeacherID=UT.Teacher_ID " +
-      "LEFT JOIN meeting_type AS MT ON M.Meeting_TypeID=MT.MeetingType_ID " +
-      "LEFT JOIN request_status AS RS ON M.Meeting_RequestStatusID=RS.RequestStatus_ID " +
-      "WHERE Meeting_ID = ?",
+    "SELECT * FROM group_project AS GP " +
+      "LEFT JOIN group_project_type AS GPT ON GP.Project_TypeID=GPT.ProjectType_ID " +
+      "LEFT JOIN group_project_status AS GPS ON GP.Project_StatusID=GPS.ProjectStatus_ID " +
+      "LEFT JOIN section AS S ON GP.Project_SectionID=S.Section_ID " +
+      "LEFT JOIN request_status AS RS ON GP.Project_RequestStatusID=RS.RequestStatus_ID " +
+      "LEFT JOIN user_teacher AS UT ON GP.Project_TeacherID=UT.Teacher_ID " +
+      "WHERE Project_ID = ?",
     [reqParamStr.id],
     (err, rows) => {
       if (err) responseByStatus(res, err, 400, rows);
@@ -66,7 +69,7 @@ router.get("/:id", (req, res) => {
 // CREATE
 router.post("/create", (req, res) => {
   var reqBodyStr = req.body;
-  database.query("INSERT INTO meeting SET ?", reqBodyStr, (err, rows) => {
+  database.query("INSERT INTO group_project SET ?", reqBodyStr, (err, rows) => {
     if (err) responseByStatus(res, err, 400, rows);
     else responseByStatus(res, err, 200, rows);
   });
@@ -77,14 +80,14 @@ router.put("/:id", (req, res) => {
   var reqParamStr = req.params;
   var reqBodyStr = req.body;
   database.query(
-    "SELECT * FROM meeting WHERE Meeting_ID = ?",
+    "SELECT * FROM group_project WHERE Project_ID = ?",
     reqParamStr.id,
     (err, rows) => {
       if (err) responseByStatus(res, err, 400, rows);
       else if (rows.length == 0) responseByStatus(res, err, 404, rows);
       else {
         database.query(
-          "UPDATE meeting SET ? WHERE Meeting_ID = ?",
+          "UPDATE group_project SET ? WHERE Project_ID = ?",
           [reqBodyStr, reqParamStr.id],
           (err, rows) => {
             if (err) responseByStatus(res, err, 400, rows);
@@ -100,14 +103,14 @@ router.put("/:id", (req, res) => {
 router.delete("/:id", (req, res) => {
   var reqParamStr = req.params;
   database.query(
-    "SELECT * FROM meeting WHERE Meeting_ID = ?",
+    "SELECT * FROM group_project WHERE Project_ID = ?",
     [reqParamStr.id],
     (err, rows) => {
       if (err) responseByStatus(res, err, 400, rows);
       else if (rows.length == 0) responseByStatus(res, err, 404, rows);
       else {
         database.query(
-          "DELETE FROM meeting WHERE Meeting_ID = ?",
+          "DELETE FROM group_project WHERE Project_ID = ?",
           reqParamStr.id,
           (err, rows) => {
             if (err) responseByStatus(res, err, 400, rows);

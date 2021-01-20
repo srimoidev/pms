@@ -1,14 +1,12 @@
 var router = require("express").Router();
-var database = require("../database");
-var { responseByStatus } = require("../utilities/functions");
+var database = require("../../database");
+var { responseByStatus } = require("../../utilities/functions");
 
 // GET ALL
 router.get("/", (req, res) => {
   database.query(
-    "SELECT * FROM form AS F " +
-      "LEFT JOIN group_project AS GP ON F.Form_GroupID = GP.Project_ID " +
-      "LEFT JOIN form_type AS FT ON F.Form_TypeID = FT.FormType_ID " +
-      "LEFT JOIN form_status AS FS ON F.Form_StatusID = FS.FormStatus_ID ",
+    "SELECT * FROM notification_teacher AS NT " +
+      "LEFT JOIN request_status AS RS ON NT.Notification_RequestStatusID=RS.RequestStatus_ID",
     (err, rows) => {
       if (err) responseByStatus(res, err, 400, rows);
       else responseByStatus(res, err, 200, rows);
@@ -25,10 +23,8 @@ router.post("/", (req, res) => {
     if (Object.entries(reqBodyStr).length != index + 1) whereStr += ` AND `;
   });
   database.query(
-    "SELECT * FROM form AS F " +
-      "LEFT JOIN group_project AS GP ON F.Form_GroupID = GP.Project_ID " +
-      "LEFT JOIN form_type AS FT ON F.Form_TypeID = FT.FormType_ID " +
-      "LEFT JOIN form_status AS FS ON F.Form_StatusID = FS.FormStatus_ID " +
+    "SELECT * FROM notification_teacher AS NT " +
+      "LEFT JOIN request_status AS RS ON NT.Notification_RequestStatusID=RS.RequestStatus_ID" +
       `WHERE ${whereStr}`,
     (err, rows) => {
       if (err) responseByStatus(res, err, 400, rows);
@@ -44,11 +40,9 @@ router.post("/", (req, res) => {
 router.get("/:id", (req, res) => {
   var reqParamStr = req.params;
   database.query(
-    "SELECT * FROM form AS F " +
-      "LEFT JOIN group_project AS GP ON F.Form_GroupID = GP.Project_ID " +
-      "LEFT JOIN form_type AS FT ON F.Form_TypeID = FT.FormType_ID " +
-      "LEFT JOIN form_status AS FS ON F.Form_StatusID = FS.FormStatus_ID " +
-      "WHERE Form_ID = ?",
+    "SELECT * FROM notification_teacher AS NT " +
+      "LEFT JOIN request_status AS RS ON NT.Notification_RequestStatusID=RS.RequestStatus_ID" +
+      "WHERE Notification_ID = ?",
     [reqParamStr.id],
     (err, rows) => {
       if (err) responseByStatus(res, err, 400, rows);
@@ -63,10 +57,14 @@ router.get("/:id", (req, res) => {
 // CREATE
 router.post("/create", (req, res) => {
   var reqBodyStr = req.body;
-  database.query("INSERT INTO form SET ?", reqBodyStr, (err, rows) => {
-    if (err) responseByStatus(res, err, 400, rows);
-    else responseByStatus(res, err, 200, rows);
-  });
+  database.query(
+    "INSERT INTO notification_teacher SET ?",
+    reqBodyStr,
+    (err, rows) => {
+      if (err) responseByStatus(res, err, 400, rows);
+      else responseByStatus(res, err, 200, rows);
+    }
+  );
 });
 
 // UPDATE
@@ -74,14 +72,14 @@ router.put("/:id", (req, res) => {
   var reqParamStr = req.params;
   var reqBodyStr = req.body;
   database.query(
-    "SELECT * FROM form WHERE Form_ID = ?",
+    "SELECT * FROM notification_teacher WHERE Notification_ID = ?",
     reqParamStr.id,
     (err, rows) => {
       if (err) responseByStatus(res, err, 400, rows);
       else if (rows.length == 0) responseByStatus(res, err, 404, rows);
       else {
         database.query(
-          "UPDATE form SET ? WHERE Form_ID = ?",
+          "UPDATE notification_teacher SET ? WHERE Notification_ID = ?",
           [reqBodyStr, reqParamStr.id],
           (err, rows) => {
             if (err) responseByStatus(res, err, 400, rows);
@@ -97,14 +95,14 @@ router.put("/:id", (req, res) => {
 router.delete("/:id", (req, res) => {
   var reqParamStr = req.params;
   database.query(
-    "SELECT * FROM form WHERE Form_ID = ?",
+    "SELECT * FROM notification_teacher WHERE Notification_ID = ?",
     [reqParamStr.id],
     (err, rows) => {
       if (err) responseByStatus(res, err, 400, rows);
       else if (rows.length == 0) responseByStatus(res, err, 404, rows);
       else {
         database.query(
-          "DELETE FROM form WHERE Form_ID = ?",
+          "DELETE FROM notification_teacher WHERE Notification_ID = ?",
           reqParamStr.id,
           (err, rows) => {
             if (err) responseByStatus(res, err, 400, rows);

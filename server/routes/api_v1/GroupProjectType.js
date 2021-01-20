@@ -1,10 +1,10 @@
 var router = require("express").Router();
-var database = require("../database");
-var { responseByStatus } = require("../utilities/functions");
+var database = require("../../database");
+var { responseByStatus } = require("../../utilities/functions");
 
 // GET ALL
 router.get("/", (req, res) => {
-  database.query("SELECT * FROM section AS FS ", (err, rows) => {
+  database.query("SELECT * FROM group_project_type AS GPT ", (err, rows) => {
     if (err) responseByStatus(res, err, 400, rows);
     else responseByStatus(res, err, 200, rows);
   });
@@ -19,7 +19,7 @@ router.post("/", (req, res) => {
     if (Object.entries(reqBodyStr).length != index + 1) whereStr += ` AND `;
   });
   database.query(
-    "SELECT * FROM section AS FS " + `WHERE ${whereStr}`,
+    "SELECT * FROM group_project_type AS GPT " + `WHERE ${whereStr}`,
     (err, rows) => {
       if (err) responseByStatus(res, err, 400, rows);
       else {
@@ -34,7 +34,7 @@ router.post("/", (req, res) => {
 router.get("/:id", (req, res) => {
   var reqParamStr = req.params;
   database.query(
-    "SELECT * FROM section AS FS " + "WHERE Section_ID = ?",
+    "SELECT * FROM group_project_type AS GPT " + "WHERE ProjectType_ID = ?",
     [reqParamStr.id],
     (err, rows) => {
       if (err) responseByStatus(res, err, 400, rows);
@@ -49,7 +49,7 @@ router.get("/:id", (req, res) => {
 // CREATE
 router.post("/create", (req, res) => {
   var reqBodyStr = req.body;
-  database.query("INSERT INTO section SET ?", reqBodyStr, (err, rows) => {
+  database.query("INSERT INTO group_project_type SET ?", reqBodyStr, (err, rows) => {
     if (err) responseByStatus(res, err, 400, rows);
     else responseByStatus(res, err, 200, rows);
   });
@@ -60,14 +60,14 @@ router.put("/:id", (req, res) => {
   var reqParamStr = req.params;
   var reqBodyStr = req.body;
   database.query(
-    "SELECT * FROM section WHERE Section_ID = ?",
+    "SELECT * FROM group_project_type WHERE ProjectType_ID = ?",
     reqParamStr.id,
     (err, rows) => {
       if (err) responseByStatus(res, err, 400, rows);
       else if (rows.length == 0) responseByStatus(res, err, 404, rows);
       else {
         database.query(
-          "UPDATE section SET ? WHERE Section_ID = ?",
+          "UPDATE group_project_type SET ? WHERE ProjectType_ID = ?",
           [reqBodyStr, reqParamStr.id],
           (err, rows) => {
             if (err) responseByStatus(res, err, 400, rows);
@@ -83,14 +83,14 @@ router.put("/:id", (req, res) => {
 router.delete("/:id", (req, res) => {
   var reqParamStr = req.params;
   database.query(
-    "SELECT * FROM section WHERE Section_ID = ?",
+    "SELECT * FROM group_project_type WHERE ProjectType_ID = ?",
     [reqParamStr.id],
     (err, rows) => {
       if (err) responseByStatus(res, err, 400, rows);
       else if (rows.length == 0) responseByStatus(res, err, 404, rows);
       else {
         database.query(
-          "DELETE FROM section WHERE Section_ID = ?",
+          "DELETE FROM group_project_type WHERE ProjectType_ID = ?",
           reqParamStr.id,
           (err, rows) => {
             if (err) responseByStatus(res, err, 400, rows);

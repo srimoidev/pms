@@ -2,11 +2,7 @@ function responseByStatus(res, err, status, rows) {
   if ((status, rows)) {
     switch (status) {
       case 200:
-        res.send({
-          status: status,
-          message: "OK",
-          data: rows,
-        });
+        res.send(JSON.parse(JSON.stringify(rows)));
         break;
       case 400:
         res.send({
