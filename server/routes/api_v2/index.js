@@ -25,12 +25,13 @@ router.use("/project_member/", require("./project_member"));
 router.use("/project_progress/", require("./project_progress"));
 router.use("/project_status/", require("./project_status"));
 router.use("/project_type/", require("./project_type"));
-router.use("/section/", require("./section"));
+// router.use("/section/", require("./section"));
 router.use("/user/", require("./user"));
 router.use("/user_profile/", require("./user_profile"));
 router.use("/user_type/", require("./user_type"));
 // V2 Final
 router.use("/project", require("./project"));
 router.use("/form", require("./form"))
-
+router.use("/section", require("./section"))
+router.use("/user",require("./user"))
 module.exports = router;
