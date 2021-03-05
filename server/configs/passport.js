@@ -15,23 +15,25 @@ passport.use(
     },
     (username, password, cb) => {
       //this one is typically a DB call.
-      database.query(
-        `SELECT * FROM user_student WHERE Student_Username = "${username}" AND Student_Password = "${password}"`,
-        (err, rows) => {
-          var data, msg;
-          if (rows.length > 0) {
-            data = {
-              Student_ID: rows[0].Student_ID,
-              Student_Name:
-                rows[0].Student_Firstname + " " + rows[0].Student_Lastname,
-            };
-            msg = "Logged In Successfully!";
-          } else {
-            msg = "Incorrect Username or Password!";
-          }
-          return cb(null, data, msg);
+      const sqlStr =
+        `SELECT * FROM user ` +
+        `JOIN user_profile ON user.User_ID = user_profile.User_ID ` +
+        `WHERE User_Username = "${username}" AND User_Password = "${password}"`;
+      console.log(sqlStr);
+      database.query(sqlStr, (err, rows) => {
+        var data, msg;
+        if (rows.length > 0) {
+          data = {
+            User_ID: rows[0].User_ID,
+            User_Firstname: rows[0].User_Firstname,
+            User_Lastname: rows[0].User_Lastname,
+          };
+          msg = "Logged In Successfully!";
+        } else {
+          msg = "Incorrect Username or Password!";
         }
-      );
+        return cb(null, data, msg);
+      });
     }
   )
 );

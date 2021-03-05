@@ -9,7 +9,6 @@ router.get("/", (req, res) => {
       "LEFT JOIN group_project_type AS GPT ON GP.Project_TypeID=GPT.ProjectType_ID " +
       "LEFT JOIN group_project_status AS GPS ON GP.Project_StatusID=GPS.ProjectStatus_ID " +
       "LEFT JOIN section AS S ON GP.Project_SectionID=S.Section_ID " +
-      "LEFT JOIN request_status AS RS ON GP.Project_RequestStatusID=RS.RequestStatus_ID " +
       "LEFT JOIN user_teacher AS UT ON GP.Project_TeacherID=UT.Teacher_ID ",
     (err, rows) => {
       if (err) responseByStatus(res, err, 400, rows);
