@@ -34,4 +34,5 @@ router.use("/project", require("./project"));
 router.use("/form", require("./form"))
 router.use("/section", require("./section"))
 router.use("/user",require("./user"))
+router.use("/meeting", require("./meeting"))
 module.exports = router;

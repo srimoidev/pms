@@ -22,7 +22,7 @@ router.get("/", async (req, res) => {
         const form_sent = await db.form_sent.findAll({
             include: [{
                     model: db.project_info,
-                    as: "Form_Project",
+                    as: "Project_Info",
                 },
                 {
                     model: db.form_type,
@@ -41,7 +41,7 @@ router.get("/", async (req, res) => {
         return res.json(form_sent);
     } catch (error) {
         return res.status(500).json({
-            msg: error
+            msg: error.sql
         });
     }
 });

@@ -172,4 +172,20 @@ db.form_comment.belongsTo(db.form_sent, {
     as: "Form_Info",
     foreignKey: "Comment_FormID"
 })
+db.meeting.belongsTo(db.project_info, {
+    as: "Meeting_Project",
+    foreignKey: "Meeting_ProjectID"
+})
+db.meeting.belongsTo(db.meeting_type, {
+    as: "Meeting_Type",
+    foreignKey: "Meeting_TypeID"
+})
+db.meeting.belongsTo(db.user_profile, {
+    as: "Meeting_Teacher",
+    foreignKey: "Meeting_TeacherID"
+})
+db.meeting_note.belongsTo(db.meeting, {
+    as: "MeetingNote_Meeting",
+    foreignKey: "MeetingNote_MeetingID"
+})
 // FormComments
