@@ -7,6 +7,16 @@ module.exports = (sequelize, Sequelize) => {
         field: "Document_ID",
         primaryKey: true,
       },
+      Document_Name: {
+        type: Sequelize.STRING,
+        field: "Document_Name",
+        primaryKey: true,
+      },
+      Document_FileName: {
+        type: Sequelize.STRING,
+        field: "Document_FileName",
+        primaryKey: true,
+      },
       Document_DateTime: {
         type: Sequelize.DATE,
         field: "Document_DateTime",
