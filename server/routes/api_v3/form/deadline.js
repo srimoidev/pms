@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const db = require("../../../models")
 
-//#region Read
+// read
 router.get("/", async (req, res) => {
     try {
         var whereStr = []
@@ -40,9 +40,46 @@ router.get("/:id", async (req, res) => {
         });
     }
 });
-//#endregion
 
-//#region Delete
+// create
+router.post("/", async (req, res) => {
+    await db.deadline.create(req.body)
+        .then(data => {
+            res.send(data);
+        })
+        .catch(err => {
+            res.status(500).send({
+                message: err.message || "Some error occurred while creating!"
+            });
+        });
+})
+
+// update
+router.put("/:id", async (req, res) => {
+    await db.deadline.update(req.body, {
+            where: {
+                Deadline_ID: req.params.id
+            }
+        })
+        .then(num => {
+            if (num == 1) {
+                res.send({
+                    message: "Updated successfully!"
+                });
+            } else {
+                res.send({
+                    message: `Cann't update, Maybe not found or req.body is empty!`
+                });
+            }
+        })
+        .catch(err => {
+            res.status(500).send({
+                message: "Error updating!"
+            });
+        });
+})
+
+// delete
 router.delete("/:id", async (req, res) => {
     await db.deadline.destroy({
             where: [{
@@ -52,19 +89,19 @@ router.delete("/:id", async (req, res) => {
         .then(num => {
             if (num == 1) {
                 res.send({
-                    message: "deleted successfully!"
+                    message: "Deleted successfully!"
                 });
             } else {
                 res.send({
-                    message: `Cannot delete, Maybe not found!`
+                    message: `Can't delete, Maybe not found!`
                 });
             }
         })
-        .catch(error => {
+        .catch(err => {
             res.status(500).send({
-                message: error
+                message: "Error deleting!"
             });
         });
-})
-//#endregion
+
+});
 module.exports = router;
