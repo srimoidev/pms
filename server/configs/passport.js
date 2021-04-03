@@ -16,8 +16,7 @@ passport.use(
     (username, password, cb) => {
       //this one is typically a DB call.
       const sqlStr =
-        `SELECT * FROM user ` +
-        `JOIN user_profile ON user.User_ID = user_profile.User_ID ` +
+        `SELECT * FROM user_profile ` +
         `WHERE User_Username = "${username}" AND User_Password = "${password}"`;
       console.log(sqlStr);
       database.query(sqlStr, (err, rows) => {
