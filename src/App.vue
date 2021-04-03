@@ -1,64 +1,20 @@
 <template>
-  <v-app id="inspire">
-    <v-navigation-drawer v-model="drawer" app>
-      <v-list nav dense>
-        <v-list-item-group
-          v-model="group"
-          active-class="deep-purple--text text--accent-4"
-        >
-          <v-list-item>
-            <v-list-item-icon>
-              <v-icon>mdi-home</v-icon>
-            </v-list-item-icon>
-            <v-list-item-title>Home</v-list-item-title>
-          </v-list-item>
-
-          <v-list-item>
-            <v-list-item-icon>
-              <v-icon>mdi-account</v-icon>
-            </v-list-item-icon>
-            <v-list-item-title>Account</v-list-item-title>
-          </v-list-item>
-        </v-list-item-group>
-      </v-list>
-    </v-navigation-drawer>
-
-    <v-app-bar app color="primary" dark>
-      <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
-
-      <v-toolbar-title>{{ name }}</v-toolbar-title>
-    </v-app-bar>
-
-    <v-main>
-      <!-- <dashboard />
-      <view-form /> -->
-      <mgr-form />
-    </v-main>
+  <v-app id="app">
+    <router-view></router-view>
   </v-app>
 </template>
 
 <script>
-// import Dashboard from "./components/Dashboard.vue";
-import MgrForm from "./components/MgrForm.vue";
-// import ViewForm from "./components/ViewForm.vue";
+import store from "./store/index";
 export default {
-  components: {
-    // Dashboard,
-    // ViewForm,
-    MgrForm,
-  },
-  data() {
-    return {
-      name: "PROJECT MANAGEMENT SYSTEMS",
-      drawer: false,
-      group: null,
-    };
-  },
+  store
 };
 </script>
 
-<style>
-.v-application {
-  font-family: "Kanit" !important;
+<style lang="scss">
+@import url("https://fonts.googleapis.com/css2?family=K2D:wght@100;200;300;400;500;600;700;800&display=swap");
+@import "./src/assets/styles/style.scss";
+#app {
+  font-family: "K2D", sans-serif !important;
 }
 </style>

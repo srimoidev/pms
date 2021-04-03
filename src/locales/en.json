@@ -1,0 +1,31 @@
+{
+  "APP": {
+    "APP_NAME": "Project Management Systems",
+    "FULL_NAME" : "Project Management Systems Rajamangala University of Technology Lanna",
+    "ACRONYM" : "PMS",
+    "LANGUAGE": "English"
+  },
+  "DASHBOARD": {
+    "NAVIGATION_DRAWER": {
+      "OVERVIEW": "Overview",
+      "PROJECT_DESCRIPTION": "Project Description",
+      "APPOINTMENT": "Appointment",
+      "DEVELOPMENT_TOOLS": "Development Tools",
+      "ASSIGNMENTS": "Assignments",
+      "PROJECT_MANUAL": "Project Manual",
+      "TOPIC_PROPOSAL": "Topic Proposal",
+      "PROGRESSION_RECORD": "Progress Record",
+      "MANAGE_GROUP": "Manage Group",
+      "MANAGE_PROJECT": "Manage Project"
+    }
+  },
+  "MANAGE_GROUP":{
+    "MANAGE_GROUP":"Manage Group",
+    "PROPOSE_NEW_TOPIC":"Propose New Topic",
+    "PROJECT_NAME":"Project Name",
+    "ADVISOR":"Advisor",
+    "TYPE":"Type",
+    "MEMBER":"Member",
+    "STATUS":"Status"
+  }
+}
