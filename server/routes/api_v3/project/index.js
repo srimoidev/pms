@@ -63,7 +63,22 @@ router.post("/", async (req, res) => {
             });
         });
 })
-
+router.post("/create", async (req, res) => {
+    await sequelize.transaction(async (t) => {
+        await db.project_info.create(req.body.project, {
+            transaction: t
+        })
+        await db.project_info.create(req.body.advisor, {
+            transaction: t
+        })
+        await db.project_info.create(req.body.member, {
+            transaction: t
+        })
+        await t.commit();
+    }).catch(err => {
+        await t.rollback();
+    })
+})
 // update
 router.put("/:id", async (req, res) => {
     await db.project_info.update(req.body, {
