@@ -20,6 +20,10 @@ router.get("/", async (req, res) => {
             })
         }
         const data = await db.project_member.findAll({
+            include: [{
+                model: db.user_profile,
+                as: "Member_Info",
+            }],
             where: whereStr
         });
         return res.json(data);
@@ -82,7 +86,43 @@ router.put("/:id", async (req, res) => {
             });
         });
 })
+router.delete("/", async (req, res) => {
+    var whereStr = []
+    if (req.query.projectid) {
+        whereStr.push({
+            Member_ProjectID: req.query.projectid
+        })
+    }
+    if (req.query.userid) {
+        whereStr.push({
+            Member_UserID: req.query.userid
+        })
+    }
+    if (whereStr.length > 0) {
+        await db.project_member.destroy({
+                where: whereStr
+            })
+            .then(num => {
+                if (num == 1) {
+                    res.send({
+                        message: "Deleted successfully!"
+                    });
+                } else {
+                    res.send({
+                        message: `Can't delete, Maybe not found!`
+                    });
+                }
+            })
+            .catch(err => {
+                res.status(500).send({
+                    message: "Error deleting!"
+                });
+            });
+    } else {
+        res.send("gg");
+    }
 
+})
 // delete
 router.delete("/:id", async (req, res) => {
     await db.project_member.destroy({

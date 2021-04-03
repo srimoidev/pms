@@ -26,6 +26,13 @@ router.get("/", async (req, res) => {
             })
         }
         const data = await db.project_info.findAll({
+            include: [{
+                model: db.user_profile,
+                as: "Project_Members",
+                through: {
+                    attributes: []
+                }
+            }],
             where: whereStr
         });
         return res.json(data);
@@ -63,22 +70,28 @@ router.post("/", async (req, res) => {
             });
         });
 })
+
 router.post("/create", async (req, res) => {
-    await sequelize.transaction(async (t) => {
-        await db.project_info.create(req.body.project, {
-            transaction: t
+    const transaction = await db.sequelize.transaction();
+    try {
+        // await db.project_info.create(req.body.project, {
+        //     transaction: transaction
+        // })
+        await db.project_advisor.create(req.body.advisor, {
+            transaction: transaction
         })
-        await db.project_info.create(req.body.advisor, {
-            transaction: t
+        await db.project_member.create(req.body.member, {
+            transaction: transaction
         })
-        await db.project_info.create(req.body.member, {
-            transaction: t
-        })
-        await t.commit();
-    }).catch(err => {
-        await t.rollback();
-    })
+        await transaction.commit();
+    } catch (err) {
+        await transaction.rollback();
+        res.status(500).send({
+            message: err.message || "Some error occurred while creating!"
+        });
+    }
 })
+
 // update
 router.put("/:id", async (req, res) => {
     await db.project_info.update(req.body, {

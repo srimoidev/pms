@@ -83,6 +83,11 @@ db.user_profile.belongsToMany(db.project_info, {
     foreignKey: "Member_UserID"
 });
 
+db.project_member.belongsTo(db.project_info,{
+    foreignKey: "Member_ProjectID",
+    as: "Project_Info"
+})
+
 //ProjectType
 db.project_info.belongsTo(db.project_type, {
     as: "Project_Type",
