@@ -52,7 +52,23 @@ export default {
   },
   methods: {
     submit() {
-      this.$emit("submit", this.data.Project_ID);
+      this.$swal
+        .fire({
+          title: `<p>ยืนยันที่จะร่วมกลุ่ม</p> <h1>${this.data.Project_NameTH}</h1> ?`,
+          text: "You won't be able to revert this!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          cancelButtonText: "ยกเลิก",
+          confirmButtonText: "ยืนยัน!"
+        })
+        .then(result => {
+          if (result.isConfirmed) {
+            this.$emit("submit", this.data.Project_ID);
+          }
+        });
+      
     },
     close() {
       this.$emit("close");

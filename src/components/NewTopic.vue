@@ -1,5 +1,5 @@
 <template>
-  <v-card height="625">
+  <v-card>
     <v-card-title>
       <v-icon large class="blue--text text--lighten-2 ma-2 mr-5"
         >mdi-file-document-multiple-outline</v-icon
@@ -140,14 +140,14 @@
                 >
                   <v-avatar left class="d-flex justify-center" color="blue">
                     <!-- <v-img :src="teacher.item.avatar"></v-img> -->
-                    JT
+                    <v-icon>mdi-account</v-icon>
                   </v-avatar>
-                  {{ teacher.item.User_Firstname }}
+                  {{ `${teacher.item.User_Firstname} ${teacher.item.User_Lastname}` }}
                 </v-chip>
               </template>
               <template v-slot:item="teacher">
                 <v-list-item-avatar color="blue" class="d-flex justify-center">
-                  JT
+                  <v-icon>mdi-account</v-icon>
                   <!-- <img :src="teacher.item.avatar" /> -->
                 </v-list-item-avatar>
                 <v-list-item-content>

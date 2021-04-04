@@ -144,21 +144,23 @@ export default {
           Form_TypeID: 7
         }
       ];
-      const preq = await this.Project.FormPrerequisite();
-      const temp = await this.Project.LatestEachForm(29);
+      const preq = await this.Form.Prerequisite();
+      // const temp = await this.Project.LatestEachForm(29);
+      console.log(preq)
+      const temp = []
       if (temp) {
         initData.map(element => {
           element.data = temp.find(
             item => item.Form_TypeID == element.Form_TypeID
           );
           element.Prerequisite = preq.filter(
-            item => item.FormType_ID == element.Form_TypeID
+            item => item.Pre_FormTypeID == element.Form_TypeID
           );
-          element.Prerequisite.map(item => {
-            item.Status = temp.find(
-              t => t.Form_TypeID == item.FormReqType_ID
-            ).Form_StatusID;
-          });
+          // element.Prerequisite.map(item => {
+          //   item.Status = temp.find(
+          //     t => t.Form_TypeID == item.Pre_FormReqTypeID
+          //   ).Form_StatusID;
+          // });
         });
       }
       this.data = initData;
@@ -190,7 +192,7 @@ export default {
   }
 };
 </script>
-<style scoped>
+<style>
 .tb-row {
   height: 8vh;
 }

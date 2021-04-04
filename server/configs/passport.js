@@ -24,8 +24,8 @@ passport.use(
         if (rows.length > 0) {
           data = {
             User_ID: rows[0].User_ID,
-            User_Firstname: rows[0].User_Firstname,
-            User_Lastname: rows[0].User_Lastname,
+            // User_Firstname: rows[0].User_Firstname,
+            // User_Lastname: rows[0].User_Lastname,
           };
           msg = "Logged In Successfully!";
         } else {

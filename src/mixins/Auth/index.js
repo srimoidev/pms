@@ -6,10 +6,7 @@ const Auth = {
       if (res) {
         sessionStorage.setItem("user", JSON.stringify(res.data[0]));
         router.push("/student");
-      } else {
-        //for debug
-        sessionStorage.setItem("user", JSON.stringify({role:"Advisor"}));
-      }
+      } 
     });
   },
   logout: () => {

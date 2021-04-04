@@ -63,7 +63,7 @@
             :class="`type-${item.Project_TypeID}`"
             small
           >
-            {{ item.Project_TypeID }}
+            {{ allType[item.Project_TypeID - 1].ProjectType_Name }}
           </v-chip>
         </template>
         <template v-slot:[`item.Project_NameTH`]="{ item }">
@@ -137,7 +137,7 @@
                     " " +
                     item.Member_Info.User_Lastname
                 }}</v-list-item-title>
-                <v-list-item-subtitle>asdasd</v-list-item-subtitle>
+                <v-list-item-subtitle>{{`รหัส : ${item.Member_Info.User_StudentID} ปีการศึกษา : ${item.Member_Info.User_AcademicYear}`}}</v-list-item-subtitle>
               </v-list-item-content>
             </v-list-item>
             <v-divider
@@ -251,6 +251,7 @@ export default {
         this.allTeacher = await this.User.UserTeacher();
         this.projectType = type.slice();
         this.allType = type.slice();
+        console.log(this.allType);
         this.projectType.push({
           ProjectType_ID: 0,
           ProjectType_Name: "ทั้งหมด"
@@ -286,9 +287,24 @@ export default {
       });
     },
     leaveProject() {
-      this.Project.Leave(this.user.User_ID).then(() => {
-        location.reload();
-      });
+      this.$swal
+        .fire({
+          title: "ยืนยันที่จะออกจากกลุ่มหรือไม่?",
+          text: "You won't be able to revert this!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          cancelButtonText: "ยกเลิก",
+          confirmButtonText: "ยืนยัน!"
+        })
+        .then(result => {
+          if (result.isConfirmed) {
+            this.Project.Leave(this.user.User_ID).then(() => {
+              location.reload();
+            });
+          }
+        });
     },
     hideModal() {
       this.proposal_modal = false;

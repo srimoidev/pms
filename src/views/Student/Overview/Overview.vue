@@ -134,10 +134,10 @@
       </div>
 
       <div class="d-flex" style="width:25%">
-        <overview-activities
+        <!-- <overview-activities
           class="act"
           :data="activities"
-        ></overview-activities>
+        ></overview-activities> -->
       </div>
     </div>
   </div>
@@ -145,11 +145,11 @@
 
 <script>
 import BurndownChart from "@/components/BurndownChart";
-import OverviewActivities from "@/components/OverviewActivities";
+// import OverviewActivities from "@/components/OverviewActivities";
 export default {
   components: {
     BurndownChart,
-    OverviewActivities
+    // OverviewActivities
   },
   data() {
     return {
