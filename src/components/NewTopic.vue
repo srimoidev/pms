@@ -22,7 +22,6 @@
             <v-text-field
               v-model="th_name"
               :error-messages="errors"
-              prepend-inner-icon="mdi-alpha-t"
               label="ชื่อภาษาไทย"
               outlined
               dense
@@ -36,14 +35,19 @@
             <v-text-field
               v-model="en_name"
               :error-messages="errors"
-              prepend-inner-icon="mdi-alpha-e"
               label="ชื่อภาษาอังกฤษ"
               outlined
               dense
             ></v-text-field>
           </ValidationProvider>
-          <v-textarea v-model="detail" outlined rows="3" no-resize label="Detail"></v-textarea>
-          <div class="d-flex" style="width:100%">
+          <v-textarea
+            v-model="detail"
+            outlined
+            rows="3"
+            no-resize
+            label="รายละเอียด"
+          ></v-textarea>
+          <div class="d-flex">
             <ValidationProvider
               v-slot="{ errors }"
               name="จำนวน"
@@ -64,19 +68,44 @@
             <ValidationProvider
               v-slot="{ errors }"
               name="ประเภท"
-              rules="required"
+              rules="select_required"
             >
               <v-select
                 v-model="type"
                 :items="alltype"
-                :item-disabled="disabled"
                 label="ประเภท"
                 item-text="ProjectType_Name"
                 item-value="ProjectType_ID"
                 :error-messages="errors"
                 outlined
                 dense
+                class="mr-5"
               >
+              </v-select>
+            </ValidationProvider>
+            <ValidationProvider
+              v-slot="{ errors }"
+              name="Section"
+              rules="select_required"
+            >
+              <v-select
+                v-model="section"
+                :items="sections"
+                label="Section"
+                item-text="sec"
+                item-value="Section_ID"
+                :error-messages="errors"
+                outlined
+                dense
+              >
+              <template v-slot:item="sections">
+                <div>
+                  {{`Section : ${sections.item.sec} อาจารย์ : ${sections.item.teacher}`}} 
+                </div>
+                <div>
+                  {{`${sections.item.day} ${sections.item.time_period} `}}
+                </div>
+              </template>
               </v-select>
             </ValidationProvider>
           </div>
@@ -84,7 +113,7 @@
           <ValidationProvider
             v-slot="{ errors }"
             name="อาจารย์ที่ปรึกษา"
-            rules="required|advisors:2"
+            rules="select_required|advisors:2"
           >
             <v-autocomplete
               :error-messages="errors"
@@ -122,8 +151,9 @@
                   <!-- <img :src="teacher.item.avatar" /> -->
                 </v-list-item-avatar>
                 <v-list-item-content>
-                  <v-list-item-title :key="teacher.item.User_ID"
-                  >{{`${teacher.item.User_Firstname} ${teacher.item.User_Lastname}`}}</v-list-item-title>
+                  <v-list-item-title :key="teacher.item.User_ID">{{
+                    `${teacher.item.User_Firstname} ${teacher.item.User_Lastname}`
+                  }}</v-list-item-title>
                 </v-list-item-content>
               </template>
             </v-autocomplete>
@@ -135,7 +165,6 @@
         <v-btn class="ma-2" color="success" @click="submit">Create</v-btn>
       </div>
     </v-container>
-    <v-btn @click="a"></v-btn>
   </v-card>
 </template>
 
@@ -152,7 +181,12 @@ setInteractionMode("eager");
 
 extend("required", {
   ...required,
-  message: "โปรดกรอก{_field_}"
+  message: "โปรดกรอก {_field_}"
+});
+
+extend("select_required", {
+  ...required,
+  message: "โปรดเลือก {_field_}"
 });
 
 extend("max", {
@@ -191,11 +225,12 @@ export default {
     return {
       th_name: "",
       en_name: "",
-      detail:"",
+      detail: "",
       number: 1,
       type: null,
-      selected: []
-    }
+      selected: [],
+      sections:[{Section_ID:1,sec:1,teacher:"จาร 1 - จาร 2",time_period:"13.00 - 15.00", day:"พุธ"}]
+    };
   },
   methods: {
     async submit() {
@@ -205,32 +240,34 @@ export default {
       }
     },
     submitForm() {
-      this.$emit("newProject", {
-        Project_NameTH: this.th_name,
-        Project_NameEN: this.en_name,
-        Project_Detail: this.detail,
-        Project_TypeID: this.type,
-        Project_MaxMember: this.number,
-        Project_SectionID: 1,
-        Project_StatusID:1
-        // Project_TeacherID: 1
-      });
+      this.$emit(
+        "newProject",
+        {
+          Project_NameTH: this.th_name,
+          Project_NameEN: this.en_name,
+          Project_Detail: this.detail,
+          Project_TypeID: this.type,
+          Project_MaxMember: this.number,
+          Project_SectionID: 1,
+          Project_StatusID: 1
+        },
+      );
     },
     remove(item) {
       const index = this.selected.indexOf(item.name);
       if (index >= 0) this.selected.splice(index, 1);
     },
     close() {
-      this.th_name = ""
-      this.en_name = ""
-      this.detail = ""
-      this.type = ""
-      this.number = 1
-      this.selected = []
-      this.$refs.observer.reset()
-      this.$emit("close")
-    },
-  },
+      this.th_name = "";
+      this.en_name = "";
+      this.detail = "";
+      this.type = "";
+      this.number = 1;
+      this.selected = [];
+      this.$refs.observer.reset();
+      this.$emit("close");
+    }
+  }
 };
 </script>
 

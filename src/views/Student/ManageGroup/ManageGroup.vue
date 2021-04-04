@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!gID">
+  <div v-if="!user.pID">
     <v-card class="ma-2 elevation-1" tile v-resize="onResize">
       <v-data-table
         :headers="allProjectHeaders"
@@ -55,7 +55,7 @@
           </v-toolbar>
         </template>
         <template v-slot:[`item.Project_MaxMember`]="{ item }">
-          {{ 1 + " / " + item.Project_MaxMember }}
+          {{ item.Project_Members.length + " / " + item.Project_MaxMember }}
         </template>
         <template v-slot:[`item.Project_TypeID`]="{ item }">
           <v-chip
@@ -92,42 +92,120 @@
           ></new-topic>
         </modal-container>
       </template>
-      <!-- <template>
+      <template>
         <modal-container
           :active="joinGroup_modal"
           :cancellable="1"
           @close="hideModal"
         >
-          <join-group @submit="join" @close="hideModal" :data="selectedGroup">
-          </join-group>
+          <join-project
+            @submit="joinProject"
+            @close="hideModal"
+            :data="selectedGroup"
+          >
+          </join-project>
         </modal-container>
-      </template> -->
+      </template>
     </v-card>
   </div>
-  <div v-else>
-    <project-detail :data="selfGroup"></project-detail>
+  <div v-else class="d-flex ma-2">
+    <v-card class="elevation-1 mr-2" style="width:70%; min-height:89vh" tile>
+      <v-toolbar flat color="white">
+        <v-toolbar-title>
+          {{
+            "Manage Group - " + (data.Project_NameTH ? data.Project_NameTH : "")
+          }}
+        </v-toolbar-title>
+        <v-divider class="mx-4" inset vertical></v-divider>
+        <v-spacer></v-spacer>
+        <v-btn class="error white--text" @click="leaveProject">
+          <v-icon class="mr-2">mdi-account-cancel-outline</v-icon>
+          ออกจากกลุ่ม
+        </v-btn>
+      </v-toolbar>
+    </v-card>
+    <div style="width:30%">
+      <v-card class="elevation-1 mb-2" tile>
+        <v-card-text>{{ "Member" }}</v-card-text>
+        <v-divider></v-divider>
+        <v-list>
+          <template v-for="(item, index) in data.Members">
+            <v-list-item :key="item.Member_Info.User_ID">
+              <v-list-item-content>
+                <v-list-item-title>{{
+                  item.Member_Info.User_Firstname +
+                    " " +
+                    item.Member_Info.User_Lastname
+                }}</v-list-item-title>
+                <v-list-item-subtitle>asdasd</v-list-item-subtitle>
+              </v-list-item-content>
+            </v-list-item>
+            <v-divider
+              v-if="index != data.Members.length - 1"
+              class="mx-2"
+              :key="item"
+            ></v-divider>
+          </template>
+        </v-list>
+      </v-card>
+      <v-card tile class="elevation-1"
+        ><v-card-text>{{ "Teacher" }}</v-card-text>
+        <v-divider></v-divider>
+        <v-list>
+          <template v-for="(item, index) in data.Advisor">
+            <v-list-item :key="item.Advisor_Info.User_ID">
+              <v-list-item-content
+                ><v-list-item-title>{{
+                  item.Advisor_Info.User_Firstname +
+                    " " +
+                    item.Advisor_Info.User_Firstname
+                }}</v-list-item-title
+                ><v-list-item-subtitle
+                  >asdasdasd</v-list-item-subtitle
+                ></v-list-item-content
+              >
+            </v-list-item>
+            <v-divider
+              v-if="index != ['a', 'b'].length - 1"
+              class="mx-2"
+              :key="item"
+            ></v-divider>
+          </template>
+        </v-list>
+        <!-- <v-list>
+          <v-list-item>
+            <v-list-item-content>
+              <v-list-item-title>{{
+                data.Teacher_Firstname + " " + data.Teacher_Lastname
+              }}</v-list-item-title>
+              <v-list-item-subtitle>asdadadsadzxc</v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list> -->
+      </v-card>
+    </div>
   </div>
 </template>
 
 <script>
 // import ProjectDataTable from "@/components/ProjectDataTable";
 import ModalContainer from "@/components/ModalContainer";
-import ProjectDetail from "@/components/ProjectDetail";
+// import ProjectDetail from "@/components/ProjectDetail";
 import GroupStatus from "@/components/GroupStatus";
 import NewTopic from "@/components/NewTopic";
+import JoinProject from "@/components/JoinProject";
 export default {
   components: {
     // ProjectDataTable,
     ModalContainer,
-    ProjectDetail,
+    // ProjectDetail,
     GroupStatus,
-    NewTopic
+    NewTopic,
+    JoinProject
   },
   data() {
     return {
       user: {},
-      // gID: 28,
-      gID:null,
       searchText: "",
       loading: true,
       typeFilter: 0,
@@ -137,11 +215,13 @@ export default {
       GroupData: [],
       selfGroup: {},
       allType: [],
-      projectType:null,
+      projectType: null,
       allStatus: [],
       allProject: [],
       allTeacher: [],
+      selectedGroup: {},
       windowHeight: 0,
+      data: {},
       allProjectHeaders: [
         {
           text: "ชื่อโครงงาน",
@@ -163,36 +243,52 @@ export default {
   methods: {
     async loadData() {
       this.user = JSON.parse(sessionStorage.getItem("user"));
-      if (this.gID) {
-        let temp = {};
-        temp = await this.Project.GetSelf(this.gID);
-        temp.Members = await this.Group.GetSelfGroupMember(this.gID);
-        temp.Advisor = await this.Group.GetAdvisor(this.gID);
-        this.selfGroup = temp;
-      } else {
+      this.user.pID =
+        (await this.Project.SelfProject(this.user.User_ID)) || null;
+      if (!this.user.pID) {
         const type = await this.Project.AllType();
         this.allStatus = await this.Project.AllStatus();
         this.allTeacher = await this.User.UserTeacher();
-        this.projectType = type.slice()
-        this.allType = type.slice()
-        this.projectType.push({ ProjectType_ID: 0, ProjectType_Name: "ทั้งหมด" });
+        this.projectType = type.slice();
+        this.allType = type.slice();
+        this.projectType.push({
+          ProjectType_ID: 0,
+          ProjectType_Name: "ทั้งหมด"
+        });
         this.allStatus.push({
           ProjectStatus_ID: 0,
           ProjectStatus_Name: "ทั้งหมด"
         });
         this.allProject = await this.Project.GetAll();
-        // this.allProject.map(async item => item.Members = await this.Project.GroupMember(item.Project_ID))
-        console.log(this.allProject);
+      } else {
+        let temp = {};
+        temp = await this.Project.GetSelf(this.user.pID);
+        temp.Members = await this.Project.ProjectMember(this.user.pID);
+        // temp.Advisor = await this.Group.GetAdvisor(this.user.pID);
+        this.data = temp;
+        console.log(temp);
       }
+
+      // this.allProject.map(async item => item.Members = await this.Project.GroupMember(item.Project_ID))
+      console.log(this.allProject);
       this.loading = false;
     },
     async newProject(val) {
-      await this.Project.New(val).then(()=>{
-        this.loadData()
-      })
+      await this.Project.New(val).then(() => {
+        this.loadData();
+      });
     },
-    joinProject() {
-      //
+    joinProject(pID) {
+      console.log(pID, this.user.User_ID);
+      this.hideModal();
+      this.Project.Join(pID, this.user.User_ID).then(() => {
+        location.reload();
+      });
+    },
+    leaveProject() {
+      this.Project.Leave(this.user.User_ID).then(() => {
+        location.reload();
+      });
     },
     hideModal() {
       this.proposal_modal = false;
@@ -215,7 +311,7 @@ export default {
     },
     rowStyle() {
       return "tb-row";
-    },
+    }
   },
   computed: {
     filteredItems() {

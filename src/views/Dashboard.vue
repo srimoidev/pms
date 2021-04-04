@@ -252,18 +252,26 @@ export default {
     }
   },
   beforeMount() {
-    this.user = JSON.parse(sessionStorage.getItem("user"));
-    if (this.user.User_ID == 3) {
-      this.user.role = "Student";
-    } else {
-      this.user.role = "Advisor";
-    }
     this.loadData();
   },
 
   methods: {
-    loadData() {
+    async loadData() {
+      this.user = JSON.parse(sessionStorage.getItem("user"));
+      this.user.pID =
+        (await this.Project.SelfProject(this.user.User_ID)) || null;
+      console.log(this.user);
+      sessionStorage.setItem("user", JSON.stringify(this.user));
+      if (this.user.User_TypeID == 1) {
+        this.user.role = "Student";
+      } else {
+        this.user.role = "Advisor";
+      }
+
       this.initMenu();
+      // if (this.user.pID) {
+      //       this.menu[1].route = "/student/project_details";
+      //     }
     },
     initMenu() {
       switch (this.user.role) {

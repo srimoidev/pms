@@ -106,7 +106,7 @@
 <script>
 import ModalContainer from "@/components/ModalContainer";
 import NewTopic from "@/components/NewTopic";
-import JoinGroup from "@/components/TopicProposalJoinGroup";
+import JoinGroup from "@/components/JoinProject";
 import GroupStatus from "@/components/GroupStatus";
 
 export default {

@@ -11,8 +11,8 @@ export async function GetAll() {
       console.error("Can't fetch group.");
     });
 }
-export async function GetSelf(gID) {
-  return await HTTP.get(`/project/${gID}/info`)
+export async function GetSelf(pID) {
+  return await HTTP.get(`/project/${pID}`)
     .then(res => {
       return res.data[0];
     })
@@ -20,8 +20,8 @@ export async function GetSelf(gID) {
       console.error("Can't fetch group.");
     });
 }
-export async function GroupMember(gID) {
-  return await HTTP.get(`/project/member?projectid=${gID}`)
+export async function ProjectMember(pID) {
+  return await HTTP.get(`/project/member?projectid=${pID}`)
     .then(res => {
       return res.data;
     })
@@ -29,8 +29,8 @@ export async function GroupMember(gID) {
       console.error("Can't fetch group.");
     });
 }
-export async function GetAdvisor(gID) {
-  return await HTTP.get(`/project/${gID}/advisor`)
+export async function GetAdvisor(pID) {
+  return await HTTP.get(`/project/${pID}/advisor`)
     .then(res => {
       return res.data;
     })
@@ -47,8 +47,8 @@ export async function GetCE(type) {
       console.error("Can't fetch CE");
     });
 }
-export async function LatestEachForm(gID) {
-  return await HTTP.get(`/form/group/${gID}/latest`)
+export async function LatestEachForm(pID) {
+  return await HTTP.get(`/form/group/${pID}/latest`)
     .then(res => {
       return res.data;
     })
@@ -71,7 +71,11 @@ export async function AllStatus() {
     return res.data;
   });
 }
-
+export async function SelfProject(uID) {
+  return HTTP.get(`/project/member?userid=${uID}`).then((res) => {
+    return res?.data[0]?.Member_ProjectID;
+  });
+}
 //#endregion outbound
 
 //#region inbound
@@ -82,17 +86,32 @@ export async function New(val) {
   });
 }
 
+export async function Join(pID, uID) {
+  await HTTP.post("/project/member", {
+    Member_ProjectID: pID,
+    Member_UserID: uID,
+    Member_UpdateTime: Date.now()
+  }).catch(() => {
+    console.error("Can't Join");
+  });
+}
+
+export async function Leave(uID) {
+  await HTTP.delete(`/project/member?userid=${uID}`).catch(()=>{
+    //
+  })
+}
 //#endregion inbound
 
-export async function Form(gID) {
-  return await HTTP.post("/form", { Form_GroupID: gID }).then(res => {
+export async function Form(pID) {
+  return await HTTP.post("/form", { Form_GroupID: pID }).then(res => {
     console.log(res.data);
     return res.data;
   });
 }
 
-export async function FormCE(gID, fID) {
-  return await HTTP.post("/form", { Form_GroupID: gID, Form_TypeID: fID })
+export async function FormCE(pID, fID) {
+  return await HTTP.post("/form", { Form_GroupID: pID, Form_TypeID: fID })
     .then(res => {
       if (res.data) {
         return res.data;
@@ -103,8 +122,8 @@ export async function FormCE(gID, fID) {
     });
 }
 
-export async function form_ce(gID, fID) {
-  return await HTTP.get("/form/group/" + gID + "/type/" + fID).then(res => {
+export async function form_ce(pID, fID) {
+  return await HTTP.get("/form/group/" + pID + "/type/" + fID).then(res => {
     console.log(res);
     return res.data;
   });

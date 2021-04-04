@@ -9,6 +9,7 @@ import axios from "axios";
 import "./plugins/codemirror";
 import CKEditor from "@ckeditor/ckeditor5-vue";
 import Database from "./mixins/Database/";
+
 Vue.use(CKEditor);
 Vue.use(Database);
 

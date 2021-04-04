@@ -243,7 +243,7 @@ router.beforeEach((to, from, next) => {
   const loggedIn = JSON.parse(sessionStorage.getItem("user"));
   let role;
   if (loggedIn) {
-    if (loggedIn.User_ID == 3) {
+    if (loggedIn.User_TypeID == 1) {
       role = "Student";
     } else {
       role = "Advisor";
