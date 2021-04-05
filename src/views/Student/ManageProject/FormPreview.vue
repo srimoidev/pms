@@ -114,7 +114,6 @@
 
 <script>
 import pdf from "vue-pdf";
-import DB from "@/mixins/Database";
 export default {
   components: {
     pdf
@@ -134,16 +133,22 @@ export default {
       return this.$route.query.d;
     }
   },
-  beforeMounted() {
+  beforeMount() {
+    this.user = JSON.parse(sessionStorage.getItem("user"));
     this.loadData();
   },
   methods: {
     async loadData() {
-      this.commentData = await DB.Project.form_comment(this.form_id);
+      this.commentData = await this.Form.Comment(this.form_id);
     },
     async saveNewComment() {
-      await DB.Project.new_formcomment(this.form_id, 1, this.newCommentData);
+      await this.Form.NewComment(
+        this.form_id,
+        this.user.User_ID,
+        this.newCommentData
+      );
       this.newComment = !this.newComment;
+      this.newCommentData = "";
       this.loadData();
     },
     cancelComment() {

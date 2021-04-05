@@ -1,6 +1,6 @@
 <template>
   <v-card width="600">
-    {{data}}
+    {{ data }}
     <v-card-title class="blue"
       >รายละเอียดโครงงาน<v-spacer></v-spacer>
       <v-btn icon @click="close">
@@ -68,7 +68,6 @@ export default {
             this.$emit("submit", this.data.Project_ID);
           }
         });
-      
     },
     close() {
       this.$emit("close");

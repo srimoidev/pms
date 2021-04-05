@@ -71,15 +71,15 @@
         >
         <!-- <v-badge color="red" inline content="5"></v-badge> -->
       </template>
-      <template v-slot:[`item.FormStatus_ID`]="{ item }">
-        <form-status :item="item"></form-status>
+      <template v-slot:[`item.Form_StatusID`]="{ item }">
+        <form-status :status="item.Form_StatusID"></form-status>
       </template>
     </v-data-table>
   </v-card>
 </template>
 
 <script>
-import DB from "@/mixins/Database";
+// import DB from "@/mixins/Database";
 import ModalContainer from "@/components/ModalContainer";
 import FormStatus from "@/components/FormStatus";
 export default {
@@ -89,7 +89,8 @@ export default {
   },
   data() {
     return {
-      windowHeight:0,
+      user: null,
+      windowHeight: 0,
       currentFile: undefined,
       progress: 0,
       message: "",
@@ -106,7 +107,7 @@ export default {
           value: "Form_UpdatedTime"
         },
         { text: "อัปเดตโดย", value: "UpdatedBy", sortable: false },
-        { text: "สถานะ", value: "FormStatus_ID" }
+        { text: "สถานะ", value: "Form_StatusID" }
       ]
     };
   },
@@ -116,8 +117,9 @@ export default {
   },
   methods: {
     async loadData() {
-      this.data = await DB.Project.FormCE(this.gID, this.fID);
-
+      this.user = JSON.parse(sessionStorage.getItem("user"));
+      this.data = await this.Form.Form(this.user.pID, this.fID);
+      console.log(this.user, this.fID, this.data);
       // if (temp) {
       //   temp.map(async item => {
       //     // item.Comments = await DB.Project.form_comment(item.Form_ID);
@@ -150,13 +152,13 @@ export default {
 
       this.message = "";
 
-      DB.Project.upload_form(this.fID, this.currentFile, event => {
-        this.progress = Math.round((100 * event.loaded) / event.total);
-      }).catch(() => {
-        this.progress = 0;
-        this.message = "Could not upload the file!";
-        this.currentFile = undefined;
-      });
+      // DB.Project.upload_form(this.fID, this.currentFile, event => {
+      //   this.progress = Math.round((100 * event.loaded) / event.total);
+      // }).catch(() => {
+      //   this.progress = 0;
+      //   this.message = "Could not upload the file!";
+      //   this.currentFile = undefined;
+      // });
     },
     apply() {
       alert("upload");
@@ -165,9 +167,6 @@ export default {
   computed: {
     fID() {
       return this.$route.query.type;
-    },
-    gID() {
-      return this.$route.query.gID;
     }
   }
 };

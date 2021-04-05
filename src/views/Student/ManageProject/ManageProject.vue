@@ -8,7 +8,7 @@
       loading-text="Loading... Please wait"
       :height="windowHeight"
     >
-    <!-- :custom-sort="dateSorting" -->
+      <!-- :custom-sort="dateSorting" -->
       <template v-slot:top>
         <v-toolbar flat>
           <v-toolbar-title>จัดการโปรเจ็ค</v-toolbar-title>
@@ -43,7 +43,7 @@
           class="text-none"
           :to="{
             path: 'form_ce',
-            query: { gID: item.Form_GroupID, type: item.Form_TypeID }
+            query: { type: item.Form_TypeID }
           }"
         >
           {{ item.FormType_Name }}
@@ -85,7 +85,7 @@ export default {
   },
   data: () => ({
     loading: true,
-    windowHeight:0,
+    windowHeight: 0,
     actionMenu: [
       { title: "Preview", method: "previewDoc" },
       { title: "Edit", method: "editDoc" },
@@ -146,8 +146,8 @@ export default {
       ];
       const preq = await this.Form.Prerequisite();
       // const temp = await this.Project.LatestEachForm(29);
-      console.log(preq)
-      const temp = []
+      console.log(preq);
+      const temp = [];
       if (temp) {
         initData.map(element => {
           element.data = temp.find(
@@ -165,7 +165,7 @@ export default {
       }
       this.data = initData;
       this.loading = false;
-      console.log(this.loading,this.data)
+      console.log(this.loading, this.data);
     },
     onResize() {
       //page header 64px

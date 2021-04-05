@@ -1,7 +1,7 @@
 <template>
   <v-tooltip bottom>
     <template v-slot:activator="{ on, attrs }">
-      <span v-bind="attrs" v-on="on">
+      <span v-bind="attrs" v-on="on" style="cursor: default;">
         <span class="circle-dot mr-2" :class="`status-${status}`"> </span>
         {{ statusText[status].text }}
       </span>

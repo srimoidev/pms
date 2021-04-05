@@ -70,9 +70,19 @@
           {{ `${item.Project_NameTH} (${item.Project_NameEN})` }}
         </template>
         <template v-slot:[`item.actions`]="{ item }">
-          <v-icon small class="mr-2" @click="showJoinGroupModal(item)">
-            mdi-magnify
-          </v-icon>
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on, attrs }">
+              <v-icon
+                v-bind="attrs"
+                v-on="on"
+                class="mr-2"
+                @click="joinProject(item)"
+              >
+                mdi-account-arrow-right-outline
+              </v-icon>
+            </template>
+            <span>เข้าร่วมกลุ่ม</span>
+          </v-tooltip>
         </template>
         <template v-slot:[`item.Project_StatusID`]="{ item }">
           <group-status :status="item.Project_StatusID"></group-status>
@@ -137,7 +147,9 @@
                     " " +
                     item.Member_Info.User_Lastname
                 }}</v-list-item-title>
-                <v-list-item-subtitle>{{`รหัส : ${item.Member_Info.User_StudentID} ปีการศึกษา : ${item.Member_Info.User_AcademicYear}`}}</v-list-item-subtitle>
+                <v-list-item-subtitle>{{
+                  `รหัส : ${item.Member_Info.User_StudentID} ปีการศึกษา : ${item.Member_Info.User_AcademicYear}`
+                }}</v-list-item-subtitle>
               </v-list-item-content>
             </v-list-item>
             <v-divider
@@ -279,12 +291,28 @@ export default {
         this.loadData();
       });
     },
-    joinProject(pID) {
-      console.log(pID, this.user.User_ID);
-      this.hideModal();
-      this.Project.Join(pID, this.user.User_ID).then(() => {
-        location.reload();
-      });
+    joinProject(pProject) {
+      console.log(pProject);
+      this.$swal
+        .fire({
+          html: `<div><p>ยืนยันที่จะร่วมกลุ่ม</p></div><div><h2>"${pProject.Project_NameTH} ?"</h2></div>`,
+          text: "You won't be able to revert this! aaaaaaa",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          cancelButtonText: "ยกเลิก",
+          confirmButtonText: "ยืนยัน!"
+        })
+        .then(result => {
+          if (result.isConfirmed) {
+            this.Project.Join(pProject.Project_ID, this.user.User_ID).then(
+              () => {
+                location.reload();
+              }
+            );
+          }
+        });
     },
     leaveProject() {
       this.$swal

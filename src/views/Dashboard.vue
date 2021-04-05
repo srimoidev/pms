@@ -260,7 +260,7 @@ export default {
       this.user = JSON.parse(sessionStorage.getItem("user"));
       this.user.pID =
         (await this.Project.SelfProject(this.user.User_ID)) || null;
-      console.log(this.user);
+      // console.log(this.user);
       sessionStorage.setItem("user", JSON.stringify(this.user));
       if (this.user.User_TypeID == 1) {
         this.user.role = "Student";
