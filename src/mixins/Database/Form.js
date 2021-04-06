@@ -28,6 +28,15 @@ export async function Comment(fID) {
       console.log(ex);
     });
 }
+export async function Type() {
+  return HTTP.get("form/type")
+    .then(res => {
+      return res.data;
+    })
+    .catch(ex => {
+      console.log(ex);
+    });
+}
 //#endregion outbound
 
 //#region inbound

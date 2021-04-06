@@ -43,7 +43,7 @@
           class="text-none"
           :to="{
             path: 'form_ce',
-            query: { type: item.Form_TypeID }
+            query: { type: item.FormType_ID }
           }"
         >
           {{ item.FormType_Name }}
@@ -126,24 +126,8 @@ export default {
 
   methods: {
     async loadData() {
-      const initData = [
-        { FormType_Name: "CE01", Form_TypeID: 1 },
-        {
-          FormType_Name: "CE02",
-          Form_TypeID: 2
-        },
-        {
-          FormType_Name: "CE03",
-          Form_TypeID: 3
-        },
-        { FormType_Name: "CE04", Form_TypeID: 4 },
-        { FormType_Name: "CE05", Form_TypeID: 5 },
-        { FormType_Name: "CE06", Form_TypeID: 6 },
-        {
-          FormType_Name: "CE07",
-          Form_TypeID: 7
-        }
-      ];
+      const initData = await this.Form.Type();
+      
       const preq = await this.Form.Prerequisite();
       // const temp = await this.Project.LatestEachForm(29);
       console.log(preq);
@@ -151,10 +135,10 @@ export default {
       if (temp) {
         initData.map(element => {
           element.data = temp.find(
-            item => item.Form_TypeID == element.Form_TypeID
+            item => item.FormType_ID == element.FormType_ID
           );
           element.Prerequisite = preq.filter(
-            item => item.Pre_FormTypeID == element.Form_TypeID
+            item => item.Pre_FormTypeID == element.FormType_ID
           );
           // element.Prerequisite.map(item => {
           //   item.Status = temp.find(

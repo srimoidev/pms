@@ -99,7 +99,7 @@
                   <v-spacer></v-spacer>
                   <span>
                     {{
-                      new Date(item.Comment_Time).toLocaleDateString("th-TH")
+                      new Date(item.Comment_DateTime).toLocaleDateString("th-TH")
                     }}
                   </span>
                 </v-card-text>
