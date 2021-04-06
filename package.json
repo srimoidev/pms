@@ -61,12 +61,12 @@
     "vue-template-compiler": "^2.6.12",
     "vuetify-loader": "^1.6.0"
   },
-  "eslintConfig": {     
-    "root": true,     
-    "extends": [       
-      "plugin:vue/essential",       
-      "plugin:prettier/recommended",       
-      "eslint:recommended"     
-    ]   
+  "eslintConfig": {
+    "root": true,
+    "extends": [
+      "plugin:vue/essential",
+      "plugin:prettier/recommended",
+      "eslint:recommended"
+    ]
   }
 }

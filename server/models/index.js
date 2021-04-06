@@ -10,34 +10,34 @@ const db = {};
 
 let sequelize;
 if (config.use_env_variable) {
-    sequelize = new Sequelize(process.env[config.use_env_variable], config);
+  sequelize = new Sequelize(process.env[config.use_env_variable], config);
 } else {
-    sequelize = new Sequelize(
-        config.database,
-        config.username,
-        config.password,
-        config
-    );
+  sequelize = new Sequelize(
+    config.database,
+    config.username,
+    config.password,
+    config
+  );
 }
 
 fs.readdirSync(__dirname)
-    .filter((file) => {
-        return (
-            file.indexOf(".") !== 0 && file !== basename && file.slice(-3) === ".js"
-        );
-    })
-    .forEach((file) => {
-        const model = require(path.join(__dirname, file))(
-            sequelize,
-            Sequelize.DataTypes
-        );
-        db[model.name] = model;
-    });
+  .filter(file => {
+    return (
+      file.indexOf(".") !== 0 && file !== basename && file.slice(-3) === ".js"
+    );
+  })
+  .forEach(file => {
+    const model = require(path.join(__dirname, file))(
+      sequelize,
+      Sequelize.DataTypes
+    );
+    db[model.name] = model;
+  });
 
-Object.keys(db).forEach((modelName) => {
-    if (db[modelName].associate) {
-        db[modelName].associate(db);
-    }
+Object.keys(db).forEach(modelName => {
+  if (db[modelName].associate) {
+    db[modelName].associate(db);
+  }
 });
 
 db.sequelize = sequelize;
@@ -58,7 +58,10 @@ db.notification = require("./notification")(sequelize, Sequelize);
 db.notification_status = require("./notification_status")(sequelize, Sequelize);
 db.project_advisor = require("./project_advisor")(sequelize, Sequelize);
 db.project_committee = require("./project_committee")(sequelize, Sequelize);
-db.project_committee_role = require("./project_committee_role")(sequelize, Sequelize);
+db.project_committee_role = require("./project_committee_role")(
+  sequelize,
+  Sequelize
+);
 db.project_info = require("./project_info")(sequelize, Sequelize);
 db.project_member = require("./project_member")(sequelize, Sequelize);
 db.project_progress = require("./project_progress")(sequelize, Sequelize);
@@ -73,124 +76,123 @@ db.user_type = require("./user_type")(sequelize, Sequelize);
 
 // ProjectMember
 db.project_info.belongsToMany(db.user_profile, {
-    through: db.project_member,
-    as: "Project_Members",
-    foreignKey: "Member_ProjectID"
+  through: db.project_member,
+  as: "Project_Members",
+  foreignKey: "Member_ProjectID"
 });
 
 db.user_profile.belongsToMany(db.project_info, {
-    through: db.project_member,
-    foreignKey: "Member_UserID"
+  through: db.project_member,
+  foreignKey: "Member_UserID"
 });
 
-db.project_member.belongsTo(db.project_info,{
-    foreignKey: "Member_ProjectID",
-    as: "Project_Info"
-})
+db.project_member.belongsTo(db.project_info, {
+  foreignKey: "Member_ProjectID",
+  as: "Project_Info"
+});
 
 //ProjectType
 db.project_info.belongsTo(db.project_type, {
-    as: "Project_Type",
-    foreignKey: "Project_TypeID"
+  as: "Project_Type",
+  foreignKey: "Project_TypeID"
 });
 
 //ProjectSection
 db.project_info.belongsTo(db.section, {
-    as: "Project_Section",
-    foreignKey: "Project_SectionID"
+  as: "Project_Section",
+  foreignKey: "Project_SectionID"
 });
 
 //ProjectStatus
 db.project_info.belongsTo(db.project_status, {
-    as: "Project_Status",
-    foreignKey: "Project_StatusID"
+  as: "Project_Status",
+  foreignKey: "Project_StatusID"
 });
 
 // FormComments
 db.form_sent.hasMany(db.form_comment, {
-    as: "Form_Comments",
-    foreignKey: "Comment_FormID"
+  as: "Form_Comments",
+  foreignKey: "Comment_FormID"
 });
 db.form_comment.belongsTo(db.form_sent, {
-    as: "Form_Comments",
-    foreignKey: "Comment_FormID"
+  as: "Form_Comments",
+  foreignKey: "Comment_FormID"
 });
-
+db.form_sent.belongsTo(db.form_type, {
+  as: "Form_Type",
+  foreignKey: "Form_TypeID"
+});
 //ProjectAdvisor
 db.project_info.belongsToMany(db.user_profile, {
-    through: db.project_advisor,
-    as: "Project_Advisors",
-    foreignKey: "Advisor_ProjectID",
+  through: db.project_advisor,
+  as: "Project_Advisors",
+  foreignKey: "Advisor_ProjectID"
 });
 
 db.user_profile.belongsToMany(db.project_info, {
-    through: db.project_advisor,
-    foreignKey: "Advisor_UserID"
+  through: db.project_advisor,
+  foreignKey: "Advisor_UserID"
 });
 
 //ProjectCommittee
 db.project_info.belongsToMany(db.user_profile, {
-    through: db.project_committee,
-    as: "Project_Committee",
-    foreignKey: "Committee_ProjectID"
+  through: db.project_committee,
+  as: "Project_Committee",
+  foreignKey: "Committee_ProjectID"
 });
 
 db.user_profile.belongsToMany(db.project_info, {
-    through: db.project_committee,
-    foreignKey: "Committee_UserID"
+  through: db.project_committee,
+  foreignKey: "Committee_UserID"
 });
 
 db.project_member.belongsTo(db.user_profile, {
-    as: "Member_Info",
-    foreignKey: "Member_UserID"
+  as: "Member_Info",
+  foreignKey: "Member_UserID"
 });
 db.project_advisor.belongsTo(db.user_profile, {
-    as: "Advisor_Info",
-    foreignKey: "Advisor_UserID"
+  as: "Advisor_Info",
+  foreignKey: "Advisor_UserID"
 });
 db.project_committee.belongsTo(db.user_profile, {
-    as: "Committee_Info",
-    foreignKey: "Committee_UserID"
+  as: "Committee_Info",
+  foreignKey: "Committee_UserID"
 });
 db.project_committee.belongsTo(db.project_committee_role, {
-    as: "Committee_Role",
-    foreignKey: "Committee_RoleID"
+  as: "Committee_Role",
+  foreignKey: "Committee_RoleID"
 });
 db.form_sent.belongsTo(db.project_info, {
-    as: "Project_Info",
-    foreignKey: "Form_ProjectID"
-})
-db.form_sent.belongsTo(db.form_type, {
-    as: "Form_Type",
-    foreignKey: "Form_TypeID"
-})
+  as: "Project_Info",
+  foreignKey: "Form_ProjectID"
+});
 db.form_sent.belongsTo(db.form_status, {
-    as: "Form_Status",
-    foreignKey: "Form_StatusID"
-})
+  as: "Form_Status",
+  foreignKey: "Form_StatusID"
+});
 module.exports = db;
 db.form_comment.belongsTo(db.user_profile, {
-    as: "User_Info",
-    foreignKey: "Comment_UserID"
-})
+  as: "User_Info",
+  foreignKey: "Comment_UserID"
+});
 db.form_comment.belongsTo(db.form_sent, {
-    as: "Form_Info",
-    foreignKey: "Comment_FormID"
-})
+  as: "Form_Info",
+  foreignKey: "Comment_FormID"
+});
 db.meeting.belongsTo(db.project_info, {
-    as: "Meeting_Project",
-    foreignKey: "Meeting_ProjectID"
-})
+  as: "Meeting_Project",
+  foreignKey: "Meeting_ProjectID"
+});
 db.meeting.belongsTo(db.meeting_type, {
-    as: "Meeting_Type",
-    foreignKey: "Meeting_TypeID"
-})
+  as: "Meeting_Type",
+  foreignKey: "Meeting_TypeID"
+});
 db.meeting.belongsTo(db.user_profile, {
-    as: "Meeting_Teacher",
-    foreignKey: "Meeting_TeacherID"
-})
+  as: "Meeting_Teacher",
+  foreignKey: "Meeting_TeacherID"
+});
 db.meeting_note.belongsTo(db.meeting, {
-    as: "MeetingNote_Meeting",
-    foreignKey: "MeetingNote_MeetingID"
-})
+  as: "MeetingNote_Meeting",
+  foreignKey: "MeetingNote_MeetingID"
+});
 // FormComments

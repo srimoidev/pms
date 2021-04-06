@@ -9,9 +9,11 @@ const PORT = 3000;
 
 app.use(cors());
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({
-  extended: false
-}));
+app.use(
+  bodyParser.urlencoded({
+    extended: false
+  })
+);
 
 app.use(
   "/api/v1/",
@@ -19,16 +21,17 @@ app.use(
     session: false
   }),
   require("./routes/api_v1")
-)
+);
 app.use(
   "/api/v2/",
   // passport.authenticate("jwt", { session: false }),
   require("./routes/api_v2")
-)
-app.use("/api/v3",
+);
+app.use(
+  "/api/v3",
   // passport.authenticate("jwt", { session: false }),
   require("./routes/api_v3")
-)
+);
 app.use("/login", require("./routes/login"));
 
 app.listen(PORT, () => {
