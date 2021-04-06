@@ -137,10 +137,14 @@ db.user_profile.belongsToMany(db.project_info, {
 //ProjectCommittee
 db.project_info.belongsToMany(db.user_profile, {
   through: db.project_committee,
-  as: "Project_Committee",
+  as: "Project_Committees",
   foreignKey: "Committee_ProjectID"
 });
-
+//ProjectProgress
+db.project_info.hasMany(db.project_progress, {
+  foreignKey: "Progress_ProjectID",
+  as: "Project_Progresses"
+});
 db.user_profile.belongsToMany(db.project_info, {
   through: db.project_committee,
   foreignKey: "Committee_UserID"
