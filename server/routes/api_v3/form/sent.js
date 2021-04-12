@@ -1,6 +1,8 @@
 const router = require("express").Router();
 const db = require("../../../models");
-
+const {
+  Op
+} = require("sequelize");
 router.get("/", async (req, res) => {
   try {
     var whereStr = [];
@@ -55,10 +57,42 @@ router.get("/", async (req, res) => {
     });
   }
 });
-
+router.get("/:id/lasted", async (req, res) => {
+  await db.form_sent.findAll({
+      attributes: [
+        [db.sequelize.fn('max', db.sequelize.col('Form_ID')), 'Form_IDMax'],
+      ],
+      group: ["Form_TypeID"],
+      where: {
+        Form_ProjectID: req.params.id
+      },
+      raw: true,
+      nast: true
+    })
+    .then(async maxIds => {
+      var formMaxIds = []
+      maxIds.forEach(item => {
+        formMaxIds.push(item.Form_IDMax)
+      });
+      await db.form_sent.findAll({
+        where: {
+          Form_ID: {
+            [Op.in]: formMaxIds
+          }
+        }
+      }).then(result => {
+        res.json(result)
+      })
+    })
+    .catch(err => {
+      res.json({
+        err: err.message
+      })
+    })
+})
 router.get("/:id", async (req, res) => {
   try {
-    const data = await db.form_sent.findAll({
+    const data = await db.form_sent.findOne({
       include: [{
           model: db.form_type,
           as: "Form_Type"

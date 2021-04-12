@@ -76,7 +76,7 @@ router.get("/", async (req, res) => {
 
 router.get("/:id", async (req, res) => {
   try {
-    const data = await db.project_info.findAll({
+    const data = await db.project_info.findOne({
       include: [{
           model: db.user_profile,
           as: "Project_Members",
