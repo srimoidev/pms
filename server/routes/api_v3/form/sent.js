@@ -57,7 +57,7 @@ router.get("/", async (req, res) => {
     });
   }
 });
-router.get("/:id/lasted", async (req, res) => {
+router.get("/:id/latest", async (req, res) => {
   await db.form_sent.findAll({
       attributes: [
         [db.sequelize.fn('max', db.sequelize.col('Form_ID')), 'Form_IDMax'],
