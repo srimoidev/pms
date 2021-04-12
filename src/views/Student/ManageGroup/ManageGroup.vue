@@ -16,14 +16,7 @@
               จัดการกลุ่ม
             </v-toolbar-title>
             <v-divider class="mx-4" inset vertical></v-divider>
-            <v-text-field
-              v-model="searchText"
-              append-icon="mdi-magnify"
-              label="Search"
-              single-line
-              hide-details
-              class="mr-10"
-            ></v-text-field>
+            <v-text-field v-model="searchText" append-icon="mdi-magnify" label="Search" single-line hide-details class="mr-10"></v-text-field>
             <v-select
               v-model="typeFilter"
               :items="projectType"
@@ -58,11 +51,7 @@
           {{ item.Project_Members.length + " / " + item.Project_MaxMember }}
         </template>
         <template v-slot:[`item.Project_TypeID`]="{ item }">
-          <v-chip
-            class=" white--text"
-            :class="`type-${item.Project_TypeID}`"
-            small
-          >
+          <v-chip class=" white--text" :class="`type-${item.Project_TypeID}`" small>
             {{ allType[item.Project_TypeID - 1].ProjectType_Name }}
           </v-chip>
         </template>
@@ -72,12 +61,7 @@
         <template v-slot:[`item.actions`]="{ item }">
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
-              <v-icon
-                v-bind="attrs"
-                v-on="on"
-                class="mr-2"
-                @click="joinProject(item)"
-              >
+              <v-icon v-bind="attrs" v-on="on" class="mr-2" @click="joinProject(item)">
                 mdi-account-arrow-right-outline
               </v-icon>
             </template>
@@ -89,31 +73,13 @@
         </template>
       </v-data-table>
       <template>
-        <modal-container
-          :active="proposal_modal"
-          :cancellable="1"
-          @close="hideModal"
-        >
-          <new-topic
-            @close="hideModal"
-            @newProject="newProject"
-            :teacher="allTeacher"
-            :alltype="allType"
-          ></new-topic>
+        <modal-container :active="proposal_modal" :cancellable="1" @close="hideModal">
+          <new-topic @close="hideModal" @newProject="newProject" :teacher="allTeacher" :alltype="allType"></new-topic>
         </modal-container>
       </template>
       <template>
-        <modal-container
-          :active="joinGroup_modal"
-          :cancellable="1"
-          @close="hideModal"
-        >
-          <join-project
-            @submit="joinProject"
-            @close="hideModal"
-            :data="selectedGroup"
-          >
-          </join-project>
+        <modal-container :active="joinGroup_modal" :cancellable="1" @close="hideModal">
+          <join-project @submit="joinProject" @close="hideModal" :data="selectedGroup"> </join-project>
         </modal-container>
       </template>
     </v-card>
@@ -122,9 +88,7 @@
     <v-card class="elevation-1 mr-2" style="width:70%; min-height:89vh" tile>
       <v-toolbar flat color="white">
         <v-toolbar-title>
-          {{
-            "Manage Group - " + (data.Project_NameTH ? data.Project_NameTH : "")
-          }}
+          {{ "Manage Group - " + (data.Project_NameTH ? data.Project_NameTH : "") }}
         </v-toolbar-title>
         <v-divider class="mx-4" inset vertical></v-divider>
         <v-spacer></v-spacer>
@@ -142,21 +106,13 @@
           <template v-for="(item, index) in data.Members">
             <v-list-item :key="item.Member_Info.User_ID">
               <v-list-item-content>
-                <v-list-item-title>{{
-                  item.Member_Info.User_Firstname +
-                    " " +
-                    item.Member_Info.User_Lastname
-                }}</v-list-item-title>
+                <v-list-item-title>{{ item.Member_Info.User_Firstname + " " + item.Member_Info.User_Lastname }}</v-list-item-title>
                 <v-list-item-subtitle>{{
                   `รหัส : ${item.Member_Info.User_StudentID} ปีการศึกษา : ${item.Member_Info.User_AcademicYear}`
                 }}</v-list-item-subtitle>
               </v-list-item-content>
             </v-list-item>
-            <v-divider
-              v-if="index != data.Members.length - 1"
-              class="mx-2"
-              :key="item"
-            ></v-divider>
+            <v-divider v-if="index != data.Members.length - 1" class="mx-2" :key="item"></v-divider>
           </template>
         </v-list>
       </v-card>
@@ -167,21 +123,11 @@
           <template v-for="(item, index) in data.Advisor">
             <v-list-item :key="item.Advisor_Info.User_ID">
               <v-list-item-content
-                ><v-list-item-title>{{
-                  item.Advisor_Info.User_Firstname +
-                    " " +
-                    item.Advisor_Info.User_Firstname
-                }}</v-list-item-title
-                ><v-list-item-subtitle
-                  >asdasdasd</v-list-item-subtitle
-                ></v-list-item-content
+                ><v-list-item-title>{{ item.Advisor_Info.User_Firstname + " " + item.Advisor_Info.User_Firstname }}</v-list-item-title
+                ><v-list-item-subtitle>asdasdasd</v-list-item-subtitle></v-list-item-content
               >
             </v-list-item>
-            <v-divider
-              v-if="index != ['a', 'b'].length - 1"
-              class="mx-2"
-              :key="item"
-            ></v-divider>
+            <v-divider v-if="index != ['a', 'b'].length - 1" class="mx-2" :key="item"></v-divider>
           </template>
         </v-list>
         <!-- <v-list>
@@ -255,8 +201,7 @@ export default {
   methods: {
     async loadData() {
       this.user = JSON.parse(sessionStorage.getItem("user"));
-      this.user.pID =
-        (await this.Project.SelfProject(this.user.User_ID)) || null;
+      this.user.pID = (await this.Project.SelfProject(this.user.User_ID)) || null;
       if (!this.user.pID) {
         const type = await this.Project.AllType();
         this.allStatus = await this.Project.AllStatus();
@@ -306,11 +251,9 @@ export default {
         })
         .then(result => {
           if (result.isConfirmed) {
-            this.Project.Join(pProject.Project_ID, this.user.User_ID).then(
-              () => {
-                location.reload();
-              }
-            );
+            this.Project.Join(pProject.Project_ID, this.user.User_ID).then(() => {
+              location.reload();
+            });
           }
         });
     },
@@ -364,9 +307,7 @@ export default {
           return !this.typeFilter || item.Project_TypeID == this.typeFilter;
         })
         .filter(item => {
-          return (
-            !this.statusFilter || item.Project_StatusID == this.statusFilter
-          );
+          return !this.statusFilter || item.Project_StatusID == this.statusFilter;
         });
     }
   },

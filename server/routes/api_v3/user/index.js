@@ -22,7 +22,7 @@ router.get("/", async (req, res) => {
 
 router.get("/:id", async (req, res) => {
     try {
-        const data = await db.user_profile.findAll({
+        const data = await db.user_profile.findOne({
             where: [{
                 User_ID: req.params.id
             }]

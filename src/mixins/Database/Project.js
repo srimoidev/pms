@@ -14,7 +14,7 @@ export async function GetAll() {
 export async function GetSelf(pID) {
   return await HTTP.get(`/project/${pID}`)
     .then(res => {
-      return res.data[0];
+      return res.data;
     })
     .catch(() => {
       console.error("Can't fetch group.");

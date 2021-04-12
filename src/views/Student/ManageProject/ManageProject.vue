@@ -17,26 +17,15 @@
         </v-toolbar>
       </template>
       <template v-slot:[`item.Prerequisite`]="{ item }">
-        <div
-          class="d-flex align-baseline"
-          v-for="pre in item.Prerequisite"
-          :key="pre.Pre_ID"
-        >
-          <v-icon
-            class="mr-2"
-            :color="pre.Status == 5 ? 'success' : 'error'"
-            small
-            >{{
-              pre.Status == 5
-                ? "mdi-check-circle-outline"
-                : "mdi-close-circle-outline"
-            }}</v-icon
-          >
-          <span>{{ pre.FormReqType_Name }}</span>
+        <div class="d-flex align-baseline" v-for="pre in item.Prerequisite" :key="pre.Pre_ID">
+          <v-icon class="mr-2" :color="pre.Status == 5 ? 'success' : 'error'" small>{{
+            pre.Status == 5 ? "mdi-check-circle-outline" : "mdi-close-circle-outline"
+          }}</v-icon>
+          <span>{{ pre.Pre_FormReqType.FormType_Name }}</span>
         </div>
       </template>
-      <template v-slot:[`item.Form_StatusID`]="{ item }">
-        <form-status :item="item.data"></form-status>
+      <template v-slot:[`item.LatestFormStatus`]="{ item }">
+        <form-status :status="item.LatestFormStatus"></form-status>
       </template>
       <template v-slot:[`item.FormType_Name`]="{ item }">
         <router-link
@@ -54,7 +43,27 @@
           {{ new Date(item.data.Form_UpdatedTime).toLocaleDateString() }}
         </span>
       </template>
-      <template v-slot:[`item.actions`]="{ item }">
+      <template v-slot:[`item.Deadline`]="{ item }">
+        <div v-if="item.Deadline != undefined">
+          <div style="font-size: 16px">
+            {{ new Date(item.Deadline.Deadline_DateTime).toLocaleString("th-TH") }}
+          </div>
+          <v-chip
+            v-if="item.isReachDeadline <= 10 && item.isReachDeadline > 0"
+            label
+            :class="{
+              'white--text orange lighten-1': item.isReachDeadline <= 10 && item.isReachDeadline >= 0
+            }"
+            small
+            ><v-icon class="mr-2" color="white">mdi-clock-alert-outline</v-icon
+            ><span>{{ "อีก " + Math.ceil(item.isReachDeadline) + " วัน !" }}</span></v-chip
+          >
+          <v-chip v-else label :class="{ 'white--text red': item.isReachDeadline < 0 }" small
+            ><v-icon class="mr-2" color="white">mdi-clock-alert-outline</v-icon><span>{{ "เกินกำหนดส่ง" }}</span></v-chip
+          >
+        </div>
+      </template>
+      <!-- <template v-slot:[`item.actions`]="{ item }">
         <v-menu bottom left min-width="20vw">
           <template v-slot:activator="{ on, attrs }">
             <v-btn icon v-bind="attrs" v-on="on">
@@ -73,7 +82,7 @@
             </v-list-item>
           </v-list>
         </v-menu>
-      </template>
+      </template> -->
     </v-data-table>
   </v-card>
 </template>
@@ -84,6 +93,7 @@ export default {
     FormStatus
   },
   data: () => ({
+    user: null,
     loading: true,
     windowHeight: 0,
     actionMenu: [
@@ -99,9 +109,9 @@ export default {
       { text: "จำเป็นต้องทำก่อน", value: "Prerequisite", sortable: false },
       { text: "อัปเดตครั้งที่", value: "rev", sortable: false },
       { text: "อัปเดตล่าสุด", value: "Form_UpdatedTime", sortable: false },
-      { text: "วันที่แล้วเสร็จ", value: "CompleteDate", sortable: false },
-      { text: "สถานะ", value: "Form_StatusID", sortable: false },
-      { text: "", value: "actions", sortable: false }
+      { text: "วันกำหนดส่ง", value: "Deadline", sortable: false },
+      { text: "สถานะ", value: "LatestFormStatus", sortable: false }
+      // { text: "", value: "actions", sortable: false }
     ],
     data: []
   }),
@@ -126,25 +136,24 @@ export default {
 
   methods: {
     async loadData() {
+      this.user = JSON.parse(sessionStorage.getItem("user"));
       const initData = await this.Form.Type();
-      
+
       const preq = await this.Form.Prerequisite();
-      // const temp = await this.Project.LatestEachForm(29);
-      console.log(preq);
-      const temp = [];
+      const temp = await this.Form.LatestEachForm(this.user.pID);
+      let deadline = await this.Form.Deadline();
+      console.log(temp);
+      // const temp = [];
       if (temp) {
         initData.map(element => {
-          element.data = temp.find(
-            item => item.FormType_ID == element.FormType_ID
-          );
-          element.Prerequisite = preq.filter(
-            item => item.Pre_FormTypeID == element.FormType_ID
-          );
-          // element.Prerequisite.map(item => {
-          //   item.Status = temp.find(
-          //     t => t.Form_TypeID == item.Pre_FormReqTypeID
-          //   ).Form_StatusID;
-          // });
+          element.LatestFormStatus = temp.find(item => item.Form_TypeID == element.FormType_ID)?.Form_StatusID;
+          element.Prerequisite = preq.filter(item => item.Pre_FormTypeID == element.FormType_ID);
+          element.Deadline = deadline.find(item => item.Deadline_FormTypeID == element.FormType_ID) || undefined;
+          // console.log(element.Deadline);
+          element.isReachDeadline = (new Date(element?.Deadline?.Deadline_DateTime) - new Date()) / (1000 * 3600 * 24);
+          element.Prerequisite.map(item => {
+            item.Status = temp.find(t => t.Form_TypeID == item.Pre_FormReqTypeID)?.Form_StatusID;
+          });
         });
       }
       this.data = initData;

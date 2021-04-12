@@ -12,6 +12,12 @@ export async function UserStudent(id) {
     return res.data;
   });
 }
+export async function Profile(uID) {
+  return (await HTTP.get(`/user/${uID}`)).data;
+  // .then((res) => {
+  //   return res.data;
+  // });
+}
 export async function GetAllStudentByGroupID(gID) {
   return await HTTP.post("/userstudent", { Student_GroupID: gID })
     .then(res => {

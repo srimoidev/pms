@@ -10,19 +10,9 @@ export const userService = {
       }),
       { headers: { "Content-Type": "application/json" } }
     ).then(async res => {
-      if (res.data.token) {
-        sessionStorage.setItem("token", res.data.token);
-        console.log(atob(res.data.token.split(".")[1]))
-        return await HTTP.get(
-          `/api/v2/user_profile/?User_ID=${
-            JSON.parse(atob(res.data.token.split(".")[1])).User_ID
-          }`,
-          {
-            headers: { Authorization: `Bearer ${res.data.token}` }
-          }
-        );
-      }
-      return false;
+      //get token and store
+      sessionStorage.setItem("token", res.data.token);
+      return res.data.token;
     });
   },
   logout: () => {

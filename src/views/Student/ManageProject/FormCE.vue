@@ -141,6 +141,7 @@ export default {
       this.windowHeight = window.innerHeight - 64 - 64 - 16 - 59;
     },
     selectFile(file) {
+      console.log(file)
       this.progress = 0;
       this.currentFile = file;
     },
@@ -152,13 +153,13 @@ export default {
 
       this.message = "";
 
-      // DB.Project.upload_form(this.fID, this.currentFile, event => {
-      //   this.progress = Math.round((100 * event.loaded) / event.total);
-      // }).catch(() => {
-      //   this.progress = 0;
-      //   this.message = "Could not upload the file!";
-      //   this.currentFile = undefined;
-      // });
+      this.Form.Upload(this.user.pID,1, this.currentFile, event => {
+        this.progress = Math.round((100 * event.loaded) / event.total);
+      }).catch(() => {
+        this.progress = 0;
+        this.message = "Could not upload the file!";
+        this.currentFile = undefined;
+      });
     },
     apply() {
       alert("upload");

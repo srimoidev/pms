@@ -1,73 +1,62 @@
 <template>
-  <div class="form-container">
-    <v-card class="login">
-      <v-avatar size="96" class="avatar">
-        <v-icon size="80" color="white">mdi-account-outline</v-icon>
-      </v-avatar>
-      <div class="form-login">
-        <v-card-title class="d-block">Login</v-card-title>
-        <div class="mx-8">
-          <ValidationObserver ref="observer">
-            <form>
-              <ValidationProvider
-                v-slot="{ errors }"
-                name="Username"
-                rules="required"
-              >
-                <v-text-field
-                  v-model="username"
-                  label="ID"
-                  :error-messages="errors"
-                  prepend-inner-icon="mdi-account"
-                ></v-text-field>
-              </ValidationProvider>
-              <ValidationProvider
-                v-slot="{ errors }"
-                name="Password"
-                rules="required"
-              >
-                <v-text-field
-                  v-model="password"
-                  label="Password"
-                  :error-messages="errors"
-                  prepend-inner-icon="mdi-lock"
-                  @keydown.enter="submit"
-                  type="password"
-                ></v-text-field>
-              </ValidationProvider>
-              <v-btn class="my-5" width="100%" color="primary" @click="submit"
-                >Login</v-btn
-              >
-              <div class="d-flex">
-                <!-- <v-checkbox
-                  v-model="rememberChecked"
-                  label="Remember me"
-                ></v-checkbox> -->
-                <v-spacer></v-spacer>
-                <span class="forget-password">Forgot Password?</span>
-              </div>
-            </form>
-          </ValidationObserver>
-        </div>
-        <v-alert v-if="isLoggedIn.loggedIn == false" dense type="error"
-          >Incorrect <strong>Username</strong> or <strong>Password</strong>
+  <div>
+    <div class="text-center mt-10">
+      <v-icon class="blue-grey--text text--lighten-5" style="font-size:86px">
+        mdi-account-group-outline
+      </v-icon>
+    </div>
+    <v-card class="mx-auto elevation-0 form-container" width="400">
+      <v-card-title class="blue-grey--text text--lighten-5 justify-center">
+        Login
+      </v-card-title>
+      <v-container>
+        <ValidationObserver ref="observer">
+          <ValidationProvider v-slot="{ errors }" name="Username" rules="required">
+            <v-text-field
+              v-model="username"
+              class="cyan--text text--accent-4"
+              solo
+              prepend-inner-icon="mdi-account"
+              label="Username"
+              @keypress.enter="submit"
+              :error-messages="errors"
+              color="cyan accent-4"
+            ></v-text-field>
+          </ValidationProvider>
+          <ValidationProvider v-slot="{ errors }" name="Password" rules="required">
+            <v-text-field
+              v-model="password"
+              solo
+              prepend-inner-icon="mdi-lock"
+              label="Password"
+              type="password"
+              @keypress.enter="submit"
+              :error-messages="errors"
+            ></v-text-field>
+          </ValidationProvider>
+        </ValidationObserver>
+        <v-alert v-if="loginFail" dense type="error">
+          <span>Incorrect <strong>Username</strong> or <strong>Password</strong></span>
         </v-alert>
-      </div>
+        <v-btn dark width="100%" class="white--text cyan accent-4 elevation-1" @click="submit">Login</v-btn>
+        <div class="d-flex">
+          <v-checkbox dark label="Remember me?" hide-details color="white" on-icon="mdi-check-box-outline"></v-checkbox>
+          <v-spacer></v-spacer>
+          <span class="blue-grey--text text--lighten-5 mt-4 pt-1">Forget Password</span>
+        </div>
+      </v-container>
     </v-card>
+    <div class="text-center mt-4">
+      <span class="mr-4 blue-grey--text text--lighten-5">Don't have a account?</span>
+      <v-btn x-small>Register</v-btn>
+    </div>
   </div>
 </template>
 
 <script>
 import { required } from "vee-validate/dist/rules";
 import Auth from "@/mixins/Auth";
-// import { required, email, max, length } from "vee-validate/dist/rules";
-import {
-  extend,
-  ValidationObserver,
-  ValidationProvider,
-  setInteractionMode
-} from "vee-validate";
-import { mapGetters } from "vuex";
+import { extend, ValidationObserver, ValidationProvider, setInteractionMode } from "vee-validate";
 setInteractionMode("eager");
 extend("required", {
   ...required,
@@ -82,53 +71,28 @@ export default {
     return {
       username: null,
       password: null,
-      rememberChacked: false
+      rememberChacked: false,
+      loginFail: false
     };
   },
   methods: {
     async submit() {
       if (await this.$refs.observer.validate()) {
-        Auth.login(this.username, this.password);
+        try {
+          await Auth.login(this.username, this.password);
+        } catch (ex) {
+          this.loginFail = true;
+        }
       }
     }
-  },
-  computed: {
-    ...mapGetters({
-      isLoggedIn: "auth/loggedIn"
-    })
   }
 };
 </script>
 
 <style>
 .form-container {
-  height: 70vh;
-  position: relative;
-}
-.login {
-  background-color: rgba(255, 255, 255, 0.6) !important;
-  width: 400px;
-  height: 400px;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
-}
-.avatar {
-  border-top-left-radius: 50% !important;
-  border-top-right-radius: 50% !important;
-  background-color: #1976d2bb;
-  top: -48px;
-}
-.forget-password {
-  margin-top: 16px;
-  padding-top: 4px;
-  color: #00000099;
-}
-.form-login {
-  position: absolute;
-  top: 60px;
-  width: inherit;
+  border: 3px solid rgba(236, 239, 241, 0.8) !important;
+  border-radius: 16px !important;
+  background: transparent !important;
 }
 </style>

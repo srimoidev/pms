@@ -17,7 +17,7 @@
         <v-tabs
           v-model="tab"
           background-color="transparent"
-          color="primary"
+          color="blue-grey lighten-5"
           v-if="!$vuetify.breakpoint.mdAndDown"
         >
           <v-tab
@@ -149,12 +149,15 @@ export default {
 .home-container {
   min-height: 100vh;
   max-height: 100vh;
-  background-image: linear-gradient(
-      to bottom,
-      rgba(245, 246, 252, 0.52),
-      rgba(117, 19, 93, 0.73)
-    ),
-    url("../../assets/aff4cc28ca93b3507d41ba0f88ec53db.jpg");
+  /* background-image: linear-gradient(to bottom,rgba(245, 246, 252, 0.52), rgba(117, 19, 93, 0.73)),url("../../assets/aff4cc28ca93b3507d41ba0f88ec53db.jpg"); */
+  /* fallback for old browsers */
+  /* background: #009fff;  */
+  /* Chrome 10-25, Safari 5.1-6 */
+  /* background: -webkit-linear-gradient(to right, #ec2f4b, #009fff),
+    url("../../assets/aff4cc28ca93b3507d41ba0f88ec53db.jpg");  */
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  background: linear-gradient(to bottom, #009fffa0,#ec2f4ba0),
+    url("../../assets/aff4cc28ca93b3507d41ba0f88ec53db.jpg"); 
   background-size: cover;
 }
 .footer {

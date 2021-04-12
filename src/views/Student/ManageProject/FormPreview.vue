@@ -54,31 +54,17 @@
               </v-btn>
             </div>
             <template v-if="newComment">
-              <v-textarea
-                v-model="newCommentData"
-                counter
-                class="ma-2"
-                outlined
-              ></v-textarea>
+              <v-textarea v-model="newCommentData" counter class="ma-2" outlined></v-textarea>
               <div class="d-flex mb-5">
                 <v-spacer></v-spacer>
-                <v-btn
-                  class="mr-2"
-                  small
-                  color="success"
-                  @click="saveNewComment"
-                >
+                <v-btn class="mr-2" small color="success" @click="saveNewComment">
                   Save
                 </v-btn>
                 <v-btn small text color="" @click="cancelComment">Cancel</v-btn>
               </div>
             </template>
             <template>
-              <v-card
-                class="mb-2 mr-2"
-                v-for="item in commentData"
-                :key="item.Comment_ID"
-              >
+              <v-card class="mb-2 mr-2" v-for="item in commentData" :key="item.Comment_ID">
                 <v-card-text>
                   <v-icon style="top:-5px">mdi-format-quote-open</v-icon>
                   {{ item.Comment_Text }}
@@ -89,18 +75,11 @@
                 <v-divider class="mx-4"></v-divider>
                 <v-card-text class="d-flex">
                   <span>
-                    {{
-                      "- " +
-                        item.Teacher_Firstname +
-                        " " +
-                        item.Teacher_Lastname
-                    }}
+                    {{ "- " + item.Comment_User.User_Firstname + " " + item.Comment_User.User_Lastname }}
                   </span>
                   <v-spacer></v-spacer>
                   <span>
-                    {{
-                      new Date(item.Comment_DateTime).toLocaleDateString("th-TH")
-                    }}
+                    {{ new Date(item.Comment_DateTime).toLocaleDateString("th-TH") }}
                   </span>
                 </v-card-text>
               </v-card>
@@ -142,11 +121,7 @@ export default {
       this.commentData = await this.Form.Comment(this.form_id);
     },
     async saveNewComment() {
-      await this.Form.NewComment(
-        this.form_id,
-        this.user.User_ID,
-        this.newCommentData
-      );
+      await this.Form.NewComment(this.form_id, this.user.User_ID, this.newCommentData);
       this.newComment = !this.newComment;
       this.newCommentData = "";
       this.loadData();
