@@ -20,6 +20,19 @@ router.get("/", async (req, res) => {
             })
         }
         const data = await db.meeting.findAll({
+            include: [{
+                    model: db.project_info,
+                    as: "Meeting_Project"
+                },
+                {
+                    model: db.meeting_type,
+                    as: "Meeting_Type"
+                },
+                {
+                    model: db.user_profile,
+                    as: "Meeting_Teacher"
+                }
+            ],
             where: whereStr
         });
         return res.json(data);

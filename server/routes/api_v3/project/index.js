@@ -26,8 +26,7 @@ router.get("/", async (req, res) => {
       });
     }
     const data = await db.project_info.findAll({
-      include: [
-        {
+      include: [{
           model: db.user_profile,
           as: "Project_Members",
           through: {
@@ -78,11 +77,47 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
   try {
     const data = await db.project_info.findAll({
-      where: [
+      include: [{
+          model: db.user_profile,
+          as: "Project_Members",
+          through: {
+            attributes: []
+          }
+        },
         {
-          Project_ID: req.params.id
+          model: db.user_profile,
+          as: "Project_Advisors",
+          through: {
+            attributes: []
+          }
+        },
+        {
+          model: db.user_profile,
+          as: "Project_Committees",
+          through: {
+            attributes: []
+          }
+        },
+        {
+          model: db.project_status,
+          as: "Project_Status"
+        },
+        {
+          model: db.section,
+          as: "Project_Section"
+        },
+        {
+          model: db.project_type,
+          as: "Project_Type"
+        },
+        {
+          model: db.project_progress,
+          as: "Project_Progresses"
         }
-      ]
+      ],
+      where: [{
+        Project_ID: req.params.id
+      }]
     });
     return res.json(data);
   } catch (error) {
@@ -157,11 +192,9 @@ router.put("/:id", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   await db.project_info
     .destroy({
-      where: [
-        {
-          Project_ID: req.params.id
-        }
-      ]
+      where: [{
+        Project_ID: req.params.id
+      }]
     })
     .then(num => {
       if (num == 1) {

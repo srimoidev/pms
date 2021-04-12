@@ -15,6 +15,13 @@ router.get("/", async (req, res) => {
             })
         }
         const data = await db.form_prerequisite.findAll({
+            include: [{
+                model: db.form_type,
+                as: "Pre_FormType"
+            }, {
+                model: db.form_type,
+                as: "Pre_FormReqType"
+            }],
             where: whereStr
         });
         return res.json(data);
@@ -28,6 +35,13 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
     try {
         const data = await db.form_prerequisite.findAll({
+            include: [{
+                model: db.form_type,
+                as: "Pre_FormType"
+            }, {
+                model: db.form_type,
+                as: "Pre_FormReqType"
+            }],
             where: [{
                 Pre_ID: req.params.id
             }]
