@@ -20,14 +20,30 @@ router.get("/", async (req, res) => {
       });
     }
     const data = await db.form_sent.findAll({
-      include: [
-        {
+      include: [{
           model: db.form_type,
           as: "Form_Type"
         },
         {
           model: db.form_status,
           as: "Form_Status"
+        },
+        {
+          model: db.project_info,
+          as: "Form_Project",
+          include: [{
+              model: db.project_status,
+              as: "Project_Status"
+            },
+            {
+              model: db.section,
+              as: "Project_Section"
+            },
+            {
+              model: db.project_type,
+              as: "Project_Type"
+            },
+          ]
         }
       ],
       where: whereStr
@@ -43,21 +59,35 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
   try {
     const data = await db.form_sent.findAll({
-      include: [
-        {
+      include: [{
           model: db.form_type,
           as: "Form_Type"
         },
         {
           model: db.form_status,
           as: "Form_Status"
+        },
+        {
+          model: db.project_info,
+          as: "Form_Project",
+          include: [{
+              model: db.project_status,
+              as: "Project_Status"
+            },
+            {
+              model: db.section,
+              as: "Project_Section"
+            },
+            {
+              model: db.project_type,
+              as: "Project_Type"
+            },
+          ]
         }
       ],
-      where: [
-        {
-          Form_ID: req.params.id
-        }
-      ]
+      where: [{
+        Form_ID: req.params.id
+      }]
     });
     return res.json(data);
   } catch (error) {
@@ -111,11 +141,9 @@ router.put("/:id", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   await db.form_sent
     .destroy({
-      where: [
-        {
-          Form_ID: req.params.id
-        }
-      ]
+      where: [{
+        Form_ID: req.params.id
+      }]
     })
     .then(num => {
       if (num == 1) {

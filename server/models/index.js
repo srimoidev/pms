@@ -90,7 +90,14 @@ db.project_member.belongsTo(db.project_info, {
   foreignKey: "Member_ProjectID",
   as: "Project_Info"
 });
-
+db.form_prerequisite.belongsTo(db.form_type, {
+  as: "Pre_FormType",
+  foreignKey: "Pre_FormTypeID"
+})
+db.form_prerequisite.belongsTo(db.form_type, {
+  as: "Pre_FormReqType",
+  foreignKey: "Pre_FormReqTypeID"
+})
 //ProjectType
 db.project_info.belongsTo(db.project_type, {
   as: "Project_Type",
@@ -174,13 +181,12 @@ db.form_sent.belongsTo(db.form_status, {
   as: "Form_Status",
   foreignKey: "Form_StatusID"
 });
-module.exports = db;
 db.form_comment.belongsTo(db.user_profile, {
-  as: "User_Info",
+  as: "Comment_User",
   foreignKey: "Comment_UserID"
 });
 db.form_comment.belongsTo(db.form_sent, {
-  as: "Form_Info",
+  as: "Comment_Form",
   foreignKey: "Comment_FormID"
 });
 db.meeting.belongsTo(db.project_info, {
@@ -199,4 +205,17 @@ db.meeting_note.belongsTo(db.meeting, {
   as: "MeetingNote_Meeting",
   foreignKey: "MeetingNote_MeetingID"
 });
-// FormComments
+
+db.deadline.belongsTo(db.form_type, {
+  as: "Deadline_FormType",
+  foreignKey: "Deadline_FormTypeID"
+})
+db.deadline.belongsTo(db.section, {
+  as: "Deadline_Section",
+  foreignKey: "Deadline_SectionID"
+})
+db.form_sent.belongsTo(db.project_info,{
+  as: "Form_Project",
+  foreignKey: "Form_ProjectID"
+})
+module.exports = db;

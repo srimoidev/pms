@@ -16,6 +16,13 @@ router.get("/", async (req, res) => {
       });
     }
     const data = await db.deadline.findAll({
+      include: [{
+        model: db.form_type,
+        as: "Deadline_FormType"
+      }, {
+        model: db.section,
+        as: "Deadline_Section"
+      }],
       where: whereStr
     });
     return res.json(data);
@@ -29,11 +36,16 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
   try {
     const data = await db.deadline.findAll({
-      where: [
-        {
-          Deadline_ID: req.params.id
-        }
-      ]
+      include: [{
+        model: db.form_type,
+        as: "Deadline_FormType"
+      }, {
+        model: db.section,
+        as: "Deadline_Section"
+      }],
+      where: [{
+        Deadline_ID: req.params.id
+      }]
     });
     return res.json(data);
   } catch (error) {
@@ -87,11 +99,9 @@ router.put("/:id", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   await db.deadline
     .destroy({
-      where: [
-        {
-          Deadline_ID: req.params.id
-        }
-      ]
+      where: [{
+        Deadline_ID: req.params.id
+      }]
     })
     .then(num => {
       if (num == 1) {

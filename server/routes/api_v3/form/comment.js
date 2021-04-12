@@ -16,6 +16,20 @@ router.get("/", async (req, res) => {
   }
   await db.form_comment
     .findAll({
+      include: [{
+        model: db.user_profile,
+        as: "Comment_User"
+      }, {
+        model: db.form_sent,
+        as: "Comment_Form",
+        include: [{
+          model: db.form_type,
+          as: "Form_Type"
+        },{
+          model: db.form_status,
+          as: "Form_Status"
+        }]
+      }],
       where: whereStr
     })
     .then(data => res.json(data))
@@ -29,11 +43,23 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
   try {
     const data = await db.form_comment.findAll({
-      where: [
-        {
-          Comment_ID: req.params.id
-        }
-      ]
+      include: [{
+        model: db.user_profile,
+        as: "Comment_User"
+      }, {
+        model: db.form_sent,
+        as: "Comment_Form",
+        include: [{
+          model: db.form_type,
+          as: "Form_Type"
+        },{
+          model: db.form_status,
+          as: "Form_Status"
+        }]
+      }],
+      where: [{
+        Comment_ID: req.params.id
+      }]
     });
     return res.json(data);
   } catch (error) {
@@ -87,11 +113,9 @@ router.put("/:id", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   await db.form_comment
     .destroy({
-      where: [
-        {
-          Comment_ID: req.params.id
-        }
-      ]
+      where: [{
+        Comment_ID: req.params.id
+      }]
     })
     .then(num => {
       if (num == 1) {
