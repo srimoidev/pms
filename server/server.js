@@ -6,16 +6,22 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const app = express();
 const fs = require("fs");
-
+const uuid = require("uuid").v4
+const path = require("path")
 const PORT = 3000;
+
 var storage = multer.diskStorage({
   destination: "./uploads/",
-  filename: function(req, file, cb) {
-    //req.body is empty... here is where req.body.new_file_name doesn't exists
-    cb(null, `${req.body.Form_ProjectID}_${req.body.Form_TypeID}_${Date.now()}.${file.originalname.split(".").pop()}`);
+  filename: function (req, file, cb) {
+    const ext = path.extname(file.originalname);
+    const originalname = `${uuid()}${ext}`;
+    cb(null, originalname);
   }
 });
-app.use(multer({ storage: storage }).any());
+
+app.use(multer({
+  storage: storage
+}).any());
 // app.use(
 //   multer({
 //     dest: __dirname + '/uploads/',
