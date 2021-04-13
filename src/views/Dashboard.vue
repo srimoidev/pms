@@ -1,10 +1,6 @@
 <template>
   <div>
-    <v-navigation-drawer
-      v-model="drawer"
-      :clipped="$vuetify.breakpoint.lgAndUp"
-      app
-    >
+    <v-navigation-drawer v-model="drawer" :clipped="$vuetify.breakpoint.lgAndUp" app>
       <v-list dense>
         <template v-for="(item, index) in menu" class="scrollable">
           <v-list-group
@@ -16,35 +12,17 @@
           >
             <template v-slot:activator>
               <v-list-item-content>
-                <v-list-item-title v-t="{ path: item.name }">
-                </v-list-item-title>
-                <v-badge
-                  v-if="index == 3"
-                  :content="allRequest"
-                  color="red"
-                  style="right:20px;top:-3px"
-                ></v-badge>
+                <v-list-item-title v-t="{ path: item.name }"> </v-list-item-title>
+                <v-badge v-if="index == 3" :content="allRequest" color="red" style="right:20px;top:-3px"></v-badge>
               </v-list-item-content>
             </template>
-            <v-list-item
-              style="padding-left:40px"
-              v-for="(child, i) in item.children"
-              :key="i"
-              :to="child.route"
-            >
+            <v-list-item style="padding-left:40px" v-for="(child, i) in item.children" :key="i" :to="child.route">
               <v-list-item-action v-if="child.icon">
                 <v-icon>{{ child.icon }}</v-icon>
               </v-list-item-action>
               <v-list-item-content>
-                <v-list-item-title
-                  v-t="{ path: child.name }"
-                ></v-list-item-title>
-                <v-badge
-                  v-if="child.req"
-                  :content="child.req"
-                  color="red"
-                  style="right:20px;top:-3px"
-                ></v-badge>
+                <v-list-item-title v-t="{ path: child.name }"></v-list-item-title>
+                <v-badge v-if="child.req" :content="child.req" color="red" style="right:20px;top:-3px"></v-badge>
               </v-list-item-content>
             </v-list-item>
           </v-list-group>
@@ -59,25 +37,14 @@
         </template>
       </v-list>
     </v-navigation-drawer>
-    <v-app-bar
-      :clipped-left="$vuetify.breakpoint.lgAndUp"
-      app
-      color="blue darken-1"
-      dark
-    >
+    <v-app-bar :clipped-left="$vuetify.breakpoint.lgAndUp" app color="blue darken-1" dark>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       <v-toolbar-title style="width: 300px" class="ml-0 pl-4">
         <span class="hidden-sm-and-down" v-t="{ path: 'APP.APP_NAME' }"></span>
       </v-toolbar-title>
       <v-spacer />
       <div class="select-lang">
-        <v-select
-          v-model="$i18n.locale"
-          :items="langs"
-          single-line
-          @input="changeLang"
-          item-text="title"
-        ></v-select>
+        <v-select v-model="$i18n.locale" :items="langs" single-line @input="changeLang" item-text="title"></v-select>
       </div>
       <div class="text-center">
         <dashboard-notification :noti="noti"></dashboard-notification>
@@ -141,7 +108,52 @@ const advisorMenu = [
     route: "/teacher/project_manual"
   }
 ];
-const instructorMenu = [];
+const instructorMenu = [
+  {
+    icon: "mdi-chart-bar",
+    name: "ถาพรวม",
+    route: "/teacher/overview"
+  },
+  {
+    icon: "mdi-group",
+    name: "จัดการทรัพยากร",
+    route: "/teacher/app_env"
+  },
+  {
+    icon: "mdi-group",
+    name: "จัดการกลุ่ม",
+    route: "/teacher/manage_group"
+  },
+  {
+    icon: "mdi-bookshelf",
+    name: "จัดการโปรเจ็ค",
+    route: "/teacher/manage_project"
+  },
+  {
+    icon: "mdi-chevron-up",
+    "icon-alt": "mdi-chevron-down",
+    name: "คำร้อง",
+    children: [
+      {
+        icon: "mdi-teach",
+        name: "ขอสอบ",
+        route: "/teacher/test_req",
+        req: 4
+      },
+      {
+        icon: "mdi-file-document-edit-outline",
+        name: "ขออนุมัติเอกสาร",
+        route: "/teacher/approvement_req",
+        req: 7
+      }
+    ]
+  },
+  {
+    icon: "mdi-bookshelf",
+    name: "Project Manual",
+    route: "/teacher/project_manual"
+  }
+];
 const studentMenu = [
   {
     icon: "mdi-chart-bar",
@@ -219,26 +231,22 @@ export default {
       {
         avatar: "https://cdn.vuetifyjs.com/images/lists/2.jpg",
         title: 'Summer BBQ <span class="grey--text text--lighten-1">4</span>',
-        subtitle:
-          "<span class='text--primary'>to Alex, Scott, Jennifer</span> &mdash; Wish I could come, but I'm out of town this weekend."
+        subtitle: "<span class='text--primary'>to Alex, Scott, Jennifer</span> &mdash; Wish I could come, but I'm out of town this weekend."
       },
       {
         avatar: "https://cdn.vuetifyjs.com/images/lists/3.jpg",
         title: "Oui oui",
-        subtitle:
-          "<span class='text--primary'>Sandra Adams</span> &mdash; Do you have Paris recommendations? Have you ever been?"
+        subtitle: "<span class='text--primary'>Sandra Adams</span> &mdash; Do you have Paris recommendations? Have you ever been?"
       },
       {
         avatar: "https://cdn.vuetifyjs.com/images/lists/4.jpg",
         title: "Birthday gift",
-        subtitle:
-          "<span class='text--primary'>Trevor Hansen</span> &mdash; Have any ideas about what we should get Heidi for her birthday?"
+        subtitle: "<span class='text--primary'>Trevor Hansen</span> &mdash; Have any ideas about what we should get Heidi for her birthday?"
       },
       {
         avatar: "https://cdn.vuetifyjs.com/images/lists/5.jpg",
         title: "Recipe to try",
-        subtitle:
-          "<span class='text--primary'>Britta Holt</span> &mdash; We should eat this: Grate, Squash, Corn, and tomatillo Tacos."
+        subtitle: "<span class='text--primary'>Britta Holt</span> &mdash; We should eat this: Grate, Squash, Corn, and tomatillo Tacos."
       }
     ],
     twoLine: true,
@@ -258,8 +266,7 @@ export default {
   methods: {
     async loadData() {
       this.user = JSON.parse(sessionStorage.getItem("user"));
-      this.user.pID =
-        (await this.Project.SelfProject(this.user.User_ID)) || null;
+      this.user.pID = (await this.Project.SelfProject(this.user.User_ID)) || null;
       // console.log(this.user);
       sessionStorage.setItem("user", JSON.stringify(this.user));
       if (this.user.User_TypeID == 1) {
@@ -274,14 +281,14 @@ export default {
       //     }
     },
     initMenu() {
-      switch (this.user.role) {
-        case "Advisor":
+      switch (this.user.User_TypeID) {
+        case 3:
           this.menu = advisorMenu;
           break;
-        case "Instructor":
+        case 2:
           this.menu = instructorMenu;
           break;
-        case "Student":
+        case 1:
           this.menu = studentMenu;
           break;
         default:

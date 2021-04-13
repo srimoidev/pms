@@ -57,13 +57,15 @@ export async function NewComment(fID, uID, txt) {
 }
 export async function Upload(pID, formTID, file) {
   var formData = new FormData();
-  formData.append("Project_ID", pID);
+  formData.append("Form_ProjectID", pID);
   formData.append("Form_TypeID", formTID);
   formData.append("file", file);
   return HTTP.post("/form/sent", formData, {
     headers: {
       "Content-Type": "multipart/form-data"
     }
+  }).then((res)=>{
+    console.log(res.data);
   });
 }
 //#endregion inbound

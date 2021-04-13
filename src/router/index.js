@@ -35,6 +35,9 @@ import Teacher_TestReq from "../views/Teacher/Request/TestRequest.vue";
 import Teacher_ApprovementReq from "../views/Teacher/Request/ApprovementRequest.vue";
 import Teacher_ProjectManual from "../views/Teacher/ProjectManual/ProjectManual.vue";
 
+//App Environment Configuration
+import App_EnvConfig from "../views/AppEnvironments/AppEnvironment.vue"
+
 Vue.use(VueRouter);
 
 const routes = [
@@ -184,6 +187,12 @@ const routes = [
         meta: { title: "Overview | PMS" }
       },
       {
+        path: "app_env",
+        name: "App Environment Configuration",
+        component: App_EnvConfig,
+        meta: { title: "App Environment Configuration | PMS" }
+      },
+      {
         path: "manage_group",
         name: "Manage Group",
         component: Teacher_ManageGroup,
@@ -242,6 +251,14 @@ router.beforeEach((to, from, next) => {
   const authRequired = publicPages.includes(to.path);
   const loggedIn = JSON.parse(sessionStorage.getItem("user"));
   let role;
+
+  /*** 
+   * User_typeID 1 : Student
+   * USer_typeID 2 : Instructor
+   * User_typeID 3 : Teacher
+  */
+
+
   if (loggedIn) {
     if (loggedIn.User_TypeID == 1) {
       role = "Student";
