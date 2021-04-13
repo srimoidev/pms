@@ -1,12 +1,28 @@
 require("./configs/passport");
 const passport = require("passport");
 const express = require("express");
+const multer = require('multer')
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const app = express();
+const fs = require('fs')
 
 const PORT = 3000;
-
+app.use(
+  multer({
+    dest: __dirname + '/uploads/',
+    rename: function (fieldname, filename) {
+      return Date.now()
+    },
+    limits: {
+      fileSize: 100000
+    },
+    onFileSizeLimit: function (file) {
+      console.log('Failed: ' + file.originalname + ' is limited')
+      fs.unlink(file.path)
+    }
+  })
+)
 app.use(cors());
 app.use(bodyParser.json());
 app.use(
