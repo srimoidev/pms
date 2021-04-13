@@ -21,7 +21,7 @@ app.use(
       console.log('Failed: ' + file.originalname + ' is limited')
       fs.unlink(file.path)
     }
-  })
+  }).any
 )
 app.use(cors());
 app.use(bodyParser.json());

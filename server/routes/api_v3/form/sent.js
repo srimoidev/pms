@@ -3,6 +3,8 @@ const db = require("../../../models");
 const {
   Op
 } = require("sequelize");
+var multer  = require('multer')
+var upload = multer({ dest: 'uploads/' })
 router.get("/", async (req, res) => {
   try {
     var whereStr = [];
@@ -134,7 +136,15 @@ router.get("/:id", async (req, res) => {
 // create
 router.post("/", async (req, res) => {
   await db.form_sent
-    .create(req.body)
+    .create({
+      Form_ProjectID: req.body.Form_ProjectID,
+      Form_TypeID: req.body.Form_TypeID,
+      Form_FileName: req.files[0].originalname,
+      Form_StatusID: req.body.Form_StatusID,
+      Form_CreatedTime: req.body.Form_CreatedTime,
+      Form_RevisedTime: req.body.Form_RevisedTime,
+      Form_CompletedTime: req.body.Form_CompletedTime,
+    })
     .then(data => {
       res.send(data);
     })
