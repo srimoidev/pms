@@ -8,7 +8,7 @@
       :height="windowHeight"
       ><template v-slot:top>
         <v-toolbar flat>
-          <v-toolbar-title>{{ "CE0" + fID }}</v-toolbar-title>
+          <v-toolbar-title>{{ "CE0" + formTID }}</v-toolbar-title>
           <v-divider class="mx-4" inset vertical></v-divider>
           <v-spacer></v-spacer>
           <v-btn @click="upNewDoc = !upNewDoc">Upload new document</v-btn>
@@ -118,8 +118,8 @@ export default {
   methods: {
     async loadData() {
       this.user = JSON.parse(sessionStorage.getItem("user"));
-      this.data = await this.Form.Form(this.user.pID, this.fID);
-      console.log(this.user, this.fID, this.data);
+      this.data = await this.Form.AllFormEachType(this.user.pID, this.formTID);
+      console.log(this.user, this.formTID, this.data);
       // if (temp) {
       //   temp.map(async item => {
       //     // item.Comments = await DB.Project.form_comment(item.Form_ID);
@@ -153,12 +153,15 @@ export default {
 
       this.message = "";
 
-      this.Form.Upload(this.user.pID,1, this.currentFile, event => {
+      this.Form.Upload(this.user.pID,this.formTID, this.currentFile, event => {
         this.progress = Math.round((100 * event.loaded) / event.total);
       }).catch(() => {
         this.progress = 0;
         this.message = "Could not upload the file!";
         this.currentFile = undefined;
+      }).finally(()=>{
+        this.upNewDoc = false;
+        this.loadData();
       });
     },
     apply() {
@@ -166,7 +169,7 @@ export default {
     }
   },
   computed: {
-    fID() {
+    formTID() {
       return this.$route.query.type;
     }
   }

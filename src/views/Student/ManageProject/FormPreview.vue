@@ -31,10 +31,10 @@
                 <v-icon>mdi-printer</v-icon>
               </v-btn>
             </v-toolbar>
-            <div>
+            <div v-if="form">
               <pdf
                 ref="pdfComponent"
-                src="http://www.africau.edu/images/default/sample.pdf"
+                :src="getFileUrl(form.Form_FileName)"
                 @num-pages="pageCount = $event"
                 @page-loaded="currentPage = $event"
                 :page="page"
@@ -118,6 +118,8 @@ export default {
   },
   methods: {
     async loadData() {
+      this.form = await this.Form.Form(this.form_id);
+      console.log(this.form);
       this.commentData = await this.Form.Comment(this.form_id);
     },
     async saveNewComment() {
@@ -125,6 +127,9 @@ export default {
       this.newComment = !this.newComment;
       this.newCommentData = "";
       this.loadData();
+    },
+    getFileUrl(fileName){
+      return `http://${process.env.VUE_APP_API_LOCALHOST}/${fileName}`
     },
     cancelComment() {
       this.newCommentData = "";

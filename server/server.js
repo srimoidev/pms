@@ -37,6 +37,10 @@ app.use(multer({
 //     }
 //   }).any()
 // )
+
+
+//static folder for upload file
+app.use(express.static('uploads'))
 app.use(cors());
 app.use(bodyParser.json());
 app.use(

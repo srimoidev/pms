@@ -10,7 +10,7 @@ export async function Prerequisite() {
       console.log(ex);
     });
 }
-export async function Form(gID, fID) {
+export async function AllFormEachType(gID, fID) {
   return HTTP.get(`form/sent?projectid=${gID}&formtypeid=${fID}`)
     .then(res => {
       return res.data;
@@ -18,6 +18,9 @@ export async function Form(gID, fID) {
     .catch(ex => {
       console.log(ex);
     });
+}
+export async function Form(formTID) {
+  return (await HTTP.get(`form/sent/${formTID}`)).data;
 }
 export async function Comment(fID) {
   return HTTP.get(`form/comment?formid=${fID}`)
@@ -64,7 +67,7 @@ export async function Upload(pID, formTID, file) {
     headers: {
       "Content-Type": "multipart/form-data"
     }
-  }).then((res)=>{
+  }).then(res => {
     console.log(res.data);
   });
 }

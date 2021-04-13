@@ -58,8 +58,8 @@
             ><v-icon class="mr-2" color="white">mdi-clock-alert-outline</v-icon
             ><span>{{ "อีก " + Math.ceil(item.isReachDeadline) + " วัน !" }}</span></v-chip
           >
-          <v-chip v-else label :class="{ 'white--text red': item.isReachDeadline < 0 }" small
-            ><v-icon class="mr-2" color="white">mdi-clock-alert-outline</v-icon><span>{{ "เกินกำหนดส่ง" }}</span></v-chip
+          <v-chip v-else-if="item.isReachDeadline < 0" label :class="{ 'white--text red': item.isReachDeadline < 0 }" small
+            ><v-icon class="mr-2" color="white">mdi-clock-alert-outline</v-icon><span>{{ "เกินกำหนด" }}</span></v-chip
           >
         </div>
       </template>

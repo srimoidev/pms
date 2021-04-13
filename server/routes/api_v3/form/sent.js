@@ -135,16 +135,12 @@ router.get("/:id", async (req, res) => {
 
 // create
 router.post("/", async (req, res) => {
-  console.log(req.body);
   await db.form_sent
     .create({
       Form_ProjectID: req.body.Form_ProjectID,
       Form_TypeID: req.body.Form_TypeID,
-      Form_FileName: req.files[0].originalname,
-      Form_StatusID: req.body.Form_StatusID,
-      Form_CreatedTime: req.body.Form_CreatedTime || Date(),
-      Form_RevisedTime: req.body.Form_RevisedTime || Date(),
-      Form_CompletedTime: req.body.Form_CompletedTime || Date(),
+      Form_FileName: req.files[0].filename,
+      Form_StatusID: 1,
     })
     .then(data => {
       res.send(data);
