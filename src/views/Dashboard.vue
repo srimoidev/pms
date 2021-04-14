@@ -310,7 +310,7 @@ export default {
   width: 120px;
 }
 .main-content {
-  height: calc(100vh - 64px - 16px);
+  height: calc(100vh - 64px);
 }
 .main-container {
   height: 100vh;

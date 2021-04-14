@@ -1,6 +1,6 @@
 <template>
   <div v-if="!user.pID">
-    <v-card class="ma-2 elevation-1" tile v-resize="onResize">
+    <v-card class="ma-2 elevation-1" tile v-resize="onResize" :height="windowHeight">
       <v-data-table
         :headers="allProjectHeaders"
         :items="filteredItems"
@@ -85,7 +85,7 @@
     </v-card>
   </div>
   <div v-else class="d-flex ma-2">
-    <v-card class="elevation-1 mr-2" style="width:70%; min-height:89vh" tile>
+    <v-card class="elevation-1 mr-2" style="width:70%; min-height:89vh" tile :height="windowHeight">
       <v-toolbar flat color="white">
         <v-toolbar-title>
           {{ "Manage Group - " + (data.Project_NameTH ? data.Project_NameTH : "") }}

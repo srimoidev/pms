@@ -1,5 +1,5 @@
 <template>
-  <v-card v-resize="onResize" class="ma-2 elevation-1" tile>
+  <v-card v-resize="onResize" class="ma-2 elevation-1" tile :height="windowHeight">
     <v-data-table
       :headers="headers"
       :items="data"
@@ -24,8 +24,9 @@
           <span>{{ pre.Pre_FormReqType.FormType_Name }}</span>
         </div>
       </template>
-      <template v-slot:[`item.LatestFormStatus`]="{ item }">
-        <form-status :status="item.LatestFormStatus"></form-status>
+      <template v-slot:[`item.LatestForm`]="{ item }">
+        <form-status v-if="item.LatestForm" :status="item.LatestForm.Form_StatusID"></form-status>
+        <form-status v-else></form-status>
       </template>
       <template v-slot:[`item.FormType_Name`]="{ item }">
         <router-link
@@ -39,8 +40,8 @@
         </router-link>
       </template>
       <template v-slot:[`item.Form_UpdatedTime`]="{ item }">
-        <span v-if="item.data != undefined">
-          {{ new Date(item.data.Form_UpdatedTime).toLocaleDateString() }}
+        <span v-if="item.LatestForm">
+          {{ new Date(item.LatestForm.Form_UpdatedTime).toLocaleDateString() }}
         </span>
       </template>
       <template v-slot:[`item.Deadline`]="{ item }">
@@ -110,7 +111,7 @@ export default {
       { text: "อัปเดตครั้งที่", value: "rev", sortable: false },
       { text: "อัปเดตล่าสุด", value: "Form_UpdatedTime", sortable: false },
       { text: "วันกำหนดส่ง", value: "Deadline", sortable: false },
-      { text: "สถานะ", value: "LatestFormStatus", sortable: false }
+      { text: "สถานะ", value: "LatestForm", sortable: false }
       // { text: "", value: "actions", sortable: false }
     ],
     data: []
@@ -146,7 +147,7 @@ export default {
       // const temp = [];
       if (temp) {
         initData.map(element => {
-          element.LatestFormStatus = temp.find(item => item.Form_TypeID == element.FormType_ID)?.Form_StatusID;
+          element.LatestForm = temp.find(item => item.Form_TypeID == element.FormType_ID) || null;
           element.Prerequisite = preq.filter(item => item.Pre_FormTypeID == element.FormType_ID);
           element.Deadline = deadline.find(item => item.Deadline_FormTypeID == element.FormType_ID) || undefined;
           // console.log(element.Deadline);

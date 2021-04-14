@@ -10,6 +10,7 @@ const uuid = require("uuid").v4
 const path = require("path")
 const PORT = 3000;
 
+app.use(cors());
 var storage = multer.diskStorage({
   destination: "./uploads/",
   filename: function (req, file, cb) {
@@ -41,7 +42,7 @@ app.use(multer({
 
 //static folder for upload file
 app.use(express.static('uploads'))
-app.use(cors());
+
 app.use(bodyParser.json());
 app.use(
   bodyParser.urlencoded({

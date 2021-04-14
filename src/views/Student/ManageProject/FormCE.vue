@@ -1,5 +1,5 @@
 <template>
-  <v-card v-resize="onResize" class="ma-2 elevation-1" tile>
+  <v-card v-resize="onResize" class="ma-2 elevation-1" tile :height="windowHeight">
     <v-data-table
       :headers="headers"
       :items="data"
