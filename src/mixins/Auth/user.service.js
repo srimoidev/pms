@@ -1,3 +1,4 @@
+import router from "../../router";
 import HTTP from "./config";
 
 export const userService = {
@@ -11,14 +12,18 @@ export const userService = {
       { headers: { "Content-Type": "application/json" } }
     ).then(async res => {
       //get token and store
-      sessionStorage.setItem("token", res.data.token);
+      localStorage.setItem("token", res.data.token);
       return res.data.token;
     });
   },
   logout: () => {
-    sessionStorage.removeItem("token");
-    sessionStorage.removeItem("user");
-    location.reload();
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    console.log(location.pathname);
+    if (location.pathname != "/") {
+      router.push("/");
+    }
+    // location.reload();
   },
   signUp: () => {
     //signup

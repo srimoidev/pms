@@ -40,7 +40,7 @@
     <v-app-bar :clipped-left="$vuetify.breakpoint.lgAndUp" app color="blue darken-1" dark>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       <v-toolbar-title style="width: 300px" class="ml-0 pl-4">
-        <span class="hidden-sm-and-down" v-t="{ path: 'APP.APP_NAME' }"></span>
+        <router-link to="/" class="text-none white--text"><span class="hidden-sm-and-down" v-t="{ path: 'APP.APP_NAME' }"></span></router-link>
       </v-toolbar-title>
       <v-spacer />
       <div class="select-lang">
@@ -60,12 +60,13 @@
 </template>
 
 <script>
-import store from "@/store/index";
-import Auth from "@/mixins/Auth";
+// import store from "@/store/index";
+// import Auth from "@/mixins/Auth";
 // import DB from "@/mixins/Database";
 // import DashboardDrawer from "@/components/DashboardNavigationDrawer";
 import DashboardProfile from "@/components/DashboardProfile";
 import DashboardNotification from "@/components/DashboardNotification";
+import { mapGetters } from "vuex";
 
 const advisorMenu = [
   {
@@ -207,15 +208,13 @@ const studentMenu = [
   }
 ];
 export default {
-  store,
   components: {
     DashboardProfile,
     DashboardNotification
   },
   data: () => ({
     drawer: null,
-    user: {},
-    menu: null,
+    menu: [],
     lang: "ไทย",
     langs: [
       { title: "ไทย", value: "th" },
@@ -255,6 +254,10 @@ export default {
     DocAppReq: 7
   }),
   computed: {
+    ...mapGetters({
+      user: "user/UserData",
+      typeID: "user/TypeID"
+    }),
     allRequest: function() {
       return this.menu[3].children.reduce((a, b) => a + (b["req"] || 0), 0);
     }
@@ -262,26 +265,30 @@ export default {
   beforeMount() {
     this.loadData();
   },
-
   methods: {
-    async loadData() {
-      this.user = JSON.parse(sessionStorage.getItem("user"));
-      this.user.pID = (await this.Project.SelfProject(this.user.User_ID)) || null;
+    loadData() {
+      this.$store.dispatch("user/getLoggedInUserData").then(() => {
+        this.initMenu(this.typeID);
+      });
+      // console.log(this.user, this.user.User_TypeID);
+      // this.user.pID = (await this.Project.SelfProject(this.user.User_ID)) || null;
       // console.log(this.user);
-      sessionStorage.setItem("user", JSON.stringify(this.user));
-      if (this.user.User_TypeID == 1) {
-        this.user.role = "Student";
-      } else {
-        this.user.role = "Advisor";
-      }
+      // localStorage.setItem("user", JSON.stringify(this.user));
+      // if (this.user.User_TypeID == 1) {
+      //   this.user.role = "Student";
+      // } else {
+      //   this.user.role = "Advisor";
+      // }
+      // this.$nextTick(() => {
+      // this.initMenu(this.TypeID);
+      // });
 
-      this.initMenu();
       // if (this.user.pID) {
       //       this.menu[1].route = "/student/project_details";
       //     }
     },
-    initMenu() {
-      switch (this.user.User_TypeID) {
+    initMenu(uTID) {
+      switch (uTID) {
         case 3:
           this.menu = advisorMenu;
           break;
@@ -299,7 +306,8 @@ export default {
       this.$store.commit("lang", val);
     },
     logout() {
-      Auth.logout();
+      this.$store.dispatch("authentication/logout");
+      this.$store.dispatch("user/clearUserDate");
     }
   }
 };

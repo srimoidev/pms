@@ -4,20 +4,11 @@
       <v-toolbar-title>{{ board.name }}</v-toolbar-title>
       <v-spacer></v-spacer>
       <div v-for="(item, index) in board.memberships" :key="index">
-        <member
-          :initial="item.initials"
-          :fullname="item.fullName"
-          :username="item.username"
-        ></member>
+        <member :initial="item.initials" :fullname="item.fullName" :username="item.username"></member>
       </div>
     </v-app-bar>
     <div v-if="token" class="board scrollable">
-      <Container
-        lock-axis="x"
-        orientation="horizontal"
-        drag-handle-selector=".list-drag-handle"
-        @drop="onListDrop"
-      >
+      <Container lock-axis="x" orientation="horizontal" drag-handle-selector=".list-drag-handle" @drop="onListDrop">
         <Draggable v-for="(list, listIndex) in board.lists" :key="list.id">
           <section class="list-container " ref="list" :data-id="list.id">
             <div class="list-header">
@@ -40,12 +31,7 @@
             </Container>
 
             <div class="item-entry">
-              <item-entry
-                :list-id="list.id"
-                placeholder="Add an item"
-                icon="ellipsis-h"
-                @enter="onAddItem"
-              />
+              <item-entry :list-id="list.id" placeholder="Add an item" icon="ellipsis-h" @enter="onAddItem" />
             </div>
           </section>
         </Draggable>
@@ -146,11 +132,7 @@ export default {
     //   //   : (this.$refs.bg.style.backgroundColor = this.board.prefs.backgroundColor);
     // },
     // Oauth() {
-    //   window.open(
-    //     "http://localhost:3000/login",
-    //     "_blank",
-    //     "toolbar=yes,scrollbars=yes,resizable=yes,top=500,left=500,width=400,height=400"
-    //   );
+    //   window.open("http://localhost:3000/login", "_blank", "toolbar=yes,scrollbars=yes,resizable=yes,top=500,left=500,width=400,height=400");
     // },
     // onAddList({ text }) {
     //   this.$store.commit("addList", { title: text });
@@ -171,12 +153,7 @@ export default {
     // onAddFullItem(item) {
     //   item.id
     //     ? this.$store.commit("updateItem", { itemId: item.id, ...item })
-    //     : this.addItem(
-    //         this.activeListId,
-    //         item.title,
-    //         item.description,
-    //         item.date
-    //       );
+    //     : this.addItem(this.activeListId, item.title, item.description, item.date);
     //   this.hideModal();
     // },
     // addItem(listId, title, description, date) {
@@ -191,12 +168,7 @@ export default {
     // },
     // onCardDrop: makeDropHandler("onCardDropComplete"),
     // onCardDropComplete(src, trg) {
-    //   this.$store.commit("moveItem", [
-    //     src.params[1],
-    //     src.index,
-    //     trg.params[1],
-    //     trg.index
-    //   ]);
+    //   this.$store.commit("moveItem", [src.params[1], src.index, trg.params[1], trg.index]);
     // },
     // showModal(item) {
     //   this.modal = true;

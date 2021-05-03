@@ -163,7 +163,6 @@ export default {
   },
   data() {
     return {
-      user: {},
       searchText: "",
       loading: true,
       typeFilter: 0,
@@ -200,8 +199,9 @@ export default {
   },
   methods: {
     async loadData() {
-      this.user = JSON.parse(sessionStorage.getItem("user"));
-      this.user.pID = (await this.Project.SelfProject(this.user.User_ID)) || null;
+      // this.user = JSON.parse(localStorage.getItem("user"));
+      // this.user.pID = (await this.Project.SelfProject(this.user.User_ID)) || null;
+      console.log(this.user);
       if (!this.user.pID) {
         const type = await this.Project.AllType();
         this.allStatus = await this.Project.AllStatus();
@@ -301,6 +301,9 @@ export default {
     }
   },
   computed: {
+    user() {
+      return this.$store.state.user;
+    },
     filteredItems() {
       return this.allProject
         .filter(item => {

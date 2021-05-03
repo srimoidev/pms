@@ -1,11 +1,6 @@
 <template>
   <v-card v-resize="onResize" class="ma-2 elevation-1" tile :height="windowHeight">
-    <v-data-table
-      :headers="headers"
-      :items="data"
-      :loading="loading"
-      loading-text="Loading... Please wait"
-      :height="windowHeight"
+    <v-data-table :headers="headers" :items="data" :loading="loading" loading-text="Loading... Please wait" :height="windowHeight"
       ><template v-slot:top>
         <v-toolbar flat>
           <v-toolbar-title>{{ "CE0" + formTID }}</v-toolbar-title>
@@ -35,13 +30,7 @@
                       @change="selectFile"
                     ></v-file-input>
                   </div>
-                  <v-btn
-                    class="success"
-                    style="position: absolute; right: 20px;"
-                    @click="upload"
-                    right
-                    >Apply</v-btn
-                  >
+                  <v-btn class="success" style="position: absolute; right: 20px;" @click="upload" right>Apply</v-btn>
                 </v-card>
               </template>
             </modal-container>
@@ -62,13 +51,9 @@
         </v-tooltip>
       </template>
       <template v-slot:[`item.Form_UpdatedTime`]="{ item }">
-        <router-link
-          class="text-none"
-          :to="{ path: 'form_preview', query: { d: item.Form_ID } }"
-          >{{
-            new Date(item.Form_UpdatedTime).toLocaleDateString()
-          }}</router-link
-        >
+        <router-link class="text-none" :to="{ path: 'form_preview', query: { d: item.Form_ID } }">{{
+          new Date(item.Form_UpdatedTime).toLocaleDateString()
+        }}</router-link>
         <!-- <v-badge color="red" inline content="5"></v-badge> -->
       </template>
       <template v-slot:[`item.Form_StatusID`]="{ item }">
@@ -117,7 +102,7 @@ export default {
   },
   methods: {
     async loadData() {
-      this.user = JSON.parse(sessionStorage.getItem("user"));
+      this.user = JSON.parse(localStorage.getItem("user"));
       this.data = await this.Form.AllFormEachType(this.user.pID, this.formTID);
       console.log(this.user, this.formTID, this.data);
       // if (temp) {
@@ -141,7 +126,7 @@ export default {
       this.windowHeight = window.innerHeight - 64 - 64 - 16 - 59;
     },
     selectFile(file) {
-      console.log(file)
+      console.log(file);
       this.progress = 0;
       this.currentFile = file;
     },
@@ -153,16 +138,18 @@ export default {
 
       this.message = "";
 
-      this.Form.Upload(this.user.pID,this.formTID, this.currentFile, event => {
+      this.Form.Upload(this.user.pID, this.formTID, this.currentFile, event => {
         this.progress = Math.round((100 * event.loaded) / event.total);
-      }).catch(() => {
-        this.progress = 0;
-        this.message = "Could not upload the file!";
-        this.currentFile = undefined;
-      }).finally(()=>{
-        this.upNewDoc = false;
-        this.loadData();
-      });
+      })
+        .catch(() => {
+          this.progress = 0;
+          this.message = "Could not upload the file!";
+          this.currentFile = undefined;
+        })
+        .finally(() => {
+          this.upNewDoc = false;
+          this.loadData();
+        });
     },
     apply() {
       alert("upload");

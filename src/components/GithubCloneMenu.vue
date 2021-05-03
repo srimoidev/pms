@@ -2,19 +2,14 @@
   <div>
     <v-menu offset-y :close-on-content-click="false">
       <template v-slot:activator="{ on }">
-        <v-btn small rounded outlined color="blue darken-1" v-on="on"
-          >Clone or Download</v-btn
-        >
+        <v-btn small rounded outlined color="blue darken-1" v-on="on">Clone or Download</v-btn>
       </template>
       <v-card class="mx-auto" max-width="300" outlined>
         <v-list-item three-line>
           <v-list-item-content>
             <v-list-item-title>Clone with HTTPS</v-list-item-title>
 
-            <v-list-item-subtitle
-              >Use Git or checkout with SVN using the web
-              URL.</v-list-item-subtitle
-            >
+            <v-list-item-subtitle>Use Git or checkout with SVN using the web URL.</v-list-item-subtitle>
             <v-text-field
               v-model="url"
               single-line

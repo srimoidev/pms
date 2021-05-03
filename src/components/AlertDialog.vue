@@ -42,13 +42,7 @@
       </v-btn>
     </v-card>
   </v-dialog>
-  <v-dialog
-    v-else
-    v-model="active"
-    persistent
-    width="420"
-    style="border-radius: 1rem"
-  >
+  <v-dialog v-else v-model="active" persistent width="420" style="border-radius: 1rem">
     <v-card>
       <v-card-title class="light-green lighten-1 justify-center">
         <v-icon size="72" class="grey--text text--lighten-5">

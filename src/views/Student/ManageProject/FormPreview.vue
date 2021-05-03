@@ -1,33 +1,50 @@
 <template>
   <div>
     <v-toolbar flat absolute width="100%">
-      <v-toolbar-title>Form_CE01 - {{ form_id }}</v-toolbar-title>
+      <v-toolbar-title>{{ form_export_name }}</v-toolbar-title>
       <v-divider class="mx-4" inset vertical></v-divider>
       <v-spacer></v-spacer>
       <v-btn icon tile @click="$refs.pdfComponent.print()">
         <v-icon>mdi-printer</v-icon>
       </v-btn>
-      <v-btn class="cyan lighten-1 white--text" small>Download</v-btn>
+      <v-btn class="cyan lighten-1 white--text" small :href="this.fileUrl" :download="form_export_name">Download</v-btn>
     </v-toolbar>
     <div class="d-flex" style="height:inherit;padding-top:65px">
       <div v-if="form" style="width:100%" class="overflow-y-auto">
         <v-container class="pa-5">
-          <div @mouseover="pdfmenu = !pdfmenu" @mouseleave="pdfmenu = !pdfmenu">
-            <pdf
-              ref="pdfComponent"
-              :src="getFileUrl(form.Form_FileName)"
-              @num-pages="pageCount = $event"
-              @page-loaded="currentPage = $event"
-              :page="page"
-            ></pdf>
-          </div>
+          <div @mouseover="pdfmenu = true" @mouseleave="pdfmenu = false">
+            <pdf ref="pdfComponent" :src="fileUrl" @num-pages="pageCount = $event" @page-loaded="currentPage = $event" :page="page"></pdf>
+            <div v-show="pdfmenu" class="pdfmenu" @mouseover="pdfmenu = true" @mouseleave="pdfmenu = false">
+              <v-card class="pdf-controller align-center d-flex mx-auto white--text" color="blue-grey lighten-2">
+                <v-spacer></v-spacer>
+                <v-btn @click="pageBack" icon>
+                  <v-icon color="white">mdi-chevron-left</v-icon>
+                </v-btn>
 
-          <!-- <div v-show="pdfmenu" class="red pdfmenu">asdasdas</div> -->
+                <div class="d-flex mx-5">
+                  <v-text-field
+                    v-model.number="pageInput"
+                    dense
+                    dark
+                    hide-details
+                    @keypress.enter="gotoPage(pageInput)"
+                    class="centered-input"
+                  ></v-text-field>
+                  <span class="pt-1">{{ "/ " + pageCount }}</span>
+                </div>
+                <v-btn @click="pageForward" icon>
+                  <v-icon color="white">mdi-chevron-right</v-icon>
+                </v-btn>
+
+                <v-spacer></v-spacer>
+              </v-card>
+            </div>
+          </div>
         </v-container>
       </div>
       <v-navigation-drawer class="pr-10" :mini-variant="variant" right mini-variant-width="39" width="500">
         <div class="d-flex">
-          <div class="font-weight-bold" style="font-size:28px">Comment</div>
+          <div class="ml-2 font-weight-bold" style="font-size:28px">Comment</div>
           <v-spacer></v-spacer>
           <v-btn icon @click="cancelComment" color="blue" class="mr-2">
             <v-icon>mdi-file-document-multiple-outline</v-icon>
@@ -86,8 +103,6 @@
             <v-card-text class="mx-4">{{ item.Comment_Text }}</v-card-text>
             <v-divider class="mx-2"></v-divider>
           </v-card> -->
-
-          
         </template>
       </v-navigation-drawer>
       <v-navigation-drawer absolute style="top:65px" right mini-variant mini-variant-width="39">
@@ -116,24 +131,28 @@ export default {
       newCommentData: "",
       commentData: [],
       variant: true,
-      pdfmenu: true
+      pdfmenu: false,
+      fileUrl: null
     };
   },
   computed: {
     form_id() {
       return this.$route.query.d;
+    },
+    form_export_name() {
+      return `Form_${this.form?.Form_Type.FormType_Name}`;
     }
   },
-  beforeMount() {
-    this.user = JSON.parse(sessionStorage.getItem("user"));
-    this.loadData();
+  async beforeMount() {
+    this.user = JSON.parse(localStorage.getItem("user"));
+    await this.loadData();
   },
   methods: {
     async loadData() {
       this.form = await this.Form.Form(this.form_id);
-
+      this.fileUrl = await this.Form.FormPDF(this.form_id);
       this.commentData = await this.Form.Comment(this.form_id);
-      console.log(this.commentData);
+      console.log(this.commentData, this.fileUrl);
     },
     async saveNewComment() {
       await this.Form.NewComment(this.form_id, this.user.User_ID, this.newCommentData);
@@ -141,8 +160,8 @@ export default {
       this.newCommentData = "";
       this.loadData();
     },
-    getFileUrl(fileName) {
-      return `http://${process.env.VUE_APP_API_LOCALHOST}/${fileName}`;
+    downloadFile() {
+      window.URL.revokeObjectURL(this.fileUrl);
     },
     cancelComment() {
       this.newCommentData = "";
@@ -184,6 +203,16 @@ export default {
 </script>
 
 <style scoped>
+@media print {
+  @page {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+  body {
+    padding-top: 72px;
+    padding-bottom: 72px;
+  }
+}
 .page-chevron {
   z-index: 1;
   bottom: 600px;
@@ -204,14 +233,25 @@ export default {
   text-align: center;
 }
 .pdfmenu {
-  width: 500px;
+  width: 100%;
   height: 50px;
-  position: absolute;
+  position: sticky;
   margin: 0 auto;
   bottom: 80px;
-  left: 32%;
+}
+.pdf-controller {
+  width: 400px;
+  height: inherit;
 }
 .comment-section {
   width: 300px !important;
+}
+.centered-input {
+  position: relative;
+  top: -2px;
+  width: 30px;
+}
+.centered-input >>> input {
+  text-align: center;
 }
 </style>

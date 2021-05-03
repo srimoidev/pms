@@ -1,10 +1,6 @@
 <template>
   <v-card v-resize="onResize" tile class="ma-2 elevation-1">
-    <v-data-table
-      :headers="headers"
-      :items="data"
-      :height="windowHeight"
-    >
+    <v-data-table :headers="headers" :items="data" :height="windowHeight">
       <template v-slot:[`item.name`]="{ item }">
         <div>
           <router-link class="text-none" to="#">{{ item.name }}</router-link>
@@ -71,7 +67,7 @@ export default {
       //table footer 59px
       this.windowHeight = window.innerHeight - 64 - 16 - 59;
     }
-  },
+  }
 };
 </script>
 

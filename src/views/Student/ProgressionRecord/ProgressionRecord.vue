@@ -9,18 +9,8 @@
     <v-container>
       <v-card v-if="isAdd" class="pa-4">
         <template>
-          <v-textarea
-            label="งานที่ทำ"
-            outlined
-            counter="120"
-            rows="3"
-          ></v-textarea>
-          <v-textarea
-            label="วิธีแก้ปัญหา"
-            outlined
-            counter="120"
-            rows="3"
-          ></v-textarea>
+          <v-textarea label="งานที่ทำ" outlined counter="120" rows="3"></v-textarea>
+          <v-textarea label="วิธีแก้ปัญหา" outlined counter="120" rows="3"></v-textarea>
           <div class="d-flex">
             <v-spacer></v-spacer>
             <v-btn class="mr-2" small color="success" @click="isAdd = !isAdd">Save</v-btn>
@@ -34,18 +24,12 @@
           <v-list-item :key="item.id">
             <v-list-item-content>
               <v-list-item-title>งานที่ทำ</v-list-item-title>
-              <v-list-item-subtitle class="ma-4">{{
-                item.detail
-              }}</v-list-item-subtitle>
+              <v-list-item-subtitle class="ma-4">{{ item.detail }}</v-list-item-subtitle>
               <v-list-item-title>วิธีแก้ปัญหา</v-list-item-title>
-              <v-list-item-subtitle class="ma-4">{{
-                item.method
-              }}</v-list-item-subtitle>
+              <v-list-item-subtitle class="ma-4">{{ item.method }}</v-list-item-subtitle>
             </v-list-item-content>
             <v-list-item-action>
-              <v-list-item-subtitle>{{
-                new Date().toLocaleString("th-TH")
-              }}</v-list-item-subtitle>
+              <v-list-item-subtitle>{{ new Date().toLocaleString("th-TH") }}</v-list-item-subtitle>
               <!-- <v-icon>mdi-star-outline</v-icon> -->
             </v-list-item-action>
           </v-list-item>
@@ -60,7 +44,7 @@
 export default {
   data() {
     return {
-      isAdd:false,
+      isAdd: false,
       records: [
         {
           id: 1,

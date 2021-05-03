@@ -2,11 +2,7 @@
   <div v-if="loaded" class="overflow-y-auto" style="max-height: 91vh">
     <v-card class="ma-2" tile min-height="88.5vh">
       <v-tabs v-model="tab" color="white" show-arrows background-color="blue">
-        <v-tab
-          v-for="(item, i) in tabs"
-          :key="item.name"
-          @click="fetchCE(item.name)"
-        >
+        <v-tab v-for="(item, i) in tabs" :key="item.name" @click="fetchCE(item.name)">
           <span v-if="update[i]"
             ><v-badge color="pink" dot>{{ item.name }} </v-badge></span
           >
@@ -57,12 +53,7 @@
                 </v-expansion-panel-content>
               </v-expansion-panel>
             </v-expansion-panels> -->
-            <v-badge
-              :color="!isSeenComment ? 'pink' : ''"
-              :content="CECommentCount"
-              class="bbt"
-              overlap
-            >
+            <v-badge :color="!isSeenComment ? 'pink' : ''" :content="CECommentCount" class="bbt" overlap>
               <v-btn depressed @click="expandCommentTab" icon
                 ><v-avatar color="purple lighten-2" size="48">
                   <v-icon color="white">mdi-comment-processing-outline</v-icon>
@@ -72,17 +63,9 @@
 
             <div class="d-flex">
               <div style="width:100%; height:100%">
-                <item-list
-                  v-for="(header, i) in tab.headers"
-                  :key="header.title"
-                  :header="header"
-                  :data="data"
-                  @submit="submit"
-                >
+                <item-list v-for="(header, i) in tab.headers" :key="header.title" :header="header" :data="data" @submit="submit">
                   <template v-slot:header>
-                    <h4 class="mr-2" style="height:28px">
-                      {{ i + 1 + ". " }}{{ header.header }}
-                    </h4>
+                    <h4 class="mr-2" style="height:28px">{{ i + 1 + ". " }}{{ header.header }}</h4>
                   </template>
                 </item-list>
               </div>
@@ -90,23 +73,13 @@
           </div>
           <div class="fill-height bbpop">
             <v-expand-x-transition>
-              <v-card
-                v-show="expand2"
-                height="100%"
-                width="300"
-                class="mx-auto primary lighten-3 fill-height"
-                flat
-              >
-              <div class="d-flex">
-                <v-spacer></v-spacer>
-                <v-btn icon @click="expand2 = !expand2">X</v-btn>
-              </div>
-              
-                <comment-block
-                  v-for="item in comments"
-                  :key="item"
-                  :comment="item"
-                ></comment-block>
+              <v-card v-show="expand2" height="100%" width="300" class="mx-auto primary lighten-3 fill-height" flat>
+                <div class="d-flex">
+                  <v-spacer></v-spacer>
+                  <v-btn icon @click="expand2 = !expand2">X</v-btn>
+                </div>
+
+                <comment-block v-for="item in comments" :key="item" :comment="item"></comment-block>
               </v-card>
             </v-expand-x-transition>
           </div>

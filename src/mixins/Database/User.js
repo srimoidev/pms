@@ -13,7 +13,9 @@ export async function UserStudent(id) {
   });
 }
 export async function Profile(uID) {
-  return (await HTTP.get(`/user/${uID}`)).data;
+  return HTTP.get(`/user/${uID}`).then(res => {
+    return res.data;
+  });
   // .then((res) => {
   //   return res.data;
   // });

@@ -4,7 +4,7 @@ const key = "";
 const token = "";
 
 var Trello = {
-  async getAllBoard() {
+  async getAllBoard(url) {
     return await Axios.get(url + "1/members/me?key=" + key + "&token=" + token)
       .then(res => {
         return res.data.idBoards;
@@ -13,29 +13,25 @@ var Trello = {
         console.log("Can't get all user trello board.");
       });
   },
-  async getBoardDetail() {
+  async getBoardDetail(url) {
     try {
       var temp = {};
-      temp = await this.getBoard();
-      temp.memberships = await this.getMembership();
-      temp.lists = await this.getBoardList();
+      temp = await this.getBoard(url);
+      temp.memberships = await this.getMembership(url);
+      temp.lists = await this.getBoardList(url);
       for (const i in temp.lists) {
-        var allCards = await this.getCards();
-        temp.lists[i].items = allCards.filter(
-          card => card.idList === temp.lists[i].id
-        );
+        var allCards = await this.getCards(url);
+        temp.lists[i].items = allCards.filter(card => card.idList === temp.lists[i].id);
       }
-      this.getCards();
+      this.getCards(url);
       sessionStorage.setItem("TrelloBoardDetail", JSON.stringify(temp));
       // console.log(JSON.parse(sessionStorage.getItem("TrelloBoardDetail")))
     } catch (error) {
       console.error(error + "Can't get trello board detail");
     }
   },
-  async getBoard() {
-    return await Axios.get(
-      url + "1/board/" + boardID + "?key=" + key + "&token=" + token
-    )
+  async getBoard(url) {
+    return await Axios.get(url + "1/board/" + boardID + "?key=" + key + "&token=" + token)
       .then(res => {
         return res.data;
       })
@@ -43,17 +39,8 @@ var Trello = {
         console.error("Can't get board");
       });
   },
-  async getMembership() {
-    return await Axios.get(
-      url +
-        "1/boards/" +
-        boardID +
-        "/memberships?key=" +
-        key +
-        "&token=" +
-        token +
-        "&member=true"
-    )
+  async getMembership(url) {
+    return await Axios.get(url + "1/boards/" + boardID + "/memberships?key=" + key + "&token=" + token + "&member=true")
       .then(res => {
         var temp = [];
         for (const i in res.data) {
@@ -65,10 +52,8 @@ var Trello = {
         console.error("Can't get board members");
       });
   },
-  async getBoardList() {
-    return await Axios.get(
-      url + "1/boards/" + boardID + "/lists?key=" + key + "&token=" + token
-    )
+  async getBoardList(url) {
+    return await Axios.get(url + "1/boards/" + boardID + "/lists?key=" + key + "&token=" + token)
       .then(res => {
         return res.data;
       })
@@ -76,10 +61,8 @@ var Trello = {
         console.error("Can't get board list");
       });
   },
-  async getCards() {
-    return await Axios.get(
-      url + "1/boards/" + boardID + "/cards?key=" + key + "&token=" + token
-    )
+  async getCards(url) {
+    return await Axios.get(url + "1/boards/" + boardID + "/cards?key=" + key + "&token=" + token)
       .then(res => {
         return res.data;
       })

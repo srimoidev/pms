@@ -2,41 +2,16 @@
   <div class="query-form card">
     <div class="card-content">
       <h2 class="title">New task</h2>
-      <v-text-field
-        label="Title"
-        v-model="name"
-        :rules="[rules.required]"
-        @enter="validate"
-      ></v-text-field>
+      <v-text-field label="Title" v-model="name" :rules="[rules.required]" @enter="validate"></v-text-field>
       <v-textarea label="Description" v-model="desc"></v-textarea>
-      <v-menu
-        v-model="menu2"
-        :close-on-content-click="false"
-        transition="scale-transition"
-        offset-y
-        max-width="290px"
-        min-width="290px"
-      >
+      <v-menu v-model="menu2" :close-on-content-click="false" transition="scale-transition" offset-y max-width="290px" min-width="290px">
         <template v-slot:activator="{ on, attrs }">
-          <v-text-field
-            v-model="computedDateFormatted"
-            label="Date"
-            prepend-icon="mdi-calendar"
-            readonly
-            v-bind="attrs"
-            v-on="on"
-          ></v-text-field>
+          <v-text-field v-model="computedDateFormatted" label="Date" prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on"></v-text-field>
         </template>
-        <v-date-picker
-          v-model="date"
-          no-title
-          @input="menu2 = false"
-        ></v-date-picker>
+        <v-date-picker v-model="date" no-title @input="menu2 = false"></v-date-picker>
       </v-menu>
       <div class="button-wrap">
-        <item-button type="primary" @click="validate">{{
-          id ? "Update" : "Add"
-        }}</item-button>
+        <item-button type="primary" @click="validate">{{ id ? "Update" : "Add" }}</item-button>
         <item-button type="text" @click="cancel">Cancel</item-button>
       </div>
     </div>

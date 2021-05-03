@@ -17,8 +17,7 @@ export default {
   methods: {
     async getPdf() {
       var pdfjsLib = import("pdfjs-dist/build/pdf");
-      pdfjsLib.GlobalWorkerOptions.workerSrc = await
-        "https://cdn.jsdelivr.net/npm/pdfjs-dist@2.0.943/build/pdf.worker.min.js";
+      pdfjsLib.GlobalWorkerOptions.workerSrc = await "https://cdn.jsdelivr.net/npm/pdfjs-dist@2.0.943/build/pdf.worker.min.js";
       let container = document.getElementById("pageContainer");
       let pdfViewer = new PDFViewer({
         container: container

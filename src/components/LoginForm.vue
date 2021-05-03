@@ -9,23 +9,10 @@
         <div class="mx-8">
           <ValidationObserver ref="observer">
             <form>
-              <ValidationProvider
-                v-slot="{ errors }"
-                name="Username"
-                rules="required"
-              >
-                <v-text-field
-                  v-model="username"
-                  label="ID"
-                  :error-messages="errors"
-                  prepend-inner-icon="mdi-account"
-                ></v-text-field>
+              <ValidationProvider v-slot="{ errors }" name="Username" rules="required">
+                <v-text-field v-model="username" label="ID" :error-messages="errors" prepend-inner-icon="mdi-account"></v-text-field>
               </ValidationProvider>
-              <ValidationProvider
-                v-slot="{ errors }"
-                name="Password"
-                rules="required"
-              >
+              <ValidationProvider v-slot="{ errors }" name="Password" rules="required">
                 <v-text-field
                   v-model="password"
                   label="Password"
@@ -34,9 +21,7 @@
                   @keydown.enter="submit"
                 ></v-text-field>
               </ValidationProvider>
-              <v-btn class="my-5" width="100%" color="primary" @click="submit"
-                >Login</v-btn
-              >
+              <v-btn class="my-5" width="100%" color="primary" @click="submit">Login</v-btn>
               <div class="d-flex">
                 <!-- <v-checkbox
                   v-model="rememberChecked"
@@ -48,9 +33,7 @@
             </form>
           </ValidationObserver>
         </div>
-        <v-alert v-if="isLoggedIn.loggedIn == false" dense type="error"
-          >Incorrect <strong>Username</strong> or <strong>Password</strong>
-        </v-alert>
+        <v-alert v-if="isLoggedIn.loggedIn == false" dense type="error">Incorrect <strong>Username</strong> or <strong>Password</strong> </v-alert>
       </div>
     </v-card>
   </div>
@@ -60,12 +43,7 @@
 import { required } from "vee-validate/dist/rules";
 import Auth from "@/mixins/Auth";
 // import { required, email, max, length } from "vee-validate/dist/rules";
-import {
-  extend,
-  ValidationObserver,
-  ValidationProvider,
-  setInteractionMode
-} from "vee-validate";
+import { extend, ValidationObserver, ValidationProvider, setInteractionMode } from "vee-validate";
 import { mapGetters } from "vuex";
 setInteractionMode("eager");
 extend("required", {

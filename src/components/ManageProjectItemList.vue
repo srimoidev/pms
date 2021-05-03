@@ -3,14 +3,7 @@
     <div class="d-flex">
       <slot name="header"></slot>
       <div style="flex-grow: 1 !important;"></div>
-      <v-btn
-        class="mr-6"
-        @click="edit_field"
-        v-if="!edit && header.editable"
-        small
-        color="primary"
-        >edit</v-btn
-      >
+      <v-btn class="mr-6" @click="edit_field" v-if="!edit && header.editable" small color="primary">edit</v-btn>
     </div>
     <span class="mx-6 mt-4 d-block" ref="content"></span>
     <div ref="field" class="mt-4" v-if="edit && header.type == `textfield`">
@@ -30,22 +23,11 @@
         <span class="mx-6">{{ data[header.title] }}</span>
       </div>
       <div v-else>
-        <span
-          class="mx-6 d-block"
-          v-for="(item, i) in data[header.title]"
-          :key="item.id"
-          >{{ i + 1 + ". " }}{{ item.name }}</span
-        >
+        <span class="mx-6 d-block" v-for="(item, i) in data[header.title]" :key="item.id">{{ i + 1 + ". " }}{{ item.name }}</span>
       </div>
     </div>
     <div v-else-if="edit && header.type == `editor`" class="mt-4 mb-2">
-      <ckeditor
-        class="mx-6"
-        :editor="editor"
-        v-model="editedData"
-        :config="editorConfig"
-        :read-only="!edit"
-      ></ckeditor>
+      <ckeditor class="mx-6" :editor="editor" v-model="editedData" :config="editorConfig" :read-only="!edit"></ckeditor>
     </div>
     <div v-else-if="edit && header.type == `table`">
       {{ editedData }}

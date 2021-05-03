@@ -137,7 +137,7 @@ export default {
 
   methods: {
     async loadData() {
-      this.user = JSON.parse(sessionStorage.getItem("user"));
+      this.user = JSON.parse(localStorage.getItem("user"));
       const initData = await this.Form.Type();
 
       const preq = await this.Form.Prerequisite();

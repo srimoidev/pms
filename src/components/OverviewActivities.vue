@@ -6,29 +6,17 @@
         <div v-if="index != 0" :key="index">
           <v-subheader
             v-if="
-              item.updateTime.toLocaleDateString('th-Th') ==
-                new Date().toLocaleDateString('th-Th') &&
-                item.updateTime.toLocaleDateString('th-Th') !=
-                  data[index - 1].updateTime.toLocaleDateString('th-Th')
+              item.updateTime.toLocaleDateString('th-Th') == new Date().toLocaleDateString('th-Th') &&
+                item.updateTime.toLocaleDateString('th-Th') != data[index - 1].updateTime.toLocaleDateString('th-Th')
             "
             >วันนี้</v-subheader
           >
-          <v-subheader
-            v-else-if="
-              item.updateTime.toLocaleDateString('th-Th') !=
-                data[index - 1].updateTime.toLocaleDateString('th-Th')
-            "
+          <v-subheader v-else-if="item.updateTime.toLocaleDateString('th-Th') != data[index - 1].updateTime.toLocaleDateString('th-Th')"
             >{{ item.updateTime.toLocaleDateString("th-Th") }}
           </v-subheader>
         </div>
         <div v-else :key="index">
-          <v-subheader
-            v-if="
-              item.updateTime.toLocaleDateString('th-Th') ==
-                new Date().toLocaleDateString('th-Th')
-            "
-            >วันนี้
-          </v-subheader>
+          <v-subheader v-if="item.updateTime.toLocaleDateString('th-Th') == new Date().toLocaleDateString('th-Th')">วันนี้ </v-subheader>
           <v-subheader v-else>
             {{ item.updateTime.toLocaleDateString("th-Th") }}
           </v-subheader>
@@ -43,13 +31,7 @@
 
           <v-list-item-content>
             <v-list-item-title>
-              {{
-                item.updateBy.name +
-                  " " +
-                  act[item.act.actid] +
-                  "ไฟล์ " +
-                  type[item.act.type]
-              }}
+              {{ item.updateBy.name + " " + act[item.act.actid] + "ไฟล์ " + type[item.act.type] }}
             </v-list-item-title>
             <v-list-item-subtitle>
               {{ item.updateTime.toLocaleTimeString("th-TH") }}

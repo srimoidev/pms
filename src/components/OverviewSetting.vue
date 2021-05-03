@@ -9,14 +9,7 @@
     </v-card-title>
     <div class="mx-6">
       layout
-      <v-slider
-        v-model="layout_index"
-        :tick-labels="[1, 2, 3, 4, 5, 6]"
-        :max="5"
-        step="1"
-        ticks="always"
-        tick-size="3"
-      ></v-slider>
+      <v-slider v-model="layout_index" :tick-labels="[1, 2, 3, 4, 5, 6]" :max="5" step="1" ticks="always" tick-size="3"></v-slider>
 
       <v-btn @click="apply">Apply</v-btn>
     </div>

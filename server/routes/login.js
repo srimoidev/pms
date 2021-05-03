@@ -6,6 +6,7 @@ const dotenv = require("dotenv"),
 dotenv.config();
 
 router.post("/", (req, res, next) => {
+  console.log(req.body);
   passport.authenticate("local", { session: false }, (err, data, msg) => {
     if (err) return next(err);
     if (data) {

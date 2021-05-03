@@ -41,7 +41,7 @@ app.use(multer({
 
 
 //static folder for upload file
-app.use(express.static('uploads'))
+// app.use(express.static('uploads'))
 
 app.use(bodyParser.json());
 app.use(

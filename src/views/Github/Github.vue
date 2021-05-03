@@ -12,12 +12,7 @@
           <code-preview :repo="github_repo"></code-preview>
         </div>
         <div v-else>
-          <entry
-            @url="getRepoDetails"
-            :hint="hint"
-            :url="`https://github.com/peteblackbone/PMS`"
-            :label="`Github Repository`"
-          ></entry>
+          <entry @url="getRepoDetails" :hint="hint" :url="`https://github.com/peteblackbone/PMS`" :label="`Github Repository`"></entry>
         </div>
       </div>
     </v-card>

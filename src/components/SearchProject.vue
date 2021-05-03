@@ -18,15 +18,7 @@
       <span>มหาวิทยาลัยเทคโนโลยีราชมงคล ล้านนา</span>
     </div>
 
-    <v-text-field
-      class="mb-8 mt-8"
-      style="margin:0 15%"
-      label="ค้นหาโปรเจ็ค"
-      append-icon="mdi-send"
-      outlined
-      dense
-      hide-details
-    ></v-text-field>
+    <v-text-field class="mb-8 mt-8" style="margin:0 15%" label="ค้นหาโปรเจ็ค" append-icon="mdi-send" outlined dense hide-details></v-text-field>
     <v-row justify="center" style="height:calc(100vh - 330px)">
       <v-col cols="5">
         <v-card height="100%">
@@ -41,28 +33,16 @@
               <div :key="item.id">
                 <v-list-item link three-line>
                   <v-list-item-icon>
-                    <v-img
-                      src="../assets/aff4cc28ca93b3507d41ba0f88ec53db.jpg"
-                      height="90"
-                      width="160"
-                      :aspect-ratio="16 / 9"
-                    ></v-img>
+                    <v-img src="../assets/aff4cc28ca93b3507d41ba0f88ec53db.jpg" height="90" width="160" :aspect-ratio="16 / 9"></v-img>
                   </v-list-item-icon>
                   <v-list-item-content>
                     <v-list-item-title>{{ item.title }}</v-list-item-title>
-                    <v-list-item-subtitle>{{
-                      item.detail
-                    }}</v-list-item-subtitle>
+                    <v-list-item-subtitle>{{ item.detail }}</v-list-item-subtitle>
                     <v-spacer></v-spacer>
-                    <v-list-item-subtitle>{{
-                      new Date().toLocaleDateString("th-TH")
-                    }}</v-list-item-subtitle>
+                    <v-list-item-subtitle>{{ new Date().toLocaleDateString("th-TH") }}</v-list-item-subtitle>
                   </v-list-item-content>
                 </v-list-item>
-                <v-divider
-                  v-if="index < news.length - 1"
-                  class="mx-2"
-                ></v-divider>
+                <v-divider v-if="index < news.length - 1" class="mx-2"></v-divider>
               </div>
             </template>
           </v-list>
@@ -71,9 +51,7 @@
           <v-divider class="mx-2 mt-2"></v-divider>
           <div class="d-flex" style="height: 50px;align-items: center;">
             <v-spacer></v-spacer>
-            <router-link class="text-none mr-2" to="#">
-              >> ดูเพิ่มเติม</router-link
-            >
+            <router-link class="text-none mr-2" to="#"> >> ดูเพิ่มเติม</router-link>
           </div>
         </div>
       </v-col>
@@ -89,26 +67,22 @@ export default {
         {
           id: 1,
           title: "Verify Project",
-          detail:
-            "A new project please upload your project image to the follow link for verify your project."
+          detail: "A new project please upload your project image to the follow link for verify your project."
         },
         {
           id: 2,
           title: "แจ้งนักศึกษาที่ติด F",
-          detail:
-            "ให้นักศึกษาที่ติด F เข้าพบอาจารย์ประจำวิชาภายในวันที่่ 15 มิถุนายน 2654"
+          detail: "ให้นักศึกษาที่ติด F เข้าพบอาจารย์ประจำวิชาภายในวันที่่ 15 มิถุนายน 2654"
         },
         {
           id: 3,
           title: "แจ้งนักศึกษาที่ติด F",
-          detail:
-            "ให้นักศึกษาที่ติด F เข้าพบอาจารย์ประจำวิชาภายในวันที่่ 15 มิถุนายน 2654"
+          detail: "ให้นักศึกษาที่ติด F เข้าพบอาจารย์ประจำวิชาภายในวันที่่ 15 มิถุนายน 2654"
         },
         {
           id: 4,
           title: "แจ้งนักศึกษาที่ติด F",
-          detail:
-            "ให้นักศึกษาที่ติด F เข้าพบอาจารย์ประจำวิชาภายในวันที่่ 15 มิถุนายน 2654"
+          detail: "ให้นักศึกษาที่ติด F เข้าพบอาจารย์ประจำวิชาภายในวันที่่ 15 มิถุนายน 2654"
         }
       ]
     };
