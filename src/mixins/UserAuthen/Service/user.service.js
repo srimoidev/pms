@@ -8,7 +8,6 @@ function login(username, password) {
       const userType = JSON.parse(atob(res.data.token.split(".")[1]))?.User_TypeID;
       const ttl = 1 * 60 * 60 * 1000; //ล็อกอินหมดอายุทุกๆ 1 ชม.
       const expiry = new Date().getTime() + ttl;
-      console.log(userType);
       localStorage.setItem("user", JSON.stringify({ token: res.data.token, expiry: expiry }));
       if (userType == 1) {
         return "student";
@@ -31,7 +30,7 @@ async function loggedInUserDate() {
   const jwt = JSON.parse(localStorage.getItem("user")).token;
   const loggedInUserID = JSON.parse(atob(jwt.split(".")[1]))?.User_ID;
   const userProfile = await Profile(loggedInUserID);
-  userProfile.User_PID = await SelfProject(loggedInUserID) || null;
+  userProfile.User_ProjectID = await SelfProject(loggedInUserID);
   return userProfile;
 }
 

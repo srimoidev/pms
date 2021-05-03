@@ -13,7 +13,6 @@ export const authentication = {
         role => {
           commit("loginSuccess", role);
 
-          console.log(role);
           router.push(`/${role}`);
           // dispatch("user/routing");
         }

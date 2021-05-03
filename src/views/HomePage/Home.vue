@@ -108,6 +108,20 @@ export default {
       ]
     };
   },
+  computed: {
+    ...mapGetters({
+      user: "user/UserData",
+      typeID: "user/TypeID",
+      isLoggedIn: "authentication/isLoggedIn"
+    }),
+    currentTabs() {
+      if (this.isLoggedIn) {
+        return this.tabs.filter(i => i.isHideOnLoggedin == false);
+      } else {
+        return this.tabs;
+      }
+    }
+  },
   beforeMount() {
     this.loadData();
     // this.user = JSON.parse(localStorage.getItem("user"));
@@ -132,20 +146,6 @@ export default {
         this.loadData();
         this.tabs.pop();
       });
-    }
-  },
-  computed: {
-    ...mapGetters({
-      user: "user/UserData",
-      typeID: "user/TypeID",
-      isLoggedIn: "authentication/isLoggedIn"
-    }),
-    currentTabs() {
-      if (this.isLoggedIn) {
-        return this.tabs.filter(i => i.isHideOnLoggedin == false);
-      } else {
-        return this.tabs;
-      }
     }
   }
 };

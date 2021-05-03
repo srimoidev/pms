@@ -1,7 +1,7 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import NProgress from "nprogress";
-// import store from "../store/";
+import store from "../store/";
 //public pages
 // import Login from "../views/Login/Login.vue";
 import MainLogin from "../views/Login/MainLogin.vue";
@@ -255,22 +255,16 @@ router.beforeEach((to, from, next) => {
 
   if (loggedIn) {
     const userTypeID = JSON.parse(atob(loggedIn.token.split(".")[1])).User_TypeID;
-    console.log(userTypeID);
     //login ครั้งละ 60 นาที
     if (new Date().getTime() < loggedIn.expiry) {
-      console.log("ttl");
       if (to.matched.some(record => record.meta.is_student)) {
-        console.log("a");
         if (userTypeID == 1) {
-          console.log("std");
           next();
         } else {
           next("/");
         }
       } else if (to.matched.some(record => record.meta.is_teacher)) {
-        console.log("t1");
         if (userTypeID == 2 || userTypeID == 3) {
-          console.log("tch");
           next();
         } else {
           next("/");
@@ -286,6 +280,8 @@ router.beforeEach((to, from, next) => {
       }
     } else {
       localStorage.clear();
+      store.dispatch("authentication/logout");
+      store.dispatch("user/clearUserDate");
       return next("/login");
     }
   } else {

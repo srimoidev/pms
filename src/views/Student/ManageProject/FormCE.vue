@@ -67,6 +67,8 @@
 // import DB from "@/mixins/Database";
 import ModalContainer from "@/components/ModalContainer";
 import FormStatus from "@/components/FormStatus";
+
+import { mapGetters } from "vuex";
 export default {
   components: {
     ModalContainer,
@@ -74,7 +76,7 @@ export default {
   },
   data() {
     return {
-      user: null,
+      // user: null,
       windowHeight: 0,
       currentFile: undefined,
       progress: 0,
@@ -96,14 +98,19 @@ export default {
       ]
     };
   },
+  watch: {
+    user() {
+      this.loadData();
+    }
+  },
   async beforeMount() {
     this.loadData();
     this.loading = false;
   },
   methods: {
     async loadData() {
-      this.user = JSON.parse(localStorage.getItem("user"));
-      this.data = await this.Form.AllFormEachType(this.user.pID, this.formTID);
+      // this.user = JSON.parse(localStorage.getItem("user"));
+      this.data = await this.Form.AllFormEachType(this.user.User_ProjectID, this.formTID);
       console.log(this.user, this.formTID, this.data);
       // if (temp) {
       //   temp.map(async item => {
@@ -156,6 +163,11 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      user: "user/UserData",
+      typeID: "user/TypeID",
+      isLoggedIn: "authentication/isLoggedIn"
+    }),
     formTID() {
       return this.$route.query.type;
     }
