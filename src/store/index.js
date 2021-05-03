@@ -22,7 +22,7 @@ export default new Vuex.Store({
   modules: {
     authentication,
     user
-  },
+  }
   // plugins:[
   //   persistedState()
   // ]

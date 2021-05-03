@@ -117,6 +117,8 @@
 
 <script>
 import pdf from "vue-pdf";
+import { mapGetters } from "vuex";
+
 export default {
   components: {
     pdf
@@ -136,6 +138,11 @@ export default {
     };
   },
   computed: {
+    ...mapGetters({
+      user: "user/UserData",
+      typeID: "user/TypeID",
+      isLoggedIn: "authentication/isLoggedIn"
+    }),
     form_id() {
       return this.$route.query.d;
     },
@@ -143,9 +150,8 @@ export default {
       return `Form_${this.form?.Form_Type.FormType_Name}`;
     }
   },
-  async beforeMount() {
-    this.user = JSON.parse(localStorage.getItem("user"));
-    await this.loadData();
+  beforeMount() {
+    this.loadData();
   },
   methods: {
     async loadData() {

@@ -64,11 +64,11 @@
 </template>
 
 <script>
-// import DB from "@/mixins/Database";
+import { mapGetters } from "vuex";
+
 import ModalContainer from "@/components/ModalContainer";
 import FormStatus from "@/components/FormStatus";
 
-import { mapGetters } from "vuex";
 export default {
   components: {
     ModalContainer,
@@ -76,7 +76,6 @@ export default {
   },
   data() {
     return {
-      // user: null,
       windowHeight: 0,
       currentFile: undefined,
       progress: 0,
@@ -98,14 +97,23 @@ export default {
       ]
     };
   },
+  computed: {
+    ...mapGetters({
+      user: "user/UserData",
+      typeID: "user/TypeID",
+      isLoggedIn: "authentication/isLoggedIn"
+    }),
+    formTID() {
+      return this.$route.query.type;
+    }
+  },
   watch: {
     user() {
       this.loadData();
     }
   },
-  async beforeMount() {
+  beforeMount() {
     this.loadData();
-    this.loading = false;
   },
   methods: {
     async loadData() {
@@ -124,6 +132,7 @@ export default {
       //   return await temp
       // }
       // console.log(this.data,this.loading);
+      this.loading = false;
     },
     onResize() {
       //page header 64px
@@ -145,7 +154,7 @@ export default {
 
       this.message = "";
 
-      this.Form.Upload(this.user.pID, this.formTID, this.currentFile, event => {
+      this.Form.Upload(this.user.User_ProjectID, this.formTID, this.currentFile, event => {
         this.progress = Math.round((100 * event.loaded) / event.total);
       })
         .catch(() => {
@@ -160,16 +169,6 @@ export default {
     },
     apply() {
       alert("upload");
-    }
-  },
-  computed: {
-    ...mapGetters({
-      user: "user/UserData",
-      typeID: "user/TypeID",
-      isLoggedIn: "authentication/isLoggedIn"
-    }),
-    formTID() {
-      return this.$route.query.type;
     }
   }
 };

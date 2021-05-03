@@ -14,7 +14,6 @@
           <ValidationProvider v-slot="{ errors }" name="Username" rules="required">
             <v-text-field
               v-model="username"
-              class="cyan--text text--accent-4"
               solo
               prepend-inner-icon="mdi-account"
               label="Username"
@@ -32,6 +31,7 @@
               type="password"
               @keypress.enter="submit"
               :error-messages="errors"
+              color="cyan accent-4"
             ></v-text-field>
           </ValidationProvider>
         </ValidationObserver>

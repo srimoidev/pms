@@ -96,7 +96,6 @@ export default {
     FormStatus
   },
   data: () => ({
-    // user: null,
     loading: true,
     windowHeight: 0,
     actionMenu: [
@@ -104,7 +103,6 @@ export default {
       { title: "Edit", method: "editDoc" },
       { title: "Delete", method: "deleteDoc" }
     ],
-
     dialog: false,
     dialogDelete: false,
     headers: [
@@ -114,7 +112,6 @@ export default {
       { text: "อัปเดตล่าสุด", value: "Form_UpdatedTime", sortable: false },
       { text: "วันกำหนดส่ง", value: "Deadline", sortable: false },
       { text: "สถานะ", value: "LatestForm", sortable: false }
-      // { text: "", value: "actions", sortable: false }
     ],
     data: []
   }),
@@ -147,29 +144,25 @@ export default {
 
   methods: {
     async loadData() {
-      // this.user = JSON.parse(localStorage.getItem("user"));
       const initData = await this.Form.Type();
-
       const preq = await this.Form.Prerequisite();
-      const temp = await this.Form.LatestEachForm(this.user.User_ProjectID);
+      const latest = await this.Form.LatestEachForm(this.user.User_ProjectID);
       let deadline = await this.Form.Deadline();
-      console.log(temp);
-      // const temp = [];
-      if (temp) {
+
+      if (latest) {
         initData.map(element => {
-          element.LatestForm = temp.find(item => item.Form_TypeID == element.FormType_ID) || null;
+          element.LatestForm = latest.find(item => item.Form_TypeID == element.FormType_ID) || null;
           element.Prerequisite = preq.filter(item => item.Pre_FormTypeID == element.FormType_ID);
           element.Deadline = deadline.find(item => item.Deadline_FormTypeID == element.FormType_ID) || undefined;
-          // console.log(element.Deadline);
           element.isReachDeadline = (new Date(element?.Deadline?.Deadline_DateTime) - new Date()) / (1000 * 3600 * 24);
           element.Prerequisite.map(item => {
-            item.Status = temp.find(t => t.Form_TypeID == item.Pre_FormReqTypeID)?.Form_StatusID;
+            item.Status = latest.find(t => t.Form_TypeID == item.Pre_FormReqTypeID)?.Form_StatusID;
           });
         });
       }
+
       this.data = initData;
       this.loading = false;
-      console.log(this.loading, this.data);
     },
     onResize() {
       //page header 64px
