@@ -1,7 +1,7 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import NProgress from "nprogress";
-
+import store from "../store/";
 //public pages
 // import Login from "../views/Login/Login.vue";
 import MainLogin from "../views/Login/MainLogin.vue";
@@ -36,7 +36,7 @@ import Teacher_ApprovementReq from "../views/Teacher/Request/ApprovementRequest.
 import Teacher_ProjectManual from "../views/Teacher/ProjectManual/ProjectManual.vue";
 
 //App Environment Configuration
-import App_EnvConfig from "../views/AppEnvironments/AppEnvironment.vue"
+import App_EnvConfig from "../views/AppEnvironments/AppEnvironment.vue";
 
 Vue.use(VueRouter);
 
@@ -82,9 +82,9 @@ const routes = [
   {
     path: "/student",
     name: "Student",
-    meta: { guest: false },
     component: Dashboard,
     redirect: "/student/overview",
+    meta: { is_student: true },
     children: [
       {
         path: "overview",
@@ -176,7 +176,7 @@ const routes = [
   {
     path: "/teacher",
     name: "Teacher",
-    meta: { guest: false },
+    meta: { is_teacher: true },
     component: Dashboard,
     redirect: "/teacher/overview",
     children: [
@@ -245,49 +245,52 @@ router.afterEach(() => {
 });
 
 router.beforeEach((to, from, next) => {
-  const publicPages = ["/", "/search", "/login", "/about"];
-  let restrictedPage = [];
+  const loggedIn = JSON.parse(localStorage.getItem("user"));
 
-  const authRequired = publicPages.includes(to.path);
-  const loggedIn = JSON.parse(sessionStorage.getItem("user"));
-  let role;
-
-  /*** 
-   * User_typeID 1 : Student
-   * USer_typeID 2 : Instructor
-   * User_typeID 3 : Teacher
-  */
-
+  // /***
+  //  * User_typeID 1 : Student
+  //  * USer_typeID 2 : Instructor
+  //  * User_typeID 3 : Teacher
+  //  */
 
   if (loggedIn) {
-    if (loggedIn.User_TypeID == 1) {
-      role = "Student";
+    const userTypeID = JSON.parse(atob(loggedIn.token.split(".")[1])).User_TypeID;
+    //login ครั้งละ 60 นาที
+    if (new Date().getTime() < loggedIn.expiry) {
+      if (to.matched.some(record => record.meta.is_student)) {
+        if (userTypeID == 1) {
+          next();
+        } else {
+          next("/");
+        }
+      } else if (to.matched.some(record => record.meta.is_teacher)) {
+        if (userTypeID == 2 || userTypeID == 3) {
+          next();
+        } else {
+          next("/");
+        }
+      } else if (to.matched.some(record => record.meta.is_admin)) {
+        if (userTypeID == 4) {
+          next();
+        } else {
+          next("/");
+        }
+      } else {
+        next();
+      }
     } else {
-      role = "Advisor";
+      localStorage.clear();
+      store.dispatch("authentication/logout");
+      store.dispatch("user/clearUserDate");
+      return next("/login");
     }
-  }
-  switch (role) {
-    case "Advisor":
-      restrictedPage = ["student", "admin"];
-      break;
-    case "Instructor":
-      restrictedPage = ["student", "admin"];
-      break;
-    case "Student":
-      restrictedPage = ["teacher", "admin"];
-      break;
-    default:
-      break;
-  }
-  if (!authRequired && !loggedIn) {
-    return next("/login");
-  } else if (["/login"].includes(to.path) && loggedIn) {
-    return next("/");
-  } else if (restrictedPage.includes(to.path.split("/")[1])) {
-    if (role == "Advisor") return next("/teacher");
-    else if (role == "Instructor") return next("/teacher");
-    else if (role == "Student") return next("/student");
-    else return next("/");
+  } else {
+    const publicPages = ["/", "/search", "/login", "/about"];
+    if (!publicPages.includes(to.path)) {
+      next("/login");
+    } else {
+      next();
+    }
   }
 
   // This goes through the matched routes from last to first, finding the closest route with a title.
@@ -311,9 +314,7 @@ router.beforeEach((to, from, next) => {
   if (nearestWithTitle) document.title = nearestWithTitle.meta.title;
 
   // Remove any stale meta tags from the document using the key attribute we set below.
-  Array.from(
-    document.querySelectorAll("[data-vue-router-controlled]")
-  ).map(el => el.parentNode.removeChild(el));
+  Array.from(document.querySelectorAll("[data-vue-router-controlled]")).map(el => el.parentNode.removeChild(el));
 
   // Skip rendering meta tags if there are none.
   if (!nearestWithMeta) return next();

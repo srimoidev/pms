@@ -1,10 +1,7 @@
 <template>
   <div class="home-container">
     <v-app-bar height="60" color="transparent" elevate-on-scroll>
-      <v-app-bar-nav-icon
-        @click.stop="drawer = !drawer"
-        v-if="$vuetify.breakpoint.mdAndDown"
-      ></v-app-bar-nav-icon>
+      <v-app-bar-nav-icon @click.stop="drawer = !drawer" v-if="$vuetify.breakpoint.mdAndDown"></v-app-bar-nav-icon>
       <v-toolbar-title class="logo" v-if="$vuetify.breakpoint.smAndUp">
         <v-avatar>
           <v-icon>mdi-account-circle</v-icon>
@@ -14,29 +11,15 @@
       <!-- <div :style="isLogin ? 'width:260%' : 'width:168%'"></div> -->
       <v-spacer></v-spacer>
       <div>
-        <v-tabs
-          v-model="tab"
-          background-color="transparent"
-          color="blue-grey lighten-5"
-          v-if="!$vuetify.breakpoint.mdAndDown"
-        >
-          <v-tab
-            class="tabs"
-            v-for="item in tabs"
-            :key="item.title"
-            :to="item.route"
-            >{{ item.title }}
+        <v-tabs v-model="tab" background-color="transparent" color="blue-grey lighten-5" v-if="!$vuetify.breakpoint.mdAndDown">
+          <v-tab class="tabs" v-for="item in currentTabs" :key="item.title" :to="item.route">
+            <span>{{ item.title }}</span>
             <v-icon class="ml-2" v-if="item.icon">{{ item.icon }}</v-icon>
           </v-tab>
         </v-tabs>
       </div>
 
-      <dashboard-profile
-        v-if="isLogin"
-        :data="account_data"
-        :size="36"
-        @logout="logout"
-      ></dashboard-profile>
+      <dashboard-profile v-if="isLoggedIn" :data="user" :size="36" @logout="logout"></dashboard-profile>
     </v-app-bar>
     <v-navigation-drawer v-model="drawer" absolute temporary>
       <div style="height:80px">
@@ -79,7 +62,8 @@
 
 <script>
 import DashboardProfile from "@/components/DashboardProfile";
-import Auth from "@/mixins/Auth";
+// import Auth from "@/mixins/Auth";
+import { mapGetters } from "vuex";
 // import RecentList from "@/components/RecentList";
 // import Entry from "@/components/Entry";
 export default {
@@ -91,14 +75,14 @@ export default {
   data() {
     return {
       isLogin: null,
+      componentKey: 0,
       drawer: false,
-      account_data: JSON.parse(sessionStorage.getItem("user")),
       tab: null,
       tabs: [
-        { title: "หน้าหลัก", route: "/" },
-        { title: "ค้นหาโครงงาน", route: "/search" },
-        { title: "เกี่ยวกับ", route: "/about" },
-        { title: "เข้าสู่ระบบ", route: "/login", icon: "mdi-lock" }
+        { title: "หน้าหลัก", route: "/", isHideOnLoggedin: false },
+        { title: "ค้นหาโครงงาน", route: "/search", isHideOnLoggedin: false },
+        { title: "เกี่ยวกับ", route: "/about", isHideOnLoggedin: false },
+        { title: "เข้าสู่ระบบ", route: "/login", icon: "mdi-lock", isHideOnLoggedin: true }
       ],
       recent_project: [
         {
@@ -124,15 +108,44 @@ export default {
       ]
     };
   },
-  beforeMount() {
-    this.isLogin = sessionStorage.getItem("user");
-    if (this.isLogin) {
-      this.tabs.pop();
+  computed: {
+    ...mapGetters({
+      user: "user/UserData",
+      typeID: "user/TypeID",
+      isLoggedIn: "authentication/isLoggedIn"
+    }),
+    currentTabs() {
+      if (this.isLoggedIn) {
+        return this.tabs.filter(i => i.isHideOnLoggedin == false);
+      } else {
+        return this.tabs;
+      }
     }
   },
+  beforeMount() {
+    this.loadData();
+    // this.user = JSON.parse(localStorage.getItem("user"));
+    console.log(this.user, this.isLoggedIn);
+  },
   methods: {
+    loadData() {
+      this.$store.dispatch("user/getLoggedInUserData").then(() => {
+        if (this.isLoggedIn) {
+          let backToDashBoard = { title: "กลับสู่ Dashboard", isHideOnLoggedin: false };
+          if (this.typeID == 1) {
+            backToDashBoard.route = "/student";
+          } else if (this.typeID == 2 || this.typeID == 3) {
+            backToDashBoard.route = "/teacher";
+          }
+          this.tabs.push(backToDashBoard);
+        }
+      });
+    },
     logout() {
-      Auth.logout();
+      this.$store.dispatch("authentication/logout").then(() => {
+        this.loadData();
+        this.tabs.pop();
+      });
     }
   }
 };
@@ -156,8 +169,7 @@ export default {
   /* background: -webkit-linear-gradient(to right, #ec2f4b, #009fff),
     url("../../assets/aff4cc28ca93b3507d41ba0f88ec53db.jpg");  */
   /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-  background: linear-gradient(to bottom, #009fffa0,#ec2f4ba0),
-    url("../../assets/aff4cc28ca93b3507d41ba0f88ec53db.jpg"); 
+  background: linear-gradient(to bottom, #009fffa0, #ec2f4ba0), url("../../assets/aff4cc28ca93b3507d41ba0f88ec53db.jpg");
   background-size: cover;
 }
 .footer {

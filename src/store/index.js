@@ -1,9 +1,10 @@
 import Vue from "vue";
 import Vuex from "vuex";
-import { github } from "./modules/github";
-import board from "./modules/board";
-import { auth } from "./modules/UserAuthen/auth";
-
+// import { github } from "./modules/github";
+// import board from "./modules/board";
+// import UserAuthen from "./modules/UserAuthen"
+import { authentication } from "./modules/authentication.module";
+import { user } from "./modules/user.module";
 // import persistedState from "vuex-persistedstate";
 Vue.use(Vuex);
 
@@ -19,10 +20,9 @@ export default new Vuex.Store({
   getters: {},
   actions: {},
   modules: {
-    github,
-    board,
-    auth
-  }
+    authentication,
+    user
+  },
   // plugins:[
   //   persistedState()
   // ]

@@ -15,14 +15,7 @@
             Manage Group
           </v-toolbar-title>
           <v-divider class="mx-4" inset vertical></v-divider>
-          <v-text-field
-            v-model="searchText"
-            append-icon="mdi-magnify"
-            label="Search"
-            single-line
-            hide-details
-            class="mr-2"
-          ></v-text-field>
+          <v-text-field v-model="searchText" append-icon="mdi-magnify" label="Search" single-line hide-details class="mr-2"></v-text-field>
           <v-select
             v-model="typeFilter"
             :items="projectType"
@@ -49,11 +42,7 @@
         </v-toolbar>
       </template>
       <template v-slot:[`item.ProjectType_Name`]="{ item }">
-        <v-chip
-          class=" white--text"
-          :class="`type-${item.ProjectType_ID}`"
-          small
-        >
+        <v-chip class=" white--text" :class="`type-${item.ProjectType_ID}`" small>
           {{ item.ProjectType_Name }}
         </v-chip>
       </template>
@@ -73,11 +62,7 @@
 </template>
 
 <script>
-export default {
-
-}
+export default {};
 </script>
 
-<style>
-
-</style>
+<style></style>

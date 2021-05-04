@@ -55,7 +55,8 @@
 
 <script>
 import { required } from "vee-validate/dist/rules";
-import Auth from "@/mixins/Auth";
+// import Auth from "@/mixins/Auth";
+// import UserAuthen from "@/mixins/UserAuthen"
 import { extend, ValidationObserver, ValidationProvider, setInteractionMode } from "vee-validate";
 setInteractionMode("eager");
 extend("required", {
@@ -72,18 +73,26 @@ export default {
       username: null,
       password: null,
       rememberChacked: false,
-      loginFail: false
+      loginFail: false,
+      returnUrl: ""
     };
   },
   methods: {
     async submit() {
       if (await this.$refs.observer.validate()) {
         try {
-          await Auth.login(this.username, this.password);
+          const { username, password } = this;
+          this.$store.dispatch("authentication/login", { username, password });
         } catch (ex) {
+          console.log(ex);
           this.loginFail = true;
         }
       }
+    }
+  },
+  computed: {
+    loggingIn() {
+      return this.$store.state.authentication.status.loggingIn;
     }
   }
 };

@@ -72,7 +72,7 @@ export async function AllStatus() {
   });
 }
 export async function SelfProject(uID) {
-  return HTTP.get(`/project/member?userid=${uID}`).then((res) => {
+  return HTTP.get(`/project/member?userid=${uID}`).then(res => {
     return res?.data[0]?.Member_ProjectID;
   });
 }
@@ -97,9 +97,9 @@ export async function Join(pID, uID) {
 }
 
 export async function Leave(uID) {
-  await HTTP.delete(`/project/member?userid=${uID}`).catch(()=>{
+  await HTTP.delete(`/project/member?userid=${uID}`).catch(() => {
     //
-  })
+  });
 }
 //#endregion inbound
 

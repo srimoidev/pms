@@ -16,23 +16,14 @@
             คำขออนุมัติเอกสาร
           </v-toolbar-title>
           <v-divider class="mx-4" inset vertical></v-divider>
-          <v-text-field
-            v-model="searchText"
-            append-icon="mdi-magnify"
-            label="Search"
-            single-line
-            hide-details
-            class="mr-2"
-          ></v-text-field>
+          <v-text-field v-model="searchText" append-icon="mdi-magnify" label="Search" single-line hide-details class="mr-2"></v-text-field>
           <v-spacer></v-spacer>
           <v-btn color="success">อนุมัติ</v-btn>
         </v-toolbar>
       </template>
       <template v-slot:[`item.Project_FormID`]="{ item }">
         <div>
-          <router-link class="text-none" to="#">{{
-            item.Project_FormID
-          }}</router-link>
+          <router-link class="text-none" to="#">{{ item.Project_FormID }}</router-link>
         </div>
       </template>
       <template v-slot:[`item.Form_StatusID`]="{ item }">
@@ -52,7 +43,7 @@ export default {
   },
   data() {
     return {
-      windowHeight:0,
+      windowHeight: 0,
       headers: [
         // { text: "#", value: "no", sortable: true },
         {
@@ -76,9 +67,7 @@ export default {
       data: []
     };
   },
-  computed: {
-
-  },
+  computed: {},
   beforeMount() {
     this.loadData();
   },
@@ -120,7 +109,7 @@ export default {
       //ma-2 8+8 px
       //table footer 59px
       this.windowHeight = window.innerHeight - 64 - 64 - 16 - 59;
-    },
+    }
   }
 };
 </script>

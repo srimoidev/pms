@@ -22,10 +22,7 @@
               <v-list>
                 <template v-for="item in members">
                   <v-list-item :key="item.id">
-                    <v-list-item-avatar
-                      class="justify-center"
-                      :style="{ background: getColor() }"
-                    >
+                    <v-list-item-avatar class="justify-center" :style="{ background: getColor() }">
                       <span>PK</span>
                     </v-list-item-avatar>
                     <v-list-item-content>
@@ -40,10 +37,7 @@
               <v-list>
                 <template v-for="item in members">
                   <v-list-item :key="item.id">
-                    <v-list-item-avatar
-                      class="justify-center"
-                      :style="{ background: getColor() }"
-                    >
+                    <v-list-item-avatar class="justify-center" :style="{ background: getColor() }">
                       <span>PK</span>
                     </v-list-item-avatar>
                     <v-list-item-content>
@@ -58,10 +52,7 @@
               <v-list>
                 <template v-for="item in instructors">
                   <v-list-item :key="item.id">
-                    <v-list-item-avatar
-                      class="justify-center"
-                      :style="{ background: getColor() }"
-                    >
+                    <v-list-item-avatar class="justify-center" :style="{ background: getColor() }">
                       <span>PK</span>
                     </v-list-item-avatar>
                     <v-list-item-content>
@@ -134,10 +125,7 @@
       </div>
 
       <div class="d-flex" style="width:25%">
-        <overview-activities
-          class="act"
-          :data="activities"
-        ></overview-activities>
+        <overview-activities class="act" :data="activities"></overview-activities>
       </div>
     </div>
   </div>

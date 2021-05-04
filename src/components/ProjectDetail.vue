@@ -3,10 +3,7 @@
     <v-card class="elevation-1 mr-2" style="width:70%; min-height:89vh" tile>
       <v-toolbar flat color="white">
         <v-toolbar-title>
-          {{
-            "Manage Group - " +
-              (selfGroup.Project_NameTH ? selfGroup.Project_NameTH : "")
-          }}
+          {{ "Manage Group - " + (selfGroup.Project_NameTH ? selfGroup.Project_NameTH : "") }}
         </v-toolbar-title>
         <v-divider class="mx-4" inset vertical></v-divider>
         <v-spacer></v-spacer>
@@ -24,19 +21,11 @@
           <template v-for="(item, index) in selfGroup.Members">
             <v-list-item :key="item.Member_Info.User_ID">
               <v-list-item-content>
-                <v-list-item-title>{{
-                  item.Member_Info.User_Firstname +
-                    " " +
-                    item.Member_Info.User_Lastname
-                }}</v-list-item-title>
+                <v-list-item-title>{{ item.Member_Info.User_Firstname + " " + item.Member_Info.User_Lastname }}</v-list-item-title>
                 <v-list-item-subtitle>asdasd</v-list-item-subtitle>
               </v-list-item-content>
             </v-list-item>
-            <v-divider
-              v-if="index != selfGroup.Members.length - 1"
-              class="mx-2"
-              :key="item"
-            ></v-divider>
+            <v-divider v-if="index != selfGroup.Members.length - 1" class="mx-2" :key="item"></v-divider>
           </template>
         </v-list>
       </v-card>
@@ -47,29 +36,17 @@
           <template v-for="(item, index) in selfGroup.Advisor">
             <v-list-item :key="item.Advisor_Info.User_ID">
               <v-list-item-content
-                ><v-list-item-title>{{
-                  item.Advisor_Info.User_Firstname +
-                    " " +
-                    item.Advisor_Info.User_Firstname
-                }}</v-list-item-title
-                ><v-list-item-subtitle
-                  >asdasdasd</v-list-item-subtitle
-                ></v-list-item-content
+                ><v-list-item-title>{{ item.Advisor_Info.User_Firstname + " " + item.Advisor_Info.User_Firstname }}</v-list-item-title
+                ><v-list-item-subtitle>asdasdasd</v-list-item-subtitle></v-list-item-content
               >
             </v-list-item>
-            <v-divider
-              v-if="index != ['a', 'b'].length - 1"
-              class="mx-2"
-              :key="item"
-            ></v-divider>
+            <v-divider v-if="index != ['a', 'b'].length - 1" class="mx-2" :key="item"></v-divider>
           </template>
         </v-list>
         <v-list>
           <v-list-item>
             <v-list-item-content>
-              <v-list-item-title>{{
-                selfGroup.Teacher_Firstname + " " + selfGroup.Teacher_Lastname
-              }}</v-list-item-title>
+              <v-list-item-title>{{ selfGroup.Teacher_Firstname + " " + selfGroup.Teacher_Lastname }}</v-list-item-title>
               <v-list-item-subtitle>asdadadsadzxc</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>

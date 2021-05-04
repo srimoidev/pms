@@ -89,12 +89,14 @@
 </template>
 <script>
 import FormStatus from "@/components/FormStatus";
+
+import { mapGetters } from "vuex";
 export default {
   components: {
     FormStatus
   },
   data: () => ({
-    user: null,
+    // user: null,
     loading: true,
     windowHeight: 0,
     actionMenu: [
@@ -118,12 +120,20 @@ export default {
   }),
 
   computed: {
+    ...mapGetters({
+      user: "user/UserData",
+      typeID: "user/TypeID",
+      isLoggedIn: "authentication/isLoggedIn"
+    }),
     formTitle() {
       return this.editedIndex === -1 ? "New Item" : "Edit Item";
     }
   },
 
   watch: {
+    user() {
+      this.loadData();
+    },
     dialog(val) {
       val || this.close();
     },
@@ -137,11 +147,11 @@ export default {
 
   methods: {
     async loadData() {
-      this.user = JSON.parse(sessionStorage.getItem("user"));
+      // this.user = JSON.parse(localStorage.getItem("user"));
       const initData = await this.Form.Type();
 
       const preq = await this.Form.Prerequisite();
-      const temp = await this.Form.LatestEachForm(this.user.pID);
+      const temp = await this.Form.LatestEachForm(this.user.User_ProjectID);
       let deadline = await this.Form.Deadline();
       console.log(temp);
       // const temp = [];

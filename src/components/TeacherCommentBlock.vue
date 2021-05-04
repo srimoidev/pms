@@ -1,20 +1,18 @@
 <template>
   <div>
-      {{comment}}
+    {{ comment }}
   </div>
 </template>
 
 <script>
 export default {
-  props:{
-    comment:{
-      type:String,
-      default:""
+  props: {
+    comment: {
+      type: String,
+      default: ""
     }
   }
-}
+};
 </script>
 
-<style>
-
-</style>
+<style></style>

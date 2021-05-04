@@ -63,12 +63,7 @@
       ></v-calendar>
     </v-sheet>-->
     <div v-if="!entry">
-      <entry
-        @url="getUrl"
-        :url="url"
-        :hint="url"
-        :label="`Google Calendar`"
-      ></entry>
+      <entry @url="getUrl" :url="url" :hint="url" :label="`Google Calendar`"></entry>
     </div>
     <div v-else>
       <frame-embedded :src="src"></frame-embedded>
@@ -86,8 +81,7 @@ export default {
   },
   data: () => ({
     entry: false,
-    url:
-      "https://calendar.google.com/calendar/embed?src=peteraminie%40gmail.com&ctz=Indian%2FChristmas",
+    url: "https://calendar.google.com/calendar/embed?src=peteraminie%40gmail.com&ctz=Indian%2FChristmas",
     src: "",
     type: "month",
     types: ["month", "week", "day", "4day"],
@@ -102,25 +96,8 @@ export default {
     ],
     value: "",
     events: [],
-    colors: [
-      "blue",
-      "indigo",
-      "deep-purple",
-      "cyan",
-      "green",
-      "orange",
-      "grey darken-1"
-    ],
-    names: [
-      "Meeting",
-      "Holiday",
-      "PTO",
-      "Travel",
-      "Event",
-      "Birthday",
-      "Conference",
-      "Party"
-    ]
+    colors: ["blue", "indigo", "deep-purple", "cyan", "green", "orange", "grey darken-1"],
+    names: ["Meeting", "Holiday", "PTO", "Travel", "Event", "Birthday", "Conference", "Party"]
   }),
   methods: {
     getUrl(val) {
@@ -160,8 +137,7 @@ export default {
     },
     formatDate(a, withTime) {
       return withTime
-        ? `${a.getFullYear()}-${a.getMonth() +
-            1}-${a.getDate()} ${a.getHours()}:${a.getMinutes()}`
+        ? `${a.getFullYear()}-${a.getMonth() + 1}-${a.getDate()} ${a.getHours()}:${a.getMinutes()}`
         : `${a.getFullYear()}-${a.getMonth() + 1}-${a.getDate()}`;
     }
   }

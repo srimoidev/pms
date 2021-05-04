@@ -5,9 +5,9 @@
 </template>
 
 <script>
-import store from "./store/index";
+// import store from "./store/index";
 export default {
-  store
+  // store
 };
 </script>
 

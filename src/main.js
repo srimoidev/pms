@@ -9,14 +9,14 @@ import axios from "axios";
 import "./plugins/codemirror";
 import CKEditor from "@ckeditor/ckeditor5-vue";
 import Database from "./mixins/Database/";
-import VueSweetalert2 from 'vue-sweetalert2';
+import VueSweetalert2 from "vue-sweetalert2";
 
-require('sweetalert2/dist/sweetalert2.min.css')
+require("sweetalert2/dist/sweetalert2.min.css");
 require("../node_modules/nprogress/nprogress.css");
 
 Vue.use(CKEditor);
 Vue.use(Database);
-Vue.use(VueSweetalert2)
+Vue.use(VueSweetalert2);
 
 Vue.config.productionTip = false;
 

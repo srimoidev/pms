@@ -5,6 +5,8 @@ const {
 } = require("sequelize");
 var multer  = require('multer')
 var upload = multer({ dest: 'uploads/' })
+const fs = require("fs");
+
 router.get("/", async (req, res) => {
   try {
     var whereStr = [];
@@ -203,5 +205,25 @@ router.delete("/:id", async (req, res) => {
       });
     });
 });
+
+//form pdf
+router.get("/pdf/:id", async (req,res) => {
+  try {
+    console.log("aaa");
+    const data = await db.form_sent.findOne({
+      where: [{
+        Form_ID: req.params.id
+      }]
+    });
+    var file = fs.createReadStream(`./uploads/${data.Form_FileName}`);
+    console.log(data.Form_FileName);
+    return file.pipe(res);
+  } catch (error) {
+    return res.status(500).json({
+      msg: error
+    });
+  }
+  
+})
 
 module.exports = router;

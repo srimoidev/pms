@@ -1,6 +1,10 @@
 .DS_Store
 node_modules
 /dist
+server/uploads/*
+
+# exception to the rule
+!server/uploads/.gitkeep 
 
 # local env files
 .env.local

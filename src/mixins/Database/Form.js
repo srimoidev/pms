@@ -19,8 +19,16 @@ export async function AllFormEachType(gID, fID) {
       console.log(ex);
     });
 }
-export async function Form(formTID) {
-  return (await HTTP.get(`form/sent/${formTID}`)).data;
+export async function Form(fID) {
+  return (await HTTP.get(`form/sent/${fID}`)).data;
+}
+export async function FormPDF(fID) {
+  return await HTTP.get(`form/sent/pdf/${fID}`, { responseType: "blob" }).then(res => {
+    const file = new Blob([res.data], {
+      type: "application/pdf"
+    });
+    return URL.createObjectURL(file);
+  });
 }
 export async function Comment(fID) {
   return HTTP.get(`form/comment?formid=${fID}`)

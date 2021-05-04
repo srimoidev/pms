@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!user.pID">
+  <div v-if="!user.User_ProjectID">
     <v-card class="ma-2 elevation-1" tile v-resize="onResize" :height="windowHeight">
       <v-data-table
         :headers="allProjectHeaders"
@@ -146,6 +146,7 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 // import ProjectDataTable from "@/components/ProjectDataTable";
 import ModalContainer from "@/components/ModalContainer";
 // import ProjectDetail from "@/components/ProjectDetail";
@@ -163,7 +164,6 @@ export default {
   },
   data() {
     return {
-      user: {},
       searchText: "",
       loading: true,
       typeFilter: 0,
@@ -198,17 +198,38 @@ export default {
       ]
     };
   },
+  computed: {
+    ...mapGetters({
+      user: "user/UserData",
+      typeID: "user/TypeID",
+      isLoggedIn: "authentication/isLoggedIn"
+    }),
+    filteredItems() {
+      return this.allProject
+        .filter(item => {
+          return !this.typeFilter || item.Project_TypeID == this.typeFilter;
+        })
+        .filter(item => {
+          return !this.statusFilter || item.Project_StatusID == this.statusFilter;
+        });
+    }
+  },
+  beforeMount() {
+    this.loadData(); //จับตอน เปลี่ยน route
+  },
+  watch: {
+    user() {
+      this.loadData(); //จับตอน reload
+    }
+  },
   methods: {
     async loadData() {
-      this.user = JSON.parse(sessionStorage.getItem("user"));
-      this.user.pID = (await this.Project.SelfProject(this.user.User_ID)) || null;
-      if (!this.user.pID) {
+      if (!this.user.User_ProjectID) {
         const type = await this.Project.AllType();
         this.allStatus = await this.Project.AllStatus();
         this.allTeacher = await this.User.UserTeacher();
         this.projectType = type.slice();
         this.allType = type.slice();
-        console.log(this.allType);
         this.projectType.push({
           ProjectType_ID: 0,
           ProjectType_Name: "ทั้งหมด"
@@ -220,11 +241,10 @@ export default {
         this.allProject = await this.Project.GetAll();
       } else {
         let temp = {};
-        temp = await this.Project.GetSelf(this.user.pID);
-        temp.Members = await this.Project.ProjectMember(this.user.pID);
+        temp = await this.Project.GetSelf(this.user.User_ProjectID);
+        temp.Members = await this.Project.ProjectMember(this.user.User_ProjectID);
         // temp.Advisor = await this.Group.GetAdvisor(this.user.pID);
         this.data = temp;
-        console.log(temp);
       }
 
       // this.allProject.map(async item => item.Members = await this.Project.GroupMember(item.Project_ID))
@@ -299,20 +319,6 @@ export default {
     rowStyle() {
       return "tb-row";
     }
-  },
-  computed: {
-    filteredItems() {
-      return this.allProject
-        .filter(item => {
-          return !this.typeFilter || item.Project_TypeID == this.typeFilter;
-        })
-        .filter(item => {
-          return !this.statusFilter || item.Project_StatusID == this.statusFilter;
-        });
-    }
-  },
-  beforeMount() {
-    this.loadData();
   }
 };
 </script>

@@ -14,14 +14,7 @@
             จัดการกลุ่ม
           </v-toolbar-title>
           <v-divider class="mx-4" inset vertical></v-divider>
-          <v-text-field
-            v-model="searchText"
-            append-icon="mdi-magnify"
-            label="Search"
-            single-line
-            hide-details
-            class="mr-10"
-          ></v-text-field>
+          <v-text-field v-model="searchText" append-icon="mdi-magnify" label="Search" single-line hide-details class="mr-10"></v-text-field>
           <v-select
             v-model="typeFilter"
             :items="type"
@@ -56,11 +49,7 @@
         {{ 1 + " / " + item.Project_MaxMember }}
       </template>
       <template v-slot:[`item.Project_TypeID`]="{ item }">
-        <v-chip
-          class=" white--text"
-          :class="`type-${item.Project_TypeID}`"
-          small
-        >
+        <v-chip class=" white--text" :class="`type-${item.Project_TypeID}`" small>
           {{ item.Project_TypeID }}
         </v-chip>
       </template>
@@ -77,27 +66,13 @@
       </template>
     </v-data-table>
     <template>
-      <modal-container
-        :active="proposal_modal"
-        :cancellable="1"
-        @close="hideModal"
-      >
-        <new-topic
-          @close="hideModal"
-          @newProject="add"
-          :data="teacher"
-          :alltype="type"
-        ></new-topic>
+      <modal-container :active="proposal_modal" :cancellable="1" @close="hideModal">
+        <new-topic @close="hideModal" @newProject="add" :data="teacher" :alltype="type"></new-topic>
       </modal-container>
     </template>
     <template>
-      <modal-container
-        :active="joinGroup_modal"
-        :cancellable="1"
-        @close="hideModal"
-      >
-        <join-group @submit="join" @close="hideModal" :data="selectedGroup">
-        </join-group>
+      <modal-container :active="joinGroup_modal" :cancellable="1" @close="hideModal">
+        <join-group @submit="join" @close="hideModal" :data="selectedGroup"> </join-group>
       </modal-container>
     </template>
   </v-card>
@@ -151,7 +126,7 @@ export default {
       proposal_modal: false,
       joinGroup_modal: false,
       teacher_list: [],
-      windowHeight: 0,
+      windowHeight: 0
     };
   },
   computed: {
@@ -161,9 +136,7 @@ export default {
           return !this.typeFilter || item.Project_TypeID == this.typeFilter;
         })
         .filter(item => {
-          return (
-            !this.statusFilter || item.Project_StatusID == this.statusFilter
-          );
+          return !this.statusFilter || item.Project_StatusID == this.statusFilter;
         });
     }
   },
@@ -201,7 +174,7 @@ export default {
       this.selectedGroup = Group;
       this.joinGroup_modal = true;
     }
-  },
+  }
 };
 </script>
 

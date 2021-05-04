@@ -12,17 +12,9 @@
         <v-list class="grey lighten-5">
           <v-list-item v-for="(item, i) in user" :key="i">
             <v-list-item-content>
-              <v-list-item-title
-                v-text="item.name"
-                class="headline"
-              ></v-list-item-title>
-              <v-list-item-subtitle
-                v-text="item.position"
-                class="blue--text text--lighten-2"
-              ></v-list-item-subtitle>
-              <v-header class="pt-5"
-                >Personal Informations<v-divider></v-divider
-              ></v-header>
+              <v-list-item-title v-text="item.name" class="headline"></v-list-item-title>
+              <v-list-item-subtitle v-text="item.position" class="blue--text text--lighten-2"></v-list-item-subtitle>
+              <v-header class="pt-5">Personal Informations<v-divider></v-divider></v-header>
               <v-row>
                 <v-col md="2">
                   <v-list-item-title class="py-5">Phone</v-list-item-title>
@@ -30,22 +22,16 @@
                   <v-list-item-title class="py-5">E-mail</v-list-item-title>
                 </v-col>
                 <v-col md="7">
-                  <v-list-item-title class="py-5"
-                    >061-3300130</v-list-item-title
-                  >
+                  <v-list-item-title class="py-5">061-3300130</v-list-item-title>
                 </v-col>
               </v-row>
-              <v-header class="pt-5"
-                >Education Informations<v-divider></v-divider
-              ></v-header>
+              <v-header class="pt-5">Education Informations<v-divider></v-divider></v-header>
               <v-row>
                 <v-col md="2">
                   <v-list-item-title class="py-5">Course</v-list-item-title>
                 </v-col>
                 <v-col md="7">
-                  <v-list-item-title class="py-5"
-                    >Faculty of Computer Engineering</v-list-item-title
-                  >
+                  <v-list-item-title class="py-5">Faculty of Computer Engineering</v-list-item-title>
                 </v-col>
               </v-row>
             </v-list-item-content>

@@ -22,10 +22,7 @@
               <v-list>
                 <template v-for="item in members">
                   <v-list-item :key="item.id">
-                    <v-list-item-avatar
-                      class="justify-center"
-                      :style="{ background: getColor() }"
-                    >
+                    <v-list-item-avatar class="justify-center" :style="{ background: getColor() }">
                       <span>PK</span>
                     </v-list-item-avatar>
                     <v-list-item-content>
@@ -40,10 +37,7 @@
               <v-list>
                 <template v-for="item in members">
                   <v-list-item :key="item.id">
-                    <v-list-item-avatar
-                      class="justify-center"
-                      :style="{ background: getColor() }"
-                    >
+                    <v-list-item-avatar class="justify-center" :style="{ background: getColor() }">
                       <span>PK</span>
                     </v-list-item-avatar>
                     <v-list-item-content>
@@ -58,10 +52,7 @@
               <v-list>
                 <template v-for="item in instructors">
                   <v-list-item :key="item.id">
-                    <v-list-item-avatar
-                      class="justify-center"
-                      :style="{ background: getColor() }"
-                    >
+                    <v-list-item-avatar class="justify-center" :style="{ background: getColor() }">
                       <span>PK</span>
                     </v-list-item-avatar>
                     <v-list-item-content>
@@ -148,7 +139,7 @@ import BurndownChart from "@/components/BurndownChart";
 // import OverviewActivities from "@/components/OverviewActivities";
 export default {
   components: {
-    BurndownChart,
+    BurndownChart
     // OverviewActivities
   },
   data() {

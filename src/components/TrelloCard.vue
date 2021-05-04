@@ -1,24 +1,12 @@
 <template>
   <v-card class="card" :class="classes" :data-id="item.id">
-    <v-chip
-      class="ma-2 card-chip"
-      v-if="item.labels.length !== 0"
-      :color="item.labels[0].color"
-    ></v-chip>
+    <v-chip class="ma-2 card-chip" v-if="item.labels.length !== 0" :color="item.labels[0].color"></v-chip>
     <div class="icons">
-      <span
-        v-if="isDue"
-        class="icon icon-due has-text-warning"
-        :title="`Item is due on ${item.date}`"
-      >
+      <span v-if="isDue" class="icon icon-due has-text-warning" :title="`Item is due on ${item.date}`">
         <v-icon>{{ "mdi-star" }}</v-icon>
         <i class="fas fa-star"></i>
       </span>
-      <span
-        v-else-if="timestamp"
-        class="icon icon-date"
-        :title="`Item is due on ${item.date}`"
-      >
+      <span v-else-if="timestamp" class="icon icon-date" :title="`Item is due on ${item.date}`">
         <v-icon>{{ "mdi-bell-alert-outline" }}</v-icon>
       </span>
       <span class="icon icon-edit" @click="edit">
