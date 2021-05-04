@@ -22,12 +22,27 @@ router.get("/", async (req, res) => {
     const data = await db.project_advisor.findAll({
       include: [
         {
-          model: db.form_type,
-          as: "Form_Type"
+          model: db.project_info,
+          as: "Advisor_Project",
+          include: [
+            {
+              model: db.project_status,
+              as: "Project_Status"
+            },
+            {
+              model: db.section,
+              as: "Project_Section"
+            },
+            {
+              model: db.project_type,
+              as: "Project_Type"
+            }
+          ]
         }
       ],
       where: whereStr
     });
+    console.log(whereStr);
     return res.json(data);
   } catch (error) {
     return res.status(500).json({
@@ -39,6 +54,26 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
   try {
     const data = await db.project_advisor.findAll({
+      include: [
+        {
+          model: db.project_info,
+          as: "Advisor_Project",
+          include: [
+            {
+              model: db.project_status,
+              as: "Project_Status"
+            },
+            {
+              model: db.section,
+              as: "Project_Section"
+            },
+            {
+              model: db.project_type,
+              as: "Project_Type"
+            }
+          ]
+        }
+      ],
       where: [
         {
           Advisor_ID: req.params.id
