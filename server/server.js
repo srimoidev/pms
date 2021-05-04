@@ -6,23 +6,25 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const app = express();
 const fs = require("fs");
-const uuid = require("uuid").v4
-const path = require("path")
+const uuid = require("uuid").v4;
+const path = require("path");
 const PORT = 3000;
 
 app.use(cors());
 var storage = multer.diskStorage({
   destination: "./uploads/",
-  filename: function (req, file, cb) {
+  filename: function(req, file, cb) {
     const ext = path.extname(file.originalname);
     const originalname = `${uuid()}${ext}`;
     cb(null, originalname);
   }
 });
 
-app.use(multer({
-  storage: storage
-}).any());
+app.use(
+  multer({
+    storage: storage
+  }).any()
+);
 // app.use(
 //   multer({
 //     dest: __dirname + '/uploads/',
@@ -39,9 +41,8 @@ app.use(multer({
 //   }).any()
 // )
 
-
 //static folder for upload file
-app.use(express.static('uploads'))
+app.use(express.static("uploads"));
 
 app.use(bodyParser.json());
 app.use(

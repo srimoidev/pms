@@ -25,8 +25,20 @@ router.get("/", async (req, res) => {
         Project_StatusID: req.query.statusid
       });
     }
+    if (req.query.advisorid) {
+      const data = await db.project_advisor.findAll({
+        include: [
+          {
+            model: db.project_info,
+            as: "Project_Advisors"
+          }
+        ]
+      });
+      return res.json(data);
+    }
     const data = await db.project_info.findAll({
-      include: [{
+      include: [
+        {
           model: db.user_profile,
           as: "Project_Members",
           through: {
@@ -77,7 +89,8 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
   try {
     const data = await db.project_info.findOne({
-      include: [{
+      include: [
+        {
           model: db.user_profile,
           as: "Project_Members",
           through: {
@@ -115,9 +128,11 @@ router.get("/:id", async (req, res) => {
           as: "Project_Progresses"
         }
       ],
-      where: [{
-        Project_ID: req.params.id
-      }]
+      where: [
+        {
+          Project_ID: req.params.id
+        }
+      ]
     });
     return res.json(data);
   } catch (error) {
@@ -192,9 +207,11 @@ router.put("/:id", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   await db.project_info
     .destroy({
-      where: [{
-        Project_ID: req.params.id
-      }]
+      where: [
+        {
+          Project_ID: req.params.id
+        }
+      ]
     })
     .then(num => {
       if (num == 1) {

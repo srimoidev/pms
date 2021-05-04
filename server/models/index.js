@@ -12,25 +12,15 @@ let sequelize;
 if (config.use_env_variable) {
   sequelize = new Sequelize(process.env[config.use_env_variable], config);
 } else {
-  sequelize = new Sequelize(
-    config.database,
-    config.username,
-    config.password,
-    config
-  );
+  sequelize = new Sequelize(config.database, config.username, config.password, config);
 }
 
 fs.readdirSync(__dirname)
   .filter(file => {
-    return (
-      file.indexOf(".") !== 0 && file !== basename && file.slice(-3) === ".js"
-    );
+    return file.indexOf(".") !== 0 && file !== basename && file.slice(-3) === ".js";
   })
   .forEach(file => {
-    const model = require(path.join(__dirname, file))(
-      sequelize,
-      Sequelize.DataTypes
-    );
+    const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
     db[model.name] = model;
   });
 
@@ -58,10 +48,7 @@ db.notification = require("./notification")(sequelize, Sequelize);
 db.notification_status = require("./notification_status")(sequelize, Sequelize);
 db.project_advisor = require("./project_advisor")(sequelize, Sequelize);
 db.project_committee = require("./project_committee")(sequelize, Sequelize);
-db.project_committee_role = require("./project_committee_role")(
-  sequelize,
-  Sequelize
-);
+db.project_committee_role = require("./project_committee_role")(sequelize, Sequelize);
 db.project_info = require("./project_info")(sequelize, Sequelize);
 db.project_member = require("./project_member")(sequelize, Sequelize);
 db.project_progress = require("./project_progress")(sequelize, Sequelize);
@@ -93,11 +80,11 @@ db.project_member.belongsTo(db.project_info, {
 db.form_prerequisite.belongsTo(db.form_type, {
   as: "Pre_FormType",
   foreignKey: "Pre_FormTypeID"
-})
+});
 db.form_prerequisite.belongsTo(db.form_type, {
   as: "Pre_FormReqType",
   foreignKey: "Pre_FormReqTypeID"
-})
+});
 //ProjectType
 db.project_info.belongsTo(db.project_type, {
   as: "Project_Type",
@@ -129,6 +116,7 @@ db.form_sent.belongsTo(db.form_type, {
   as: "Form_Type",
   foreignKey: "Form_TypeID"
 });
+
 //ProjectAdvisor
 db.project_info.belongsToMany(db.user_profile, {
   through: db.project_advisor,
@@ -209,13 +197,18 @@ db.meeting_note.belongsTo(db.meeting, {
 db.deadline.belongsTo(db.form_type, {
   as: "Deadline_FormType",
   foreignKey: "Deadline_FormTypeID"
-})
+});
 db.deadline.belongsTo(db.section, {
   as: "Deadline_Section",
   foreignKey: "Deadline_SectionID"
-})
-db.form_sent.belongsTo(db.project_info,{
+});
+db.form_sent.belongsTo(db.project_info, {
   as: "Form_Project",
   foreignKey: "Form_ProjectID"
-})
+});
+
+db.project_advisor.belongsTo(db.project_info, {
+  as: "Advisor_Project",
+  foreignKey: "Advisor_ProjectID"
+});
 module.exports = db;
