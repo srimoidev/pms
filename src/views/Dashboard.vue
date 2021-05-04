@@ -71,12 +71,12 @@ import { mapGetters } from "vuex";
 const advisorMenu = [
   {
     icon: "mdi-chart-bar",
-    name: "ถาพรวม",
+    name: "ภาพรวม",
     route: "/teacher/overview"
   },
   {
     icon: "mdi-group",
-    name: "จัดการกลุ่ม",
+    name: "โปรเจ็คทั้งหมด",
     route: "/teacher/manage_group"
   },
   {

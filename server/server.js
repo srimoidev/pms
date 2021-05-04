@@ -41,12 +41,6 @@ app.use(
 //   }).any()
 // )
 
-//static folder for upload file
-<<<<<<< HEAD
-app.use(express.static("uploads"));
-=======
-// app.use(express.static('uploads'))
->>>>>>> 7459fe229570fc963975b3ddd9728789a1cfe73b
 
 app.use(bodyParser.json());
 app.use(

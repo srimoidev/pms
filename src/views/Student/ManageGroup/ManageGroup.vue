@@ -51,7 +51,7 @@
           {{ item.Project_Members.length + " / " + item.Project_MaxMember }}
         </template>
         <template v-slot:[`item.Project_TypeID`]="{ item }">
-          <v-chip class=" white--text" :class="`type-${item.Project_TypeID}`" small>
+          <v-chip class=" white--text" :class="`type-${item.Project_TypeID}`" small label>
             {{ allType[item.Project_TypeID - 1].ProjectType_Name }}
           </v-chip>
         </template>

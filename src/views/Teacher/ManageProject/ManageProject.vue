@@ -1,6 +1,6 @@
 <template>
   <v-card v-resize="onResize" tile class="ma-2 elevation-1">
-    <v-data-table :headers="headers" :items="data" :height="windowHeight">
+    <v-data-table :headers="headers" :items="project" :height="windowHeight">
       <template v-slot:[`item.name`]="{ item }">
         <div>
           <router-link class="text-none" to="#">{{ item.name }}</router-link>
@@ -21,6 +21,8 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+
 import GroupStatus from "@/components/GroupStatus";
 export default {
   components: {
@@ -34,33 +36,38 @@ export default {
           text: "Project Name",
           align: "start",
           sortable: false,
-          value: "name"
+          value: "Project_NameTH"
         },
         { text: "Member", value: "members", sortable: false },
-        { text: "Type", value: "types", sortable: false },
+        { text: "Type", value: "Project_TypeID", sortable: false },
         { text: "Status", value: "status" }
       ],
-      data: [
-        {
-          name: "PMS",
-          members: [
-            { id: 0, name: "พลเษฐ์ คำมุง" },
-            { id: 1, name: "bdfdf hbtrh" }
-          ],
-          status: 3
-        },
-        {
-          name: "PTT",
-          members: [
-            { id: 3, name: "csdf tyety" },
-            { id: 4, name: "dfdg jytmtm" }
-          ],
-          status: 5
-        }
-      ]
+      project: []
     };
   },
+  computed: {
+    ...mapGetters({
+      user: "user/UserData",
+      typeID: "user/TypeID",
+      isLoggedIn: "authentication/isLoggedIn"
+    })
+  },
+  watch: {
+    user() {
+      this.loadData();
+    }
+  },
+  beforeMount() {
+    this.loadData();
+  },
   methods: {
+    async loadData() {
+      const temp = await this.Project.GetProjectByAdvisor(this.user.User_ID);
+      console.log(temp);
+
+      temp.map(item => this.project.push(item.Advisor_Project));
+      console.log(this.project);
+    },
     onResize() {
       //header 64px
       //mr-2 8+8 px

@@ -33,12 +33,12 @@
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
-    <v-main style="height:78%;">
+    <v-main style="height:100%;">
       <transition name="fade" mode="out-in">
         <router-view></router-view>
       </transition>
     </v-main>
-    <v-footer absolute class="font-weight-medium footer d-none d-sm-flex">
+    <!-- <v-footer absolute class="font-weight-medium footer d-none d-sm-flex">
       <v-col class="text-center" cols="12">
         <div class="mx-6 d-inline-grid">
           <v-icon>mdi-bookshelf</v-icon>
@@ -56,7 +56,7 @@
           <span>ประเภทฮาร์ดแวร์</span>
         </div>
       </v-col>
-    </v-footer>
+    </v-footer> -->
   </div>
 </template>
 

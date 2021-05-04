@@ -76,6 +76,14 @@ export async function SelfProject(uID) {
     return res?.data[0]?.Member_ProjectID;
   });
 }
+
+export async function GetProjectByAdvisor(uID) {
+  return await HTTP.get(`/project/advisor/?userid=${uID}`).then(res => {
+    console.log(res.data);
+    return res.data;
+  });
+}
+
 //#endregion outbound
 
 //#region inbound
@@ -101,6 +109,7 @@ export async function Leave(uID) {
     //
   });
 }
+
 //#endregion inbound
 
 export async function Form(pID) {

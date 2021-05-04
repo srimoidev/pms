@@ -34,7 +34,7 @@ import Teacher_ManageProject from "../views/Teacher/ManageProject/ManageProject.
 import Teacher_TestReq from "../views/Teacher/Request/TestRequest.vue";
 import Teacher_ApprovementReq from "../views/Teacher/Request/ApprovementRequest.vue";
 import Teacher_ProjectManual from "../views/Teacher/ProjectManual/ProjectManual.vue";
-
+import Teacher_FormPreview from "../views/Teacher/ManageProject/FormPreview.vue";
 //App Environment Configuration
 import App_EnvConfig from "../views/AppEnvironments/AppEnvironment.vue";
 
@@ -221,6 +221,12 @@ const routes = [
         name: "Project Manual",
         component: Teacher_ProjectManual,
         meta: { title: "Project Manual | PMS" }
+      },
+      {
+        path: "form_preview",
+        name: "Form Preview",
+        component: Teacher_FormPreview,
+        meta: { title: "Form Preview | PMS" }
       }
     ]
   },

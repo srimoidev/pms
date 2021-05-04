@@ -1,6 +1,7 @@
 <template>
   <v-card class="ma-2" tile style="height:inherit" v-resize="onResize">
     <v-data-table
+      v-model="selectedList"
       :headers="headers"
       :items="data"
       :loading="loading"
@@ -18,17 +19,23 @@
           <v-divider class="mx-4" inset vertical></v-divider>
           <v-text-field v-model="searchText" append-icon="mdi-magnify" label="Search" single-line hide-details class="mr-2"></v-text-field>
           <v-spacer></v-spacer>
-          <v-btn color="success">อนุมัติ</v-btn>
+          <v-btn class="mr-2" color="success" small @click="approveSelectedList">อนุมัติรายการที่เลือก</v-btn>
+          <v-btn color="error" small @click="rejectSelectedList">ไม่อนุมัติรายการที่เลือก</v-btn>
         </v-toolbar>
       </template>
-      <template v-slot:[`item.Project_FormID`]="{ item }">
+      <!-- <template v-slot:[`item.Project_FormID`]="{ item }">
         <div>
           <router-link class="text-none" to="#">{{ item.Project_FormID }}</router-link>
         </div>
-      </template>
+      </template> -->
       <template v-slot:[`item.Form_StatusID`]="{ item }">
         <div>
           <form-status :status="item.Form_StatusID"></form-status>
+        </div>
+      </template>
+      <template v-slot:[`item.actions`]="{ item }">
+        <div>
+          <v-btn small outlined color="primary" @click="showDetail(item)">รายละเอียด</v-btn>
         </div>
       </template>
     </v-data-table>
@@ -44,6 +51,7 @@ export default {
   data() {
     return {
       windowHeight: 0,
+      searchText: "",
       headers: [
         // { text: "#", value: "no", sortable: true },
         {
@@ -62,9 +70,14 @@ export default {
           text: "สถานะ",
           value: "Form_StatusID",
           sortable: true
+        },
+        {
+          value: "actions",
+          sortable: false
         }
       ],
-      data: []
+      data: [],
+      selectedList: []
     };
   },
   computed: {},
@@ -109,6 +122,30 @@ export default {
       //ma-2 8+8 px
       //table footer 59px
       this.windowHeight = window.innerHeight - 64 - 64 - 16 - 59;
+    },
+    showDetail(val) {
+      console.log(val);
+      this.$router.push(`/teacher/form_preview?d=83`);
+    },
+    approveSelectedList() {
+      if (this.selectedList.length > 0) {
+        alert("c" + this.selectedList.length);
+      } else {
+        this.$swal.fire({
+          icon: "error",
+          text: "คุณไม่ได้เลือกรายการใด ๆ"
+        });
+      }
+    },
+    rejectSelectedList() {
+      if (this.selectedList.length > 0) {
+        alert("c" + this.selectedList.length);
+      } else {
+        this.$swal.fire({
+          icon: "error",
+          text: "คุณไม่ได้เลือกรายการใด ๆ"
+        });
+      }
     }
   }
 };
