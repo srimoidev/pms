@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const db = require("../../../models");
-
+const Op = db.Sequelize.Op;
 router.use("/advisor", require("./advisor"));
 router.use("/committee", require("./committee"));
 router.use("/member", require("./member"));
@@ -24,6 +24,24 @@ router.get("/", async (req, res) => {
       whereStr.push({
         Project_StatusID: req.query.statusid
       });
+    }
+    if (req.query.name) {
+      whereStr.push({
+        // Project_NameEN: { [Op.like]: `%${req.query.name}%` }
+        [Op.or]: [
+          {
+            Project_NameEN: {
+              [Op.like]: `%${req.query.name}%`
+            }
+          },
+          {
+            Project_NameTH: {
+              [Op.like]: `%${req.query.name}%`
+            }
+          }
+        ]
+      });
+      console.log(whereStr);
     }
     if (req.query.advisorid) {
       const data = await db.project_advisor.findAll({
