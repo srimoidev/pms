@@ -7,8 +7,8 @@ export async function UserTeacher() {
     return res.data;
   });
 }
-export async function UserStudent(id) {
-  return HTTP.get(`/userstudent/${id}`).then(res => {
+export async function UserStudent() {
+  return HTTP.get("/user?typeid=1").then(res => {
     return res.data;
   });
 }

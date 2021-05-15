@@ -174,19 +174,39 @@ router.post("/", async (req, res) => {
     });
 });
 
+//สร้างกลุ่ม เพิ่่มอาจารย์ที่ปรึกษา เพิ่มสมาชิก
 router.post("/create", async (req, res) => {
   const transaction = await db.sequelize.transaction();
   try {
-    // await db.project_info.create(req.body.project, {
-    //     transaction: transaction
-    // })
-    await db.project_advisor.create(req.body.advisor, {
+    console.log(req.body);
+    const project = await db.project_info.create(req.body.project, {
       transaction: transaction
     });
-    await db.project_member.create(req.body.member, {
-      transaction: transaction
-    });
+    for (const item of req.body.advisors) {
+      await db.project_advisor.create(
+        {
+          Advisor_ProjectID: project.Project_ID,
+          Advisor_UserID: item,
+          Advisor_RequestStatusID: 1 //1 Wait Approved
+        },
+        {
+          transaction: transaction
+        }
+      );
+    }
+    for (const item of req.body.members) {
+      await db.project_member.create(
+        {
+          Member_UserID: item,
+          Member_ProjectID: project.Project_ID
+        },
+        {
+          transaction: transaction
+        }
+      );
+    }
     await transaction.commit();
+    res.send(project);
   } catch (err) {
     await transaction.rollback();
     res.status(500).send({

@@ -18,6 +18,45 @@
           <ValidationProvider v-slot="{ errors }" name="ชื่อภาษาอังกฤษ" rules="required|engLang">
             <v-text-field v-model="en_name" :error-messages="errors" label="ชื่อภาษาอังกฤษ" outlined dense></v-text-field>
           </ValidationProvider>
+          <ValidationProvider v-slot="{ errors }" name="สมาชิก" :rules="'select_required|maxSelected:' + number">
+            <v-autocomplete
+              :error-messages="errors"
+              v-model="members"
+              :items="students"
+              chips
+              color="blue-grey lighten-2"
+              label="สมาชิก"
+              item-text="User_Firstname"
+              item-value="User_ID"
+              multiple
+              hide-no-data
+              outlined
+              dense
+              item-disabled="disabled"
+              disable-lookup
+            >
+              <template v-slot:selection="students">
+                <v-chip v-bind="students.attrs" :input-value="students.selected" @click="students.select" @click:close="remove(students.item)" small>
+                  <v-avatar left class="d-flex justify-center" color="blue">
+                    <!-- <v-img :src="teacher.item.avatar"></v-img> -->
+                    <v-icon>mdi-account</v-icon>
+                  </v-avatar>
+                  {{ `${students.item.User_Firstname} ${students.item.User_Lastname}` }}
+                </v-chip>
+              </template>
+              <template v-slot:item="students">
+                <v-list-item-avatar color="blue" class="d-flex justify-center">
+                  <v-icon>mdi-account</v-icon>
+                  <!-- <img :src="teacher.item.avatar" /> -->
+                </v-list-item-avatar>
+                <v-list-item-content>
+                  <v-list-item-title :key="students.item.User_ID">{{
+                    `${students.item.User_Firstname} ${students.item.User_Lastname}`
+                  }}</v-list-item-title>
+                </v-list-item-content>
+              </template>
+            </v-autocomplete>
+          </ValidationProvider>
           <v-textarea v-model="detail" outlined rows="3" no-resize label="รายละเอียด"></v-textarea>
           <div class="d-flex">
             <ValidationProvider v-slot="{ errors }" name="จำนวน" rules="required">
@@ -61,11 +100,11 @@
             </ValidationProvider>
           </div>
 
-          <ValidationProvider v-slot="{ errors }" name="อาจารย์ที่ปรึกษา" rules="select_required|advisors:2">
+          <ValidationProvider v-slot="{ errors }" name="อาจารย์ที่ปรึกษา" rules="select_required|maxSelected:2">
             <v-autocomplete
               :error-messages="errors"
-              v-model="selected"
-              :items="teacher"
+              v-model="advisors"
+              :items="teachers"
               chips
               color="blue-grey lighten-2"
               label="อาจารย์ที่ปรึกษา"
@@ -129,8 +168,12 @@ extend("max", {
   ...max,
   message: "{_field_} may not be greater than {length} characters"
 });
-extend("advisors", {
-  message: "{_field_} limit exceeded (2)",
+// extend("memberValidation",{
+//   message: "{_field_} exceeded member count",
+//   validate: function()
+// })
+extend("maxSelected", {
+  message: "{_field_} limit exceeded {length}",
   validate: (value, maxCount) => !!(value.length <= maxCount[0])
 });
 extend("thaiLang", {
@@ -148,9 +191,21 @@ export default {
     ValidationObserver
   },
   props: {
-    teacher: {
+    teachers: {
       type: Array,
       default: () => []
+    },
+    students: {
+      type: Array,
+      default: () => []
+    },
+    section: {
+      type: Array,
+      default: () => []
+    },
+    createUser: {
+      type: Object,
+      default: () => {}
     },
     alltype: {
       type: Array,
@@ -164,9 +219,13 @@ export default {
       detail: "",
       number: 1,
       type: null,
-      selected: [],
+      advisors: [],
+      members: [],
       sections: [{ Section_ID: 1, sec: 1, teacher: "จาร 1 - จาร 2", time_period: "13.00 - 15.00", day: "พุธ" }]
     };
+  },
+  beforeMount() {
+    this.members.push(this.createUser);
   },
   methods: {
     async submit() {
@@ -176,19 +235,30 @@ export default {
       }
     },
     submitForm() {
-      this.$emit("newProject", {
-        Project_NameTH: this.th_name,
-        Project_NameEN: this.en_name,
-        Project_Detail: this.detail,
-        Project_TypeID: this.type,
-        Project_MaxMember: this.number,
-        Project_SectionID: 1,
-        Project_StatusID: 1
-      });
+      this.$emit(
+        "newProject",
+        {
+          Project_NameTH: this.th_name,
+          Project_NameEN: this.en_name,
+          Project_Detail: this.detail,
+          Project_TypeID: this.type,
+          Project_MaxMember: this.number,
+          Project_SectionID: 1,
+          Project_StatusID: 1
+        },
+        this.advisors,
+        this.members
+      );
     },
     remove(item) {
-      const index = this.selected.indexOf(item.name);
-      if (index >= 0) this.selected.splice(index, 1);
+      const index = this.advisors.indexOf(item.name);
+      if (index >= 0) this.advisors.splice(index, 1);
+    },
+    disableItem(item) {
+      if (item.disabled === true) {
+        return true;
+      }
+      return false;
     },
     close() {
       this.th_name = "";
@@ -196,7 +266,7 @@ export default {
       this.detail = "";
       this.type = "";
       this.number = 1;
-      this.selected = [];
+      this.advisors = [];
       this.$refs.observer.reset();
       this.$emit("close");
     }

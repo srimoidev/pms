@@ -24,6 +24,7 @@
           hide-details
         ></v-text-field>
         <div class="d-flex my-2">
+          <span class="text-caption">ผลการค้นหา {{ searchResult.length }} รายการ</span>
           <v-spacer></v-spacer>
           <v-menu offset-y>
             <template v-slot:activator="{ on, attrs }">
@@ -36,25 +37,41 @@
             </v-list>
           </v-menu>
         </div>
-        <v-row no-gutters>
-          <v-col cols="3"></v-col>
+        <v-row>
+          <v-col cols="3">
+            <v-select :items="allType" item-text="ProjectType_Name" item-value="ProjectType_ID" solo dense> </v-select>
+          </v-col>
           <v-col cols="9">
             <div class="overflow-y-auto pr-2" style="max-height: calc(100vh - 180px);">
-              <v-card v-for="item in searchResult" :key="item.Project_ID" class="d-flex mb-2">
-                <div>
-                  <v-card-title>{{ item.Project_NameTH }}</v-card-title>
-                  <v-card-subtitle>
-                    zxczczxc sd fsd sd sd fsd fsd fsd fsdf sd sd sd s fsd fsd sd fsd as dasd asd asd asd asd as asdasd asdasd as dasdasd as dasdas
-                    dasdasd
-                  </v-card-subtitle>
+              <v-card v-for="item in searchResult" :key="item.Project_ID" class="mb-2">
+                <div class="d-flex">
+                  <v-card-title style="width:100%">
+                    <router-link to="/student" class="text-none">{{ `${item.Project_NameTH} (${item.Project_NameEN})` }} </router-link>
+                  </v-card-title>
+                  <div class="mt-5 mx-5">
+                    <v-chip class=" white--text" :class="`type-${item.Project_TypeID}`" small label>
+                      {{ allType[item.Project_TypeID - 1].ProjectType_Name }}
+                    </v-chip>
+                  </div>
                 </div>
-                <!-- <v-spacer></v-spacer> -->
-                <div class="ma-5">
-                  <v-chip class=" white--text" :class="`type-${item.Project_TypeID}`" small label>
-                    {{ allType[item.Project_TypeID - 1].ProjectType_Name }}
-                  </v-chip>
-                  <!-- <v-chip label color="green" class="white--text" small>Hardware</v-chip> -->
-                </div>
+                <v-card-subtitle>
+                  <div style="text-indent:2em">{{ item.Project_Detail }}</div>
+                  <v-divider class="my-2"></v-divider>
+                  <v-row no-gutters>
+                    <v-col cols="8">
+                      <span class="grey--text text--darken-3">สมาชิก</span>
+                      <div v-for="(item, index) in item.Project_Members" :key="item.User_ID" class="ml-4">
+                        {{ index + 1 + ". " + item.User_Firstname + " " + item.User_Lastname }}
+                      </div>
+                    </v-col>
+                    <v-col cols="4">
+                      <span class="grey--text text--darken-3">อาจารย์ที่ปรึกษา</span>
+                      <div v-for="(item, index) in item.Project_Advisors" :key="item.User_ID" class="ml-4">
+                        {{ index + 1 + ". " + item.User_Firstname + " " + item.User_Lastname }}
+                      </div>
+                    </v-col>
+                  </v-row>
+                </v-card-subtitle>
               </v-card>
             </div>
           </v-col>
@@ -83,8 +100,7 @@ export default {
     async submitSearch() {
       this.isSearch = true;
       this.allType = await this.Project.AllType();
-      this.searchResult = await this.Project.GetAll();
-      // alert(this.searchText);
+      this.searchResult = await this.Project.GetAll(this.searchText.trim());
     },
     sort(val) {
       console.log(val);

@@ -2,8 +2,13 @@ import HTTP from "./config";
 
 //#region outbound
 
-export async function GetAll() {
-  return await HTTP.get("/project")
+export async function GetAll(pName = null, pTypeID = null, pSectionID = null) {
+  var searchStr = "?";
+  if (pName != null) searchStr += "name=" + pName;
+  if (pTypeID != null) searchStr += "&typeid=" + pTypeID;
+  if (pSectionID != null) searchStr += "&sectionid=" + pSectionID;
+
+  return await HTTP.get("/project" + searchStr)
     .then(res => {
       return res.data;
     })
@@ -30,7 +35,7 @@ export async function ProjectMember(pID) {
     });
 }
 export async function GetAdvisor(pID) {
-  return await HTTP.get(`/project/${pID}/advisor`)
+  return await HTTP.get(`/project/advisor?projectid=${pID}`)
     .then(res => {
       return res.data;
     })
@@ -88,8 +93,8 @@ export async function GetProjectByAdvisor(uID) {
 
 //#region inbound
 
-export async function New(val) {
-  await HTTP.post("/project", val).catch(() => {
+export async function New(pProject, pAdvisors, pMember) {
+  await HTTP.post("/project/create", { project: pProject, advisors: pAdvisors, members: pMember }).catch(() => {
     console.error("Can't add new group");
   });
 }

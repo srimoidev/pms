@@ -3,6 +3,20 @@
   background: #fafafa !important;
 }
 
+//text ellipsis
+@mixin ellipsis-x {
+  @for $i from 1 through 5 {
+    .ellipsis-#{$i} {
+      display: -webkit-box;
+      -webkit-line-clamp: #{$i};
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+}
+@include ellipsis-x;
+
 //scrollbar
 // ::-webkit-scrollbar {
 //   width: 12px;
@@ -27,4 +41,3 @@
 // ::-webkit-scrollbar-thumb {
 //   color: #666666ff;
 // }
-

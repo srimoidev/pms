@@ -8,7 +8,7 @@
         :item-class="rowStyle"
         :search="searchText"
         loading-text="Loading... Please wait"
-        :height="windowHeight"
+        :height="windowHeight - 64 - 59"
       >
         <template v-slot:top>
           <v-toolbar flat color="white">
@@ -58,6 +58,11 @@
         <template v-slot:[`item.Project_NameTH`]="{ item }">
           {{ `${item.Project_NameTH} (${item.Project_NameEN})` }}
         </template>
+        <template v-slot:[`item.Project_Detail`]="{ item }">
+          <div class="ellipsis-2">
+            {{ item.Project_Detail }}
+          </div>
+        </template>
         <template v-slot:[`item.actions`]="{ item }">
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
@@ -74,7 +79,14 @@
       </v-data-table>
       <template>
         <modal-container :active="proposal_modal" :cancellable="1" @close="hideModal">
-          <new-topic @close="hideModal" @newProject="newProject" :teacher="allTeacher" :alltype="allType"></new-topic>
+          <new-topic
+            @close="hideModal"
+            @newProject="newProject"
+            :teachers="allTeacher"
+            :alltype="allType"
+            :students="allStudent"
+            :createUser="user"
+          ></new-topic>
         </modal-container>
       </template>
       <template>
@@ -91,6 +103,7 @@
           {{ "Manage Group - " + (data.Project_NameTH ? data.Project_NameTH : "") }}
         </v-toolbar-title>
         <v-divider class="mx-4" inset vertical></v-divider>
+        รอการอนุมัติจากอาจารยที่ปรึกษา
         <v-spacer></v-spacer>
         <v-btn class="error white--text" @click="leaveProject">
           <v-icon class="mr-2">mdi-account-cancel-outline</v-icon>
@@ -121,11 +134,12 @@
         <v-divider></v-divider>
         <v-list>
           <template v-for="(item, index) in data.Advisor">
-            <v-list-item :key="item.Advisor_Info.User_ID">
-              <v-list-item-content
+            <v-list-item :key="item.Advisor_ID">
+              {{ item.Advisor_UserID }}
+              <!-- <v-list-item-content
                 ><v-list-item-title>{{ item.Advisor_Info.User_Firstname + " " + item.Advisor_Info.User_Firstname }}</v-list-item-title
                 ><v-list-item-subtitle>asdasdasd</v-list-item-subtitle></v-list-item-content
-              >
+              > -->
             </v-list-item>
             <v-divider v-if="index != ['a', 'b'].length - 1" class="mx-2" :key="item"></v-divider>
           </template>
@@ -186,12 +200,12 @@ export default {
           align: "start",
           sortable: true,
           value: "Project_NameTH",
-          width: 500
+          width: 300
         },
         // { text: "อาจารย์ที่ปรึกษา", value: "GROUP_ADVISOR" },
         { text: "ประเภท", value: "Project_TypeID", sortable: false },
         { text: "สมาชิก", value: "Project_MaxMember", sortable: false },
-        { text: "รายละเอียด", value: "Project_Detail", sortable: false },
+        { text: "รายละเอียด", value: "Project_Detail", sortable: false, width: 300 },
         { text: "ปีการศึกษา", value: "Section_Year" },
         { text: "สถานะ", value: "Project_StatusID" },
         { text: "Action", value: "actions" }
@@ -228,6 +242,8 @@ export default {
         const type = await this.Project.AllType();
         this.allStatus = await this.Project.AllStatus();
         this.allTeacher = await this.User.UserTeacher();
+        this.allStudent = await this.User.UserStudent();
+        // this.allStudent = this.allStudent.filter(item => item.User_ID != this.user.User_ID);
         this.projectType = type.slice();
         this.allType = type.slice();
         this.projectType.push({
@@ -243,17 +259,20 @@ export default {
         let temp = {};
         temp = await this.Project.GetSelf(this.user.User_ProjectID);
         temp.Members = await this.Project.ProjectMember(this.user.User_ProjectID);
-        // temp.Advisor = await this.Group.GetAdvisor(this.user.pID);
+        temp.Advisor = await this.Project.GetAdvisor(this.user.User_ProjectID);
         this.data = temp;
       }
 
       // this.allProject.map(async item => item.Members = await this.Project.GroupMember(item.Project_ID))
       console.log(this.allProject);
+      console.log(this.data);
       this.loading = false;
     },
-    async newProject(val) {
-      await this.Project.New(val).then(() => {
-        this.loadData();
+    async newProject(project, advisors, members) {
+      console.log(advisors, members);
+      await this.Project.New(project, advisors, members).then(() => {
+        // this.loadData();
+        location.reload();
       });
     },
     joinProject(pProject) {
@@ -314,7 +333,7 @@ export default {
       //table header 64px
       //ma-2 8+8 px
       //table footer 59px
-      this.windowHeight = window.innerHeight - 64 - 64 - 16 - 59;
+      this.windowHeight = window.innerHeight - 64 - 16;
     },
     rowStyle() {
       return "tb-row";
