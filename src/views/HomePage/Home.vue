@@ -1,6 +1,6 @@
 <template>
   <div class="home-container">
-    <v-app-bar height="60" color="transparent" elevate-on-scroll>
+    <v-app-bar app height="60" color="transparent" elevate-on-scroll>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" v-if="$vuetify.breakpoint.mdAndDown"></v-app-bar-nav-icon>
       <v-toolbar-title class="logo" v-if="$vuetify.breakpoint.smAndUp">
         <v-avatar>

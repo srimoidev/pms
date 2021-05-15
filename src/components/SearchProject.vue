@@ -39,22 +39,24 @@
         <v-row no-gutters>
           <v-col cols="3"></v-col>
           <v-col cols="9">
-            <v-card v-for="item in searchResult" :key="item.Project_ID" class="d-flex mb-2">
-              <div>
-                <v-card-title>{{ item.Project_NameTH }}</v-card-title>
-                <v-card-subtitle>
-                  zxczczxc sd fsd sd sd fsd fsd fsd fsdf sd sd sd s fsd fsd sd fsd as dasd asd asd asd asd as asdasd asdasd as dasdasd as dasdas
-                  dasdasd
-                </v-card-subtitle>
-              </div>
-              <!-- <v-spacer></v-spacer> -->
-              <div class="ma-5">
-                <v-chip class=" white--text" :class="`type-${item.Project_TypeID}`" small label>
-                  {{ allType[item.Project_TypeID - 1].ProjectType_Name }}
-                </v-chip>
-                <!-- <v-chip label color="green" class="white--text" small>Hardware</v-chip> -->
-              </div>
-            </v-card>
+            <div class="overflow-y-auto pr-2" style="max-height: calc(100vh - 180px);">
+              <v-card v-for="item in searchResult" :key="item.Project_ID" class="d-flex mb-2">
+                <div>
+                  <v-card-title>{{ item.Project_NameTH }}</v-card-title>
+                  <v-card-subtitle>
+                    zxczczxc sd fsd sd sd fsd fsd fsd fsdf sd sd sd s fsd fsd sd fsd as dasd asd asd asd asd as asdasd asdasd as dasdasd as dasdas
+                    dasdasd
+                  </v-card-subtitle>
+                </div>
+                <!-- <v-spacer></v-spacer> -->
+                <div class="ma-5">
+                  <v-chip class=" white--text" :class="`type-${item.Project_TypeID}`" small label>
+                    {{ allType[item.Project_TypeID - 1].ProjectType_Name }}
+                  </v-chip>
+                  <!-- <v-chip label color="green" class="white--text" small>Hardware</v-chip> -->
+                </div>
+              </v-card>
+            </div>
           </v-col>
         </v-row>
       </div>
