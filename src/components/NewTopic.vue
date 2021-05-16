@@ -32,8 +32,6 @@
               hide-no-data
               outlined
               dense
-              item-disabled="disabled"
-              disable-lookup
             >
               <template v-slot:selection="students">
                 <v-chip v-bind="students.attrs" :input-value="students.selected" @click="students.select" @click:close="remove(students.item)" small>
@@ -225,7 +223,7 @@ export default {
     };
   },
   beforeMount() {
-    this.members.push(this.createUser);
+    this.members.push(this.createUser.User_ID);
   },
   methods: {
     async submit() {
@@ -268,6 +266,8 @@ export default {
       this.number = 1;
       this.advisors = [];
       this.$refs.observer.reset();
+      this.members = [];
+      this.members.push(this.createUser.User_ID);
       this.$emit("close");
     }
   }

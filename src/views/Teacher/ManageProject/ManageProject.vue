@@ -62,10 +62,10 @@ export default {
   },
   methods: {
     async loadData() {
-      const temp = await this.Project.GetProjectByAdvisor(this.user.User_ID);
-      console.log(temp);
+      this.project = await this.Project.GetProjectByAdvisor(this.user.User_ID);
+      // console.log(temp);
 
-      temp.map(item => this.project.push(item.Advisor_Project));
+      // temp.map(item => this.project.push(item.Advisor_Project));
       console.log(this.project);
     },
     onResize() {

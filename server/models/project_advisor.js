@@ -6,6 +6,7 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.INTEGER,
         field: "Advisor_ID",
         primaryKey: true,
+        autoIncrement: true
       },
       Advisor_ProjectID: {
         type: Sequelize.INTEGER,
@@ -15,9 +16,9 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.INTEGER,
         field: "Advisor_UserID",
       },
-      Advisor_RequestStatusID: {
-        type: Sequelize.INTEGER,
-        field: "Advisor_RequestStatusID",
+      Advisor_RequestStatus: {
+        type: Sequelize.BOOLEAN,
+        field: "Advisor_RequestStatus",
       },
       Advisor_UpdatedTime: {
         type: Sequelize.DATE,

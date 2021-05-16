@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const db = require("../../../models");
+const Op = db.Sequelize.Op;
 
 router.get("/", async (req, res) => {
   try {
@@ -110,15 +111,35 @@ router.put("/:id", async (req, res) => {
         Advisor_ID: req.params.id
       }
     })
-    .then(num => {
-      if (num == 1) {
-        res.send({
-          message: "Updated successfully!"
-        });
-      } else {
-        res.send({
-          message: `Cann't update, Maybe not found or req.body is empty!`
-        });
+    .then(async () => {
+      const temp = await db.project_advisor.findOne({
+        where: {
+          Advisor_ID: req.params.id
+        }
+      })
+      const isAllConfirm = await db.project_advisor.findAll({
+        where: {
+          Advisor_ProjectID: temp.Advisor_ProjectID,
+          [Op.and]: {
+            Advisor_RequestStatus: 0 
+          }
+        }
+      });
+      return isAllConfirm.length == 0 ? temp.Advisor_ProjectID : null
+    })
+    .then(async result => {
+      console.log(result);
+      if (result) {
+        await db.project_info.update(
+          { isAdvisorsConfirm: 1 }, //set that all teachers confirm to be advisor
+          {
+            // transaction: transaction,
+            where: {
+              Project_ID: result
+            }
+          }
+        );
+        console.log("asdasd");
       }
     })
     .catch(err => {
@@ -127,6 +148,31 @@ router.put("/:id", async (req, res) => {
       });
     });
 });
+
+// .then(num => {
+//   console.log(num);
+//   await db.project_advisor.findAll({
+//     where: {
+//       Advisor_ProjectID: req.params.id
+//     }
+//   }
+
+//   )
+// if (num == 1) {
+//   res.send({
+//     message: "Updated successfully!"
+//   });
+// } else {
+//   res.send({
+//     message: `Cann't update, Maybe not found or req.body is empty!`
+//   });
+// }
+// })
+//     catch(err => {
+//       res.status(500).send({
+//         message: "Error updating!"
+//       });
+// });
 
 // delete
 router.delete("/:id", async (req, res) => {

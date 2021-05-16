@@ -136,6 +136,12 @@ const instructorMenu = [
     name: "คำร้อง",
     children: [
       {
+        icon: "mdi-file-document-edit-outline",
+        name: "ขออนุมัติเป็นที่ปรึกษา",
+        route: "/teacher/adviser_req",
+        req: 2
+      },
+      {
         icon: "mdi-teach",
         name: "ขอสอบ",
         route: "/teacher/test_req",

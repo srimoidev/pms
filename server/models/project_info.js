@@ -11,38 +11,35 @@ module.exports = (sequelize, Sequelize) => {
       Project_NameTH: {
         type: Sequelize.STRING,
         field: "Project_NameTH",
-        primaryKey: true,
       },
       Project_NameEN: {
         type: Sequelize.STRING,
         field: "Project_NameEN",
-        primaryKey: true,
       },
       Project_Detail: {
         type: Sequelize.STRING,
         field: "Project_Detail",
-        primaryKey: true,
       },
       Project_TypeID: {
         type: Sequelize.STRING,
         field: "Project_TypeID",
-        primaryKey: true,
       },
       Project_MaxMember: {
         type: Sequelize.INTEGER,
         field: "Project_MaxMember",
-        primaryKey: true,
       },
       Project_SectionID: {
         type: Sequelize.INTEGER,
         field: "Project_SectionID",
-        primaryKey: true,
       },
       Project_StatusID: {
         type: Sequelize.INTEGER,
         field: "Project_StatusID",
-        primaryKey: true,
       },
+      isAdvisorsConfirm: {
+        type:Sequelize.BOOLEAN,
+        field:"isAdvisorsConfirm"
+      }
     },
     {
       timestamps: false,

@@ -10,6 +10,11 @@ router.use("/type", require("./type"));
 router.get("/", async (req, res) => {
   try {
     var whereStr = [];
+    if (req.query.projectid) {
+      whereStr.push({
+        Project_ID: req.query.projectid
+      });
+    }
     if (req.query.typeid) {
       whereStr.push({
         Project_TypeID: req.query.typeid
@@ -25,9 +30,18 @@ router.get("/", async (req, res) => {
         Project_StatusID: req.query.statusid
       });
     }
+    if (req.query.advisorid && req.query.reqStatus) {
+      whereStr.push({
+        "$Project_Advisors.User_ID$": req.query.advisorid,
+        [Op.and]: [
+          {
+            "$Project_Advisors.Advisors.Advisor_RequestStatus$": req.query.reqStatus
+          }
+        ]
+      });
+    }
     if (req.query.name) {
       whereStr.push({
-        // Project_NameEN: { [Op.like]: `%${req.query.name}%` }
         [Op.or]: [
           {
             Project_NameEN: {
@@ -41,18 +55,6 @@ router.get("/", async (req, res) => {
           }
         ]
       });
-      console.log(whereStr);
-    }
-    if (req.query.advisorid) {
-      const data = await db.project_advisor.findAll({
-        include: [
-          {
-            model: db.project_info,
-            as: "Project_Advisors"
-          }
-        ]
-      });
-      return res.json(data);
     }
     const data = await db.project_info.findAll({
       include: [
@@ -61,21 +63,25 @@ router.get("/", async (req, res) => {
           as: "Project_Members",
           through: {
             attributes: []
-          }
+          },
+          attributes: { exclude: ["User_UserName", "User_Password", "project_member"] }
         },
         {
           model: db.user_profile,
           as: "Project_Advisors",
           through: {
-            attributes: []
-          }
+            as: "Advisors",
+            attributes: { exclude: ["Advisor_ProjectID", "Advisor_UserID", "Advisor_RequestStatus", "Advisor_UpdatedTime"] }
+          },
+          attributes: { exclude: ["User_UserName", "User_Password", "User_StudentID", "User_AcademicYear"] }
         },
         {
           model: db.user_profile,
           as: "Project_Committees",
           through: {
             attributes: []
-          }
+          },
+          attributes: { exclude: ["User_UserName", "User_Password", "User_StudentID", "User_AcademicYear"] }
         },
         {
           model: db.project_status,
@@ -94,7 +100,8 @@ router.get("/", async (req, res) => {
           as: "Project_Progresses"
         }
       ],
-      where: whereStr
+      where: whereStr,
+      attributes: { exclude: ["Project_TypeID", "Project_SectionID", "Project_StatusID"] }
     });
     return res.json(data);
   } catch (error) {
@@ -113,21 +120,25 @@ router.get("/:id", async (req, res) => {
           as: "Project_Members",
           through: {
             attributes: []
-          }
+          },
+          attributes: { exclude: ["User_UserName", "User_Password", "project_member"] }
         },
         {
           model: db.user_profile,
           as: "Project_Advisors",
           through: {
-            attributes: []
-          }
+            as: "Advisors",
+            attributes: { exclude: ["Advisor_ProjectID", "Advisor_UserID", "Advisor_RequestStatus", "Advisor_UpdatedTime"] }
+          },
+          attributes: { exclude: ["User_UserName", "User_Password", "User_StudentID", "User_AcademicYear"] }
         },
         {
           model: db.user_profile,
           as: "Project_Committees",
           through: {
             attributes: []
-          }
+          },
+          attributes: { exclude: ["User_UserName", "User_Password", "User_StudentID", "User_AcademicYear"] }
         },
         {
           model: db.project_status,
@@ -146,11 +157,8 @@ router.get("/:id", async (req, res) => {
           as: "Project_Progresses"
         }
       ],
-      where: [
-        {
-          Project_ID: req.params.id
-        }
-      ]
+      where: {Project_ID:req.params.id},
+      attributes: { exclude: ["Project_TypeID", "Project_SectionID", "Project_StatusID"] }
     });
     return res.json(data);
   } catch (error) {
@@ -195,6 +203,7 @@ router.post("/create", async (req, res) => {
       );
     }
     for (const item of req.body.members) {
+      console.log(item);
       await db.project_member.create(
         {
           Member_UserID: item,

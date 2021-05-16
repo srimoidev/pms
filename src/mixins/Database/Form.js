@@ -1,6 +1,8 @@
 import HTTP from "./config";
 
 //#region outbound
+
+//Form ที่ต้องทำก่อน
 export async function Prerequisite() {
   return HTTP.get("form/prerequisite")
     .then(res => {
@@ -10,6 +12,8 @@ export async function Prerequisite() {
       console.log(ex);
     });
 }
+
+//Form ทั้งหมดแต่ละ CE
 export async function AllFormEachType(gID, fID) {
   return HTTP.get(`form/sent?projectid=${gID}&formtypeid=${fID}`)
     .then(res => {
@@ -19,9 +23,13 @@ export async function AllFormEachType(gID, fID) {
       console.log(ex);
     });
 }
+
+//Form
 export async function Form(fID) {
   return (await HTTP.get(`form/sent/${fID}`)).data;
 }
+
+//blob pdf file
 export async function FormPDF(fID) {
   return await HTTP.get(`form/sent/pdf/${fID}`, { responseType: "blob" }).then(res => {
     const file = new Blob([res.data], {
@@ -30,6 +38,7 @@ export async function FormPDF(fID) {
     return URL.createObjectURL(file);
   });
 }
+//Form comment
 export async function Comment(fID) {
   return HTTP.get(`form/comment?formid=${fID}`)
     .then(res => {
@@ -39,6 +48,7 @@ export async function Comment(fID) {
       console.log(ex);
     });
 }
+//Form type
 export async function Type() {
   return HTTP.get("form/type")
     .then(res => {
@@ -48,9 +58,11 @@ export async function Type() {
       console.log(ex);
     });
 }
+//Form deadline
 export async function Deadline() {
   return (await HTTP.get("form/deadline")).data;
 }
+//Form ล่าสุดของแต่ละ CE
 export async function LatestEachForm(pID) {
   return await (await HTTP.get(`form/sent/${pID}/latest`)).data;
 }

@@ -77,6 +77,7 @@ db.project_member.belongsTo(db.project_info, {
   foreignKey: "Member_ProjectID",
   as: "Project_Info"
 });
+
 db.form_prerequisite.belongsTo(db.form_type, {
   as: "Pre_FormType",
   foreignKey: "Pre_FormTypeID"
@@ -211,4 +212,5 @@ db.project_advisor.belongsTo(db.project_info, {
   as: "Advisor_Project",
   foreignKey: "Advisor_ProjectID"
 });
+
 module.exports = db;

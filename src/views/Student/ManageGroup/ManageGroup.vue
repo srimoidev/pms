@@ -47,24 +47,35 @@
             </v-btn>
           </v-toolbar>
         </template>
-        <template v-slot:[`item.Project_MaxMember`]="{ item }">
-          {{ item.Project_Members.length + " / " + item.Project_MaxMember }}
-        </template>
-        <template v-slot:[`item.Project_TypeID`]="{ item }">
-          <v-chip class=" white--text" :class="`type-${item.Project_TypeID}`" small label>
-            {{ allType[item.Project_TypeID - 1].ProjectType_Name }}
-          </v-chip>
-        </template>
         <template v-slot:[`item.Project_NameTH`]="{ item }">
           {{ `${item.Project_NameTH} (${item.Project_NameEN})` }}
         </template>
-        <template v-slot:[`item.Project_Detail`]="{ item }">
+        <template v-slot:[`item.Project_Type`]="{ item }">
+          <v-chip class=" white--text" :class="`type-${item.Project_Type.ProjectType_ID}`" small label>
+            {{ allType[item.Project_Type.ProjectType_ID - 1].ProjectType_Name }}
+          </v-chip>
+        </template>
+        <template v-slot:[`item.Project_MaxMember`]="{ item }">
+          {{ item.Project_Members.length + " / " + item.Project_MaxMember }}
+        </template>
+        <!-- <template v-slot:[`item.Project_Detail`]="{ item }">
           <div class="ellipsis-2">
             {{ item.Project_Detail }}
           </div>
+        </template> -->
+        <template v-slot:[`item.Project_Advisors`]="{ item }">
+          <div v-for="(advs, index) in item.Project_Advisors" :key="advs.User_ID">
+            {{ index + 1 + ". " + advs.User_Firstname + " " + advs.User_Lastname }}
+          </div>
+        </template>
+        <template v-slot:[`item.Project_Section`]="{ item }">
+          {{ item.Project_Section.Section_Name }}
+        </template>
+        <template v-slot:[`item.Project_Status`]="{ item }">
+          <group-status :status="item.Project_Status.ProjectStatus_ID"></group-status>
         </template>
         <template v-slot:[`item.actions`]="{ item }">
-          <v-tooltip bottom>
+          <v-tooltip v-if="item.Project_Members.length < item.Project_MaxMember" bottom>
             <template v-slot:activator="{ on, attrs }">
               <v-icon v-bind="attrs" v-on="on" class="mr-2" @click="joinProject(item)">
                 mdi-account-arrow-right-outline
@@ -72,9 +83,6 @@
             </template>
             <span>เข้าร่วมกลุ่ม</span>
           </v-tooltip>
-        </template>
-        <template v-slot:[`item.Project_StatusID`]="{ item }">
-          <group-status :status="item.Project_StatusID"></group-status>
         </template>
       </v-data-table>
       <template>
@@ -103,7 +111,7 @@
           {{ "Manage Group - " + (data.Project_NameTH ? data.Project_NameTH : "") }}
         </v-toolbar-title>
         <v-divider class="mx-4" inset vertical></v-divider>
-        รอการอนุมัติจากอาจารยที่ปรึกษา
+        <v-chip v-if="!data.isAdvisorsConfirm" label color="orange" text-color="white" small>รอการรับรองเป็นอาจารยที่ปรึกษา</v-chip>
         <v-spacer></v-spacer>
         <v-btn class="error white--text" @click="leaveProject">
           <v-icon class="mr-2">mdi-account-cancel-outline</v-icon>
@@ -113,47 +121,32 @@
     </v-card>
     <div style="width:30%">
       <v-card class="elevation-1 mb-2" tile>
-        <v-card-text>{{ "Member" }}</v-card-text>
+        <v-card-text>{{ "สมาชิก" }}</v-card-text>
         <v-divider></v-divider>
         <v-list>
-          <template v-for="(item, index) in data.Members">
-            <v-list-item :key="item.Member_Info.User_ID">
+          <template v-for="(item, index) in data.Project_Members">
+            <v-list-item :key="item.User_ID">
               <v-list-item-content>
-                <v-list-item-title>{{ item.Member_Info.User_Firstname + " " + item.Member_Info.User_Lastname }}</v-list-item-title>
-                <v-list-item-subtitle>{{
-                  `รหัส : ${item.Member_Info.User_StudentID} ปีการศึกษา : ${item.Member_Info.User_AcademicYear}`
-                }}</v-list-item-subtitle>
+                <v-list-item-title>{{ item.User_Firstname + " " + item.User_Lastname }}</v-list-item-title>
+                <v-list-item-subtitle>{{ `รหัส : ${item.User_StudentID} ปีการศึกษา : ${item.User_AcademicYear}` }}</v-list-item-subtitle>
               </v-list-item-content>
             </v-list-item>
-            <v-divider v-if="index != data.Members.length - 1" class="mx-2" :key="item"></v-divider>
+            <v-divider v-if="index != data.Project_Members.length - 1" class="mx-2" :key="item"></v-divider>
           </template>
         </v-list>
       </v-card>
       <v-card tile class="elevation-1"
-        ><v-card-text>{{ "Teacher" }}</v-card-text>
+        ><v-card-text v-if="data.isAdvisorsConfirm">{{ "อาจารย์ที่ปรึกษา" }}</v-card-text>
+        <v-card-text v-else>{{ "ว่าที่อาจารย์ที่ปรึกษา" }}</v-card-text>
         <v-divider></v-divider>
         <v-list>
-          <template v-for="(item, index) in data.Advisor">
-            <v-list-item :key="item.Advisor_ID">
-              {{ item.Advisor_UserID }}
-              <!-- <v-list-item-content
-                ><v-list-item-title>{{ item.Advisor_Info.User_Firstname + " " + item.Advisor_Info.User_Firstname }}</v-list-item-title
-                ><v-list-item-subtitle>asdasdasd</v-list-item-subtitle></v-list-item-content
-              > -->
+          <template v-for="(item, index) in data.Project_Advisors">
+            <v-list-item :key="item.User_ID">
+              {{ item.User_Firstname + " " + item.User_Lastname }}
             </v-list-item>
-            <v-divider v-if="index != ['a', 'b'].length - 1" class="mx-2" :key="item"></v-divider>
+            <v-divider v-if="index != data.Project_Advisors.length - 1" class="mx-2" :key="item"></v-divider>
           </template>
         </v-list>
-        <!-- <v-list>
-          <v-list-item>
-            <v-list-item-content>
-              <v-list-item-title>{{
-                data.Teacher_Firstname + " " + data.Teacher_Lastname
-              }}</v-list-item-title>
-              <v-list-item-subtitle>asdadadsadzxc</v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list> -->
       </v-card>
     </div>
   </div>
@@ -202,12 +195,13 @@ export default {
           value: "Project_NameTH",
           width: 300
         },
-        // { text: "อาจารย์ที่ปรึกษา", value: "GROUP_ADVISOR" },
-        { text: "ประเภท", value: "Project_TypeID", sortable: false },
+
+        { text: "ประเภท", value: "Project_Type", sortable: false },
         { text: "สมาชิก", value: "Project_MaxMember", sortable: false },
-        { text: "รายละเอียด", value: "Project_Detail", sortable: false, width: 300 },
-        { text: "ปีการศึกษา", value: "Section_Year" },
-        { text: "สถานะ", value: "Project_StatusID" },
+        { text: "อาจารย์ที่ปรึกษา", value: "Project_Advisors" },
+        // { text: "รายละเอียด", value: "Project_Detail", sortable: false, width: 300 },
+        { text: "Section", value: "Project_Section" },
+        { text: "สถานะ", value: "Project_Status" },
         { text: "Action", value: "actions" }
       ]
     };
@@ -256,15 +250,9 @@ export default {
         });
         this.allProject = await this.Project.GetAll();
       } else {
-        let temp = {};
-        temp = await this.Project.GetSelf(this.user.User_ProjectID);
-        temp.Members = await this.Project.ProjectMember(this.user.User_ProjectID);
-        temp.Advisor = await this.Project.GetAdvisor(this.user.User_ProjectID);
-        this.data = temp;
+        this.data = await this.Project.GetSelf(this.user.User_ProjectID);
+        console.log(this.data);
       }
-
-      // this.allProject.map(async item => item.Members = await this.Project.GroupMember(item.Project_ID))
-      console.log(this.allProject);
       console.log(this.data);
       this.loading = false;
     },

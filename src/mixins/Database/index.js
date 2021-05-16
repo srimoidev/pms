@@ -5,6 +5,7 @@ import * as Notification from "./Notification";
 import * as Project from "./Project";
 import * as Section from "./Section";
 import * as User from "./User";
+import * as Advisor from "./Advisor";
 
 export default {
   install(Vue) {
@@ -15,5 +16,6 @@ export default {
     Vue.prototype.Project = Project;
     Vue.prototype.Section = Section;
     Vue.prototype.User = User;
+    Vue.prototype.Advisor = Advisor;
   }
 };

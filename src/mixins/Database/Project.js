@@ -2,6 +2,7 @@ import HTTP from "./config";
 
 //#region outbound
 
+//โปรเจ็คทั้งหมด
 export async function GetAll(pName = null, pTypeID = null, pSectionID = null) {
   var searchStr = "?";
   if (pName != null) searchStr += "name=" + pName;
@@ -16,8 +17,10 @@ export async function GetAll(pName = null, pTypeID = null, pSectionID = null) {
       console.error("Can't fetch group.");
     });
 }
-export async function GetSelf(pID) {
-  return await HTTP.get(`/project/${pID}`)
+
+//โปรเจ็คกลุ่มตัวเอง
+export async function GetSelf(pUserID) {
+  return await HTTP.get(`/project/${pUserID}`)
     .then(res => {
       return res.data;
     })
@@ -25,6 +28,8 @@ export async function GetSelf(pID) {
       console.error("Can't fetch group.");
     });
 }
+
+//สมาชิกของโปรเจ็ค
 export async function ProjectMember(pID) {
   return await HTTP.get(`/project/member?projectid=${pID}`)
     .then(res => {
@@ -34,6 +39,8 @@ export async function ProjectMember(pID) {
       console.error("Can't fetch group.");
     });
 }
+
+//ที่ปรึกษาของโปรเจ็ค
 export async function GetAdvisor(pID) {
   return await HTTP.get(`/project/advisor?projectid=${pID}`)
     .then(res => {
@@ -43,48 +50,75 @@ export async function GetAdvisor(pID) {
       console.error("Can't fetch group.");
     });
 }
-export async function GetCE(type) {
-  return await HTTP.get(type)
-    .then(res => {
-      return res.data;
-    })
-    .catch(() => {
-      console.error("Can't fetch CE");
-    });
-}
-export async function LatestEachForm(pID) {
-  return await HTTP.get(`/form/group/${pID}/latest`)
-    .then(res => {
-      return res.data;
-    })
-    .catch(() => {
-      console.error("Can't get latest 'form CE' from each type");
-    });
-}
-export async function FormPrerequisite() {
-  return await HTTP.get("/form/prerequisite").then(res => {
-    return res.data;
-  });
-}
+
+//CE
+// export async function GetCE(type) {
+//   return await HTTP.get(type)
+//     .then(res => {
+//       return res.data;
+//     })
+//     .catch(() => {
+//       console.error("Can't fetch CE");
+//     });
+// }
+
+// //form ล่าสุดของแต่ละ form ของแต่ละโปรเจ็ค
+// export async function LatestEachForm(pID) {
+//   return await HTTP.get(`/form/group/${pID}/latest`)
+//     .then(res => {
+//       return res.data;
+//     })
+//     .catch(() => {
+//       console.error("Can't get latest 'form CE' from each type");
+//     });
+// }
+
+//form ที่ต้องทำก่อน
+// export async function FormPrerequisite() {
+//   return await HTTP.get("/form/prerequisite").then(res => {
+//     return res.data;
+//   });
+// }
+
+//ประเภทของโปรเจ็คทั้งหมด
 export async function AllType() {
   return HTTP.get("/project/type").then(res => {
     return res.data;
   });
 }
+
+//สถานะของโปรเจ็คทั้งหมด
 export async function AllStatus() {
   return HTTP.get("/project/status").then(res => {
     return res.data;
   });
 }
+
+//project กลุ่มตัวเอง
 export async function SelfProject(uID) {
   return HTTP.get(`/project/member?userid=${uID}`).then(res => {
     return res?.data[0]?.Member_ProjectID;
   });
 }
 
+//advisor
+export async function Advisor(pProjectID, pUserID) {
+  return HTTP.get(`project/advisor?projectid=${pProjectID}&userid=${pUserID}`).then(res => {
+    return res.data;
+  });
+}
+
+//project ของ แต่ละ advisor
 export async function GetProjectByAdvisor(uID) {
-  return await HTTP.get(`/project/advisor/?userid=${uID}`).then(res => {
+  console.log(uID);
+  return await HTTP.get(`/project?advisorid=${uID}&reqStatus=1`).then(res => {
     console.log(res.data);
+    return res.data;
+  });
+}
+//project รอ advisor รับเป็นที่ปรึกษา
+export async function WaitAdviserConfirmProject(uID) {
+  return await HTTP.get(`/project?advisorid=${uID}&reqStatus=0`).then(res => {
     return res.data;
   });
 }
@@ -115,6 +149,11 @@ export async function Leave(uID) {
   });
 }
 
+export async function ConfirmProjectAdviser(pAdvisorID) {
+  await HTTP.put(`/project/advisor/${pAdvisorID}`, { Advisor_RequestStatus: 1 }).catch(() => {
+    //
+  });
+}
 //#endregion inbound
 
 export async function Form(pID) {

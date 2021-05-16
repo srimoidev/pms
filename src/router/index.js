@@ -35,6 +35,7 @@ import Teacher_TestReq from "../views/Teacher/Request/TestRequest.vue";
 import Teacher_ApprovementReq from "../views/Teacher/Request/ApprovementRequest.vue";
 import Teacher_ProjectManual from "../views/Teacher/ProjectManual/ProjectManual.vue";
 import Teacher_FormPreview from "../views/Teacher/ManageProject/FormPreview.vue";
+import Teacher_AdviserRequest from "../views/Teacher/Request/AdviserRequest.vue";
 //App Environment Configuration
 import App_EnvConfig from "../views/AppEnvironments/AppEnvironment.vue";
 
@@ -203,6 +204,12 @@ const routes = [
         name: "Manage Project",
         component: Teacher_ManageProject,
         meta: { title: "Topic Proposal | PMS" }
+      },
+      {
+        path: "adviser_req",
+        name: "Adviser Request",
+        component: Teacher_AdviserRequest,
+        meta: { title: "Adviser Request | PMS" }
       },
       {
         path: "test_req",
