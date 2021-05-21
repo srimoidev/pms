@@ -3,6 +3,7 @@ const router = require("express").Router();
 router.get("/", (req, res) => {
   res.send("API V3");
 });
+router.use("/app_menus",require("./app"))
 router.use("/form", require("./form"))
 router.use("/document", require("./document"))
 router.use("/meeting", require("./meeting"))

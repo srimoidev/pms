@@ -1,3 +1,4 @@
+import * as App from "./App";
 import * as Document from "./Document";
 import * as Form from "./Form";
 import * as Meeting from "./Meeting";
@@ -9,6 +10,7 @@ import * as Advisor from "./Advisor";
 
 export default {
   install(Vue) {
+    Vue.prototype.App = App;
     Vue.prototype.Document = Document;
     Vue.prototype.Form = Form;
     Vue.prototype.Meeting = Meeting;

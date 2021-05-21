@@ -34,6 +34,8 @@ db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
 // ALLTABLE
+db.app_menus = require("./app_menus")(sequelize, Sequelize);
+db.app_privileges = require("./app_privileges")(sequelize, Sequelize);
 db.deadline = require("./deadline")(sequelize, Sequelize);
 db.document = require("./document")(sequelize, Sequelize);
 db.form_comment = require("./form_comment")(sequelize, Sequelize);
@@ -60,6 +62,14 @@ db.user_profile = require("./user_profile")(sequelize, Sequelize);
 db.user_type = require("./user_type")(sequelize, Sequelize);
 
 // ALLRELATIONSHIP
+
+//app
+// db.app_menus.hasMany(db.app_privileges,{
+//   foreignKey: "MenuID"
+// });
+db.app_privileges.belongsTo(db.app_menus, {
+  foreignKey: "MenuID"
+});
 
 // ProjectMember
 db.project_info.belongsToMany(db.user_profile, {

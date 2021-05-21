@@ -68,151 +68,6 @@ import DashboardProfile from "@/components/DashboardProfile";
 import DashboardNotification from "@/components/DashboardNotification";
 import { mapGetters } from "vuex";
 
-const advisorMenu = [
-  {
-    icon: "mdi-chart-bar",
-    name: "ภาพรวม",
-    route: "/teacher/overview"
-  },
-  {
-    icon: "mdi-group",
-    name: "โปรเจ็คทั้งหมด",
-    route: "/teacher/manage_group"
-  },
-  {
-    icon: "mdi-bookshelf",
-    name: "จัดการโปรเจ็ค",
-    route: "/teacher/manage_project"
-  },
-  {
-    icon: "mdi-chevron-up",
-    "icon-alt": "mdi-chevron-down",
-    name: "คำร้อง",
-    children: [
-      {
-        icon: "mdi-teach",
-        name: "ขอสอบ",
-        route: "/teacher/test_req",
-        req: 4
-      },
-      {
-        icon: "mdi-file-document-edit-outline",
-        name: "ขออนุมัติเอกสาร",
-        route: "/teacher/approvement_req",
-        req: 7
-      }
-    ]
-  },
-  {
-    icon: "mdi-bookshelf",
-    name: "Project Manual",
-    route: "/teacher/project_manual"
-  }
-];
-const instructorMenu = [
-  {
-    icon: "mdi-chart-bar",
-    name: "ถาพรวม",
-    route: "/teacher/overview"
-  },
-  {
-    icon: "mdi-group",
-    name: "จัดการทรัพยากร",
-    route: "/teacher/app_env"
-  },
-  {
-    icon: "mdi-group",
-    name: "จัดการกลุ่ม",
-    route: "/teacher/manage_group"
-  },
-  {
-    icon: "mdi-bookshelf",
-    name: "จัดการโปรเจ็ค",
-    route: "/teacher/manage_project"
-  },
-  {
-    icon: "mdi-chevron-up",
-    "icon-alt": "mdi-chevron-down",
-    name: "คำร้อง",
-    children: [
-      {
-        icon: "mdi-file-document-edit-outline",
-        name: "ขออนุมัติเป็นที่ปรึกษา",
-        route: "/teacher/adviser_req",
-        req: 2
-      },
-      {
-        icon: "mdi-teach",
-        name: "ขอสอบ",
-        route: "/teacher/test_req",
-        req: 4
-      },
-      {
-        icon: "mdi-file-document-edit-outline",
-        name: "ขออนุมัติเอกสาร",
-        route: "/teacher/approvement_req",
-        req: 7
-      }
-    ]
-  },
-  {
-    icon: "mdi-bookshelf",
-    name: "Project Manual",
-    route: "/teacher/project_manual"
-  }
-];
-const studentMenu = [
-  {
-    icon: "mdi-chart-bar",
-    name: "DASHBOARD.NAVIGATION_DRAWER.OVERVIEW",
-    route: "/student/overview"
-  },
-  {
-    icon: "mdi-group",
-    name: "DASHBOARD.NAVIGATION_DRAWER.MANAGE_GROUP",
-    route: "/student/manage_group"
-  },
-  {
-    icon: "mdi-bookshelf",
-    name: "DASHBOARD.NAVIGATION_DRAWER.MANAGE_PROJECT",
-    route: "/student/manage_project"
-  },
-  {
-    icon: "mdi-bell",
-    name: "DASHBOARD.NAVIGATION_DRAWER.APPOINTMENT",
-    route: "/student/appointment"
-  },
-  {
-    icon: "mdi-cogs",
-    name: "DASHBOARD.NAVIGATION_DRAWER.PROGRESSION_RECORD",
-    route: "/student/progression_record"
-  },
-  {
-    icon: "mdi-file-document-multiple-outline",
-    name: "DASHBOARD.NAVIGATION_DRAWER.PROJECT_MANUAL",
-    route: "/student/assocdoc"
-  },
-  {
-    icon: "mdi-chevron-up",
-    "icon-alt": "mdi-chevron-down",
-    name: "DASHBOARD.NAVIGATION_DRAWER.DEVELOPMENT_TOOLS",
-    model: false,
-    children: [
-      { icon: "mdi-github", name: "GitHub", route: "/student/github" },
-      { icon: "mdi-trello", name: "Trello", route: "/student/trello" },
-      {
-        icon: "mdi-folder-google-drive",
-        name: "Google Drive",
-        route: "/student/drive"
-      },
-      {
-        icon: "mdi-calendar-month",
-        name: "Google Calendar",
-        route: "/student/calendar"
-      }
-    ]
-  }
-];
 export default {
   components: {
     DashboardProfile,
@@ -257,7 +112,8 @@ export default {
     twoLine: true,
     avatar: true,
     TestReq: 8,
-    DocAppReq: 7
+    DocAppReq: 7,
+    waitAdvisorsConfirmProject: null
   }),
   computed: {
     ...mapGetters({
@@ -268,45 +124,80 @@ export default {
       return this.menu[3].children.reduce((a, b) => a + (b["req"] || 0), 0);
     }
   },
+  watch: {
+    waitAdvisorsConfirmProject: function() {
+      const menuIdx = this.menu.findIndex(x=>x.id == 40);
+      const subMenuIdx = this.menu[menuIdx].children.findIndex(x=>x.id == 43)
+      console.log(menuIdx,subMenuIdx,this.waitAdvisorsConfirmProject.length > 0);
+      this.menu[menuIdx].children[subMenuIdx].req = this.waitAdvisorsConfirmProject.length > 0 ? this.waitAdvisorsConfirmProject.length : 0;
+    }
+  },
   beforeMount() {
     this.loadData();
   },
   methods: {
-    loadData() {
-      this.$store.dispatch("user/getLoggedInUserData").then(() => {
-        this.initMenu(this.typeID);
+    async loadData() {
+      this.$store.dispatch("user/getLoggedInUserData").then(async () => {
+        this.menu = this.initMenu(await this.App.Menus(this.typeID));
+        this.waitAdvisorsConfirmProject = await this.Project.WaitAdviserConfirmProject(this.user.User_ID);
+        console.log(this.menu);
+        // console.log(this.waitAdvisorsConfirmProject);
       });
-      // console.log(this.user, this.user.User_TypeID);
-      // this.user.pID = (await this.Project.SelfProject(this.user.User_ID)) || null;
-      // console.log(this.user);
-      // localStorage.setItem("user", JSON.stringify(this.user));
-      // if (this.user.User_TypeID == 1) {
-      //   this.user.role = "Student";
-      // } else {
-      //   this.user.role = "Advisor";
-      // }
-      // this.$nextTick(() => {
-      // this.initMenu(this.TypeID);
-      // });
+      // console.log(this.menu, this.user);
+      // if (this.user.User_ID) {
+      //   this.menu = await this.App.Menus(this.user.UserType_ID);
 
-      // if (this.user.pID) {
-      //       this.menu[1].route = "/student/project_details";
-      //     }
+      //   console.log(this.waitAdvisorsConfirmProject);
+      // }
     },
-    initMenu(uTID) {
-      switch (uTID) {
-        case 3:
-          this.menu = advisorMenu;
-          break;
-        case 2:
-          this.menu = instructorMenu;
-          break;
-        case 1:
-          this.menu = studentMenu;
-          break;
-        default:
-          break;
-      }
+    initMenu(data) {
+      var temp = [];
+      //parent
+      data
+        .filter(item => item.app_menu.ParentID == 0)
+        .forEach(element => {
+          var menuObj = {};
+          menuObj.id = element.app_menu.MenuID;
+          menuObj.route = element.Route;
+          menuObj.icon = element.app_menu.Icon;
+          menuObj.name = element.app_menu.MenuName;
+          menuObj["icon-alt"] = element.app_menu.IconAlt;
+          temp.push(menuObj);
+        });
+      //กรองเอา parent node ที่ไม่ใช่ 0
+      const parentNodeID = [...new Set(data.map(x => x.app_menu.ParentID))].filter(y => y != 0);
+      //map children กับ parent
+      parentNodeID.map(async nodeID => {
+        var temp2 = [];
+        const editIdx = temp.findIndex(i => i.id == nodeID);
+        data
+          .filter(item => item.app_menu.ParentID == nodeID)
+          .forEach(element => {
+            var menuObj = {};
+            menuObj.id = element.app_menu.MenuID;
+            menuObj.route = element.Route;
+            menuObj.icon = element.app_menu.Icon;
+            menuObj.name = element.app_menu.MenuName;
+            // switch (menuObj.id) {
+            //   case 41:
+            //     break;
+            //   case 42:
+            //     break;
+            //   case 43:
+            //     menuObj.req = (this.Project.WaitAdviserConfirmProject(this.user.User_ID)).length;
+            //     break;
+            //   default:
+            //     break;
+            // }
+            console.log(menuObj);
+            temp2.push(menuObj);
+            console.log(temp2);
+          });
+        temp[editIdx].children = temp2;
+        temp2 = [];
+      });
+      console.log(temp);
+      return temp;
     },
     changeLang(val) {
       this.$store.commit("lang", val);

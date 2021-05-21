@@ -49,14 +49,20 @@
       <template v-slot:[`item.Project_MaxMember`]="{ item }">
         {{ item.Project_Members.length + " / " + item.Project_MaxMember }}
       </template>
-      <template v-slot:[`item.Project_TypeID`]="{ item }">
-        <v-chip class=" white--text" :class="`type-${item.Project_TypeID}`" small label>
-          {{ allType[item.Project_TypeID - 1].ProjectType_Name }}
+      <template v-slot:[`item.Project_Type`]="{ item }">
+        <v-chip class=" white--text" :class="`type-${item.Project_Type.ProjectType_ID}`" small label>
+          {{ item.Project_Type.ProjectType_Name }}
         </v-chip>
       </template>
       <template v-slot:[`item.Project_NameTH`]="{ item }">
         {{ `${item.Project_NameTH} (${item.Project_NameEN})` }}
       </template>
+      <template v-slot:[`item.Project_Section`]="{ item }">
+          {{ item.Project_Section.Section_Name }}
+        </template>
+      <template v-slot:[`item.Project_Status`]="{ item }">
+          <group-status :status="item.Project_Status.ProjectStatus_ID"></group-status>
+        </template>
       <template v-slot:[`item.actions`]="{ item }">
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
@@ -128,11 +134,11 @@ export default {
           width: 500
         },
         // { text: "อาจารย์ที่ปรึกษา", value: "GROUP_ADVISOR" },
-        { text: "ประเภท", value: "Project_TypeID", sortable: false },
+        { text: "ประเภท", value: "Project_Type", sortable: false },
         { text: "สมาชิก", value: "Project_MaxMember", sortable: false },
-        { text: "รายละเอียด", value: "Project_Detail", sortable: false },
-        { text: "ปีการศึกษา", value: "Section_Year" },
-        { text: "สถานะ", value: "Project_StatusID" },
+        // { text: "รายละเอียด", value: "Project_Detail", sortable: false },
+        { text: "ปีการศึกษา", value: "Project_Section" },
+        { text: "สถานะ", value: "Project_Status" },
         { text: "Action", value: "actions" }
       ]
     };
@@ -177,7 +183,7 @@ export default {
         ProjectStatus_Name: "ทั้งหมด"
       });
       this.allProject = await this.Project.GetAll();
-
+      console.log(this.allProject);
       this.loading = false;
     },
     async newProject(val) {

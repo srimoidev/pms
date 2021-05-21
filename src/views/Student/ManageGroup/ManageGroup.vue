@@ -154,17 +154,13 @@
 
 <script>
 import { mapGetters } from "vuex";
-// import ProjectDataTable from "@/components/ProjectDataTable";
 import ModalContainer from "@/components/ModalContainer";
-// import ProjectDetail from "@/components/ProjectDetail";
 import GroupStatus from "@/components/GroupStatus";
 import NewTopic from "@/components/NewTopic";
 import JoinProject from "@/components/JoinProject";
 export default {
   components: {
-    // ProjectDataTable,
     ModalContainer,
-    // ProjectDetail,
     GroupStatus,
     NewTopic,
     JoinProject
@@ -199,7 +195,6 @@ export default {
         { text: "ประเภท", value: "Project_Type", sortable: false },
         { text: "สมาชิก", value: "Project_MaxMember", sortable: false },
         { text: "อาจารย์ที่ปรึกษา", value: "Project_Advisors" },
-        // { text: "รายละเอียด", value: "Project_Detail", sortable: false, width: 300 },
         { text: "Section", value: "Project_Section" },
         { text: "สถานะ", value: "Project_Status" },
         { text: "Action", value: "actions" }
@@ -215,10 +210,10 @@ export default {
     filteredItems() {
       return this.allProject
         .filter(item => {
-          return !this.typeFilter || item.Project_TypeID == this.typeFilter;
+          return !this.typeFilter || item.Project_Type.ProjectType_ID == this.typeFilter;
         })
         .filter(item => {
-          return !this.statusFilter || item.Project_StatusID == this.statusFilter;
+          return !this.statusFilter || item.Project_Status.ProjectStatus_ID == this.statusFilter;
         });
     }
   },

@@ -17,7 +17,13 @@
 export default {
   components: {},
   data() {
-    return {};
+    return {
+      data: [
+        { id: 1, name: "A", color: "red", visible: false },
+        { id: 2, name: "B", color: "blue", visible: true },
+        { id: 3, name: "C", color: "yellow", visible: true }
+      ]
+    };
   },
   methods: {}
 };

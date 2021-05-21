@@ -242,7 +242,7 @@ export default {
           Project_TypeID: this.type,
           Project_MaxMember: this.number,
           Project_SectionID: 1,
-          Project_StatusID: 1
+          Project_StatusID: 2 //Wait Revisors
         },
         this.advisors,
         this.members
