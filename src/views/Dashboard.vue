@@ -13,7 +13,7 @@
             <template v-slot:activator>
               <v-list-item-content>
                 <v-list-item-title v-t="{ path: item.name }"> </v-list-item-title>
-                <v-badge v-if="index == 3" :content="allRequest" color="red" style="right:20px;top:-3px"></v-badge>
+                <v-badge v-if="index == 3 && allRequest" :content="allRequest" color="red" style="right:20px;top:-3px"></v-badge>
               </v-list-item-content>
             </template>
             <v-list-item style="padding-left:40px" v-for="(child, i) in item.children" :key="i" :to="child.route">
@@ -126,9 +126,8 @@ export default {
   },
   watch: {
     waitAdvisorsConfirmProject: function() {
-      const menuIdx = this.menu.findIndex(x=>x.id == 40);
-      const subMenuIdx = this.menu[menuIdx].children.findIndex(x=>x.id == 43)
-      console.log(menuIdx,subMenuIdx,this.waitAdvisorsConfirmProject.length > 0);
+      const menuIdx = this.menu.findIndex(x => x.id == 40);
+      const subMenuIdx = this.menu[menuIdx].children.findIndex(x => x.id == 43);
       this.menu[menuIdx].children[subMenuIdx].req = this.waitAdvisorsConfirmProject.length > 0 ? this.waitAdvisorsConfirmProject.length : 0;
     }
   },
@@ -139,8 +138,11 @@ export default {
     async loadData() {
       this.$store.dispatch("user/getLoggedInUserData").then(async () => {
         this.menu = this.initMenu(await this.App.Menus(this.typeID));
-        this.waitAdvisorsConfirmProject = await this.Project.WaitAdviserConfirmProject(this.user.User_ID);
-        console.log(this.menu);
+
+        //เป็นอาจารย์
+        if (this.typeID == 2) {
+          this.waitAdvisorsConfirmProject = await this.Project.WaitAdviserConfirmProject(this.user.User_ID);
+        }
         // console.log(this.waitAdvisorsConfirmProject);
       });
       // console.log(this.menu, this.user);
@@ -189,14 +191,11 @@ export default {
             //   default:
             //     break;
             // }
-            console.log(menuObj);
             temp2.push(menuObj);
-            console.log(temp2);
           });
         temp[editIdx].children = temp2;
         temp2 = [];
       });
-      console.log(temp);
       return temp;
     },
     changeLang(val) {

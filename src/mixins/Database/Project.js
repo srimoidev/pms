@@ -118,7 +118,7 @@ export async function GetProjectByAdvisor(uID) {
 }
 //project รอ advisor รับเป็นที่ปรึกษา
 export async function WaitAdviserConfirmProject(uID) {
-  return await HTTP.get(`/project?advisorid=${uID}&reqStatus=0`).then(res => {
+  return await HTTP.get(`/project?advisorid=${uID}`).then(res => {
     return res.data;
   });
 }
@@ -136,8 +136,7 @@ export async function New(pProject, pAdvisors, pMember) {
 export async function Join(pID, uID) {
   await HTTP.post("/project/member", {
     Member_ProjectID: pID,
-    Member_UserID: uID,
-    Member_UpdateTime: Date.now()
+    Member_UserID: uID
   }).catch(() => {
     console.error("Can't Join");
   });

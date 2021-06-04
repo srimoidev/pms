@@ -7,7 +7,7 @@
       :item-class="rowStyle"
       :search="searchText"
       loading-text="Loading... Please wait"
-      :height="windowHeight"
+      :height="windowHeight - 64 - 59"
     >
       <template v-slot:top>
         <v-toolbar flat color="white">
@@ -40,51 +40,67 @@
             style="width:2%"
           ></v-select>
           <v-spacer></v-spacer>
-          <v-btn class="primary white--text" @click="showProposalModal">
+          <v-btn v-if="!user.User_ProjectID" class="primary white--text" @click="showProposalModal">
             <v-icon class="mr-2">mdi-text-box-plus-outline</v-icon>
             เสนอหัวข้อใหม่
           </v-btn>
         </v-toolbar>
       </template>
-      <template v-slot:[`item.Project_MaxMember`]="{ item }">
-        {{ item.Project_Members.length + " / " + item.Project_MaxMember }}
-      </template>
-      <template v-slot:[`item.Project_Type`]="{ item }">
-        <v-chip class=" white--text" :class="`type-${item.Project_Type.ProjectType_ID}`" small label>
-          {{ item.Project_Type.ProjectType_Name }}
-        </v-chip>
-      </template>
       <template v-slot:[`item.Project_NameTH`]="{ item }">
         {{ `${item.Project_NameTH} (${item.Project_NameEN})` }}
       </template>
+      <template v-slot:[`item.Project_Type`]="{ item }">
+        <v-chip class=" white--text" :class="`type-${item.Project_Type.ProjectType_ID}`" small label>
+          {{ allType[item.Project_Type.ProjectType_ID - 1].ProjectType_Name }}
+        </v-chip>
+      </template>
+      <template v-slot:[`item.Project_MaxMember`]="{ item }">
+        {{ item.Project_Members.length + " / " + item.Project_MaxMember }}
+      </template>
       <template v-slot:[`item.Project_Section`]="{ item }">
-          {{ item.Project_Section.Section_Name }}
-        </template>
+        {{ item.Project_Section.Section_Name }}
+      </template>
       <template v-slot:[`item.Project_Status`]="{ item }">
-          <group-status :status="item.Project_Status.ProjectStatus_ID"></group-status>
-        </template>
+        <group-status :status="item.Project_Status.ProjectStatus_ID"></group-status>
+      </template>
       <template v-slot:[`item.actions`]="{ item }">
-        <v-tooltip bottom>
+        <v-tooltip v-if="!user.User_ProjectID" bottom>
           <template v-slot:activator="{ on, attrs }">
-            <v-icon v-bind="attrs" v-on="on" class="mr-2" @click="joinProject(item)">
+            <v-icon v-if="item.Project_Members.length < item.Project_MaxMember" v-bind="attrs" v-on="on" class="mr-2" @click="projectModal(item)">
               mdi-account-arrow-right-outline
             </v-icon>
+            <v-icon v-else v-bind="attrs" v-on="on" class="mr-2" @click="projectModal(item)" size="20">
+              mdi-open-in-new
+            </v-icon>
           </template>
-          <span>เข้าร่วมกลุ่ม</span>
+          <span v-if="item.Project_Members.length < item.Project_MaxMember">เข้าร่วมกลุ่ม</span>
+          <span v-else>ดูรายละเอียด</span>
         </v-tooltip>
-      </template>
-      <template v-slot:[`item.Project_StatusID`]="{ item }">
-        <group-status :status="item.Project_StatusID"></group-status>
+        <v-tooltip v-else bottom>
+          <template v-slot:activator="{ on, attrs }">
+            <v-icon v-bind="attrs" v-on="on" class="mr-2" @click="projectModal(item)" size="20">
+              mdi-open-in-new
+            </v-icon>
+          </template>
+          <span>ดูรายละเอียด</span>
+        </v-tooltip>
       </template>
     </v-data-table>
     <template>
       <modal-container :active="proposal_modal" :cancellable="1" @close="hideModal">
-        <new-topic @close="hideModal" @newProject="newProject" :teacher="allTeacher" :alltype="allType"></new-topic>
+        <new-topic
+          @close="hideModal"
+          @newProject="newProject"
+          :teachers="allTeacher"
+          :alltype="allType"
+          :students="allStudent"
+          :createUser="user"
+        ></new-topic>
       </modal-container>
     </template>
     <template>
-      <modal-container :active="joinGroup_modal" :cancellable="1" @close="hideModal">
-        <join-project @submit="joinProject" @close="hideModal" :data="selectedGroup"> </join-project>
+      <modal-container :active="joinProjectModal" :cancellable="1" @close="hideModal">
+        <project-modal-detail @submit="joinProject" @close="hideModal" :data="selectedProject" :view="isJoinable"> </project-modal-detail>
       </modal-container>
     </template>
   </v-card>
@@ -92,20 +108,16 @@
 
 <script>
 import { mapGetters } from "vuex";
-// import ProjectDataTable from "@/components/ProjectDataTable";
 import ModalContainer from "@/components/ModalContainer";
-// import ProjectDetail from "@/components/ProjectDetail";
 import GroupStatus from "@/components/GroupStatus";
 import NewTopic from "@/components/NewTopic";
-import JoinProject from "@/components/JoinProject";
+import ProjectModalDetail from "@/components/ProjectModalDetail";
 export default {
   components: {
-    // ProjectDataTable,
     ModalContainer,
-    // ProjectDetail,
     GroupStatus,
     NewTopic,
-    JoinProject
+    ProjectModalDetail
   },
   data() {
     return {
@@ -113,17 +125,18 @@ export default {
       loading: true,
       typeFilter: 0,
       proposal_modal: false,
-      joinGroup_modal: false,
+      joinProjectModal: false,
       statusFilter: 0,
-      GroupData: [],
-      selfGroup: {},
       allType: [],
+      selectedProject: {},
       projectType: null,
+      allStudent: [],
       allStatus: [],
       allProject: [],
       allTeacher: [],
       selectedGroup: {},
       windowHeight: 0,
+      isJoinable: true,
       data: {},
       allProjectHeaders: [
         {
@@ -131,13 +144,12 @@ export default {
           align: "start",
           sortable: true,
           value: "Project_NameTH",
-          width: 500
+          width: 300
         },
-        // { text: "อาจารย์ที่ปรึกษา", value: "GROUP_ADVISOR" },
+
         { text: "ประเภท", value: "Project_Type", sortable: false },
         { text: "สมาชิก", value: "Project_MaxMember", sortable: false },
-        // { text: "รายละเอียด", value: "Project_Detail", sortable: false },
-        { text: "ปีการศึกษา", value: "Project_Section" },
+        { text: "Section", value: "Project_Section" },
         { text: "สถานะ", value: "Project_Status" },
         { text: "Action", value: "actions" }
       ]
@@ -152,10 +164,10 @@ export default {
     filteredItems() {
       return this.allProject
         .filter(item => {
-          return !this.typeFilter || item.Project_TypeID == this.typeFilter;
+          return !this.typeFilter || item.Project_Type.ProjectType_ID == this.typeFilter;
         })
         .filter(item => {
-          return !this.statusFilter || item.Project_StatusID == this.statusFilter;
+          return !this.statusFilter || item.Project_Status.ProjectStatus_ID == this.statusFilter;
         });
     }
   },
@@ -172,6 +184,8 @@ export default {
       const type = await this.Project.AllType();
       this.allStatus = await this.Project.AllStatus();
       this.allTeacher = await this.User.UserTeacher();
+      this.allStudent = await this.User.UserStudent();
+      // this.allStudent = this.allStudent.filter(item => item.User_ID != this.user.User_ID);
       this.projectType = type.slice();
       this.allType = type.slice();
       this.projectType.push({
@@ -183,34 +197,31 @@ export default {
         ProjectStatus_Name: "ทั้งหมด"
       });
       this.allProject = await this.Project.GetAll();
-      console.log(this.allProject);
       this.loading = false;
     },
-    async newProject(val) {
-      await this.Project.New(val).then(() => {
-        this.loadData();
+    async newProject(project, advisors, members) {
+      await this.Project.New(project, advisors, members).then(() => {
+        // this.loadData();
+        // location.reload();
+        this.$router.push("/student/project");
       });
     },
-    joinProject(pProject) {
+    projectModal(pProject) {
       console.log(pProject);
-      this.$swal
-        .fire({
-          html: `<div><p>ยืนยันที่จะร่วมกลุ่ม</p></div><div><h2>"${pProject.Project_NameTH} ?"</h2></div>`,
-          text: "You won't be able to revert this! aaaaaaa",
-          icon: "warning",
-          showCancelButton: true,
-          confirmButtonColor: "#3085d6",
-          cancelButtonColor: "#d33",
-          cancelButtonText: "ยกเลิก",
-          confirmButtonText: "ยืนยัน!"
-        })
-        .then(result => {
-          if (result.isConfirmed) {
-            this.Project.Join(pProject.Project_ID, this.user.User_ID).then(() => {
-              location.reload();
-            });
-          }
-        });
+      this.selectedProject = pProject;
+      //ถ้ามีกลุ่มแล้ว หรือ สมาชิกกลุ่มนั้นๆเต็มแล้ว หรือ สถานะ != 1(Draft) และ 2(WaitAdvisor) จะไม่สามารถเข้าร่วมกลุ่มได้
+      if(this.user.User_ProjectID || pProject.Project_Members.length == pProject.Project_MaxMember || ![1,2].includes(pProject.Project_Status.ProjectStatus_ID)){
+        this.isJoinable = true;
+      } else {
+        this.isJoinable = false;
+      }
+      this.joinProjectModal = true;
+    },
+    joinProject(pProjectID) {
+      this.Project.Join(pProjectID, this.user.User_ID).then(() => {
+        // location.reload();
+        this.$router.push("/student/project");
+      });
     },
     leaveProject() {
       this.$swal
@@ -234,7 +245,7 @@ export default {
     },
     hideModal() {
       this.proposal_modal = false;
-      this.joinGroup_modal = false;
+      this.joinProjectModal = false;
     },
     showProposalModal() {
       // this.getAllTeacher();
@@ -242,14 +253,14 @@ export default {
     },
     showJoinGroupModal(Group) {
       this.selectedGroup = Group;
-      this.joinGroup_modal = true;
+      this.joinProjectModal = true;
     },
     onResize() {
       //page header 64px
       //table header 64px
       //ma-2 8+8 px
       //table footer 59px
-      this.windowHeight = window.innerHeight - 64 - 64 - 16 - 59;
+      this.windowHeight = window.innerHeight - 64 - 16;
     },
     rowStyle() {
       return "tb-row";

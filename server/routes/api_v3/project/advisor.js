@@ -19,7 +19,7 @@ router.get("/", async (req, res) => {
       whereStr.push({
         Advisor_RequestStatusID: req.query.statusid
       });
-    }
+    } 
     const data = await db.project_advisor.findAll({
       include: [
         {
@@ -116,22 +116,21 @@ router.put("/:id", async (req, res) => {
         where: {
           Advisor_ID: req.params.id
         }
-      })
+      });
       const isAllConfirm = await db.project_advisor.findAll({
         where: {
           Advisor_ProjectID: temp.Advisor_ProjectID,
           [Op.and]: {
-            Advisor_RequestStatus: 0 
+            Advisor_RequestStatus: 0
           }
         }
       });
-      return isAllConfirm.length == 0 ? temp.Advisor_ProjectID : null
+      return isAllConfirm.length == 0 ? temp.Advisor_ProjectID : null;
     })
     .then(async result => {
-      console.log(result);
       if (result) {
         await db.project_info.update(
-          { isAdvisorsConfirm: 1 }, //set that all teachers confirm to be advisor
+          { Project_StatusID: 3, isAdvisorsConfirm: 1 }, //set that all teachers confirm to be advisor
           {
             // transaction: transaction,
             where: {
@@ -139,12 +138,14 @@ router.put("/:id", async (req, res) => {
             }
           }
         );
-        console.log("asdasd");
       }
+    })
+    .then(() => {
+      res.status(200).send();
     })
     .catch(err => {
       res.status(500).send({
-        message: "Error updating!"
+        message: "Error updating!" + err
       });
     });
 });

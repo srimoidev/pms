@@ -21,15 +21,16 @@ import Student_Appointment from "../views/Student/Appointment/Appointment.vue";
 import Student_Overview from "../views/Student/Overview/Overview.vue";
 import Student_Description from "../views/Student/ProjecDescription/Description.vue";
 import Student_ProjectManual from "../views/Student/ProjectManual/ProjectManual.vue";
-import Student_ManageGroup from "../views/Student/ManageGroup/ManageGroup.vue";
-import Student_ManageProject from "../views/Student/ManageProject/ManageProject.vue";
+import Student_Project from "../views/Student/Project/Project.vue";
+import Student_Documents from "../views/Student/Documents/Documents.vue";
 import Student_ProgressionRecord from "../views/Student/ProgressionRecord/ProgressionRecord.vue";
-import Student_FormCE from "../views/Student/ManageProject/FormCE.vue";
-import Student_FormPreview from "../views/Student/ManageProject/FormPreview.vue";
+import Student_FormCE from "../views/Student/Documents/FormCE.vue";
+import Student_FormPreview from "../views/Student/Documents/FormPreview.vue";
+import Student_AllProject from "../views/Student/AllProject/AllProject.vue"
 
 //teacher pages
 import Teacher_Overview from "../views/Teacher/Overview/Overview.vue";
-import Teacher_ManageGroup from "../views/Teacher/ManageGroup/ManageGroup.vue";
+import Teacher_AllProject from "../views/Teacher/AllProject/AllProject.vue";
 import Teacher_ManageProject from "../views/Teacher/ManageProject/ManageProject.vue";
 import Teacher_TestReq from "../views/Teacher/Request/TestRequest.vue";
 import Teacher_ApprovementReq from "../views/Teacher/Request/ApprovementRequest.vue";
@@ -136,22 +137,22 @@ const routes = [
         meta: { title: "Google Drive | PMS" }
       },
       {
-        path: "assocdoc",
+        path: "project_manual",
         name: "ProjectManual",
         component: Student_ProjectManual,
-        meta: { title: "Associated Documents | PMS" }
+        meta: { title: "Project Manual | PMS" }
       },
       {
-        path: "manage_group",
-        name: "Manage Group",
-        component: Student_ManageGroup,
-        meta: { title: "Topic Proposal | PMS" }
+        path: "project",
+        name: "Project",
+        component: Student_Project,
+        meta: { title: "Project | PMS" }
       },
       {
-        path: "manage_project",
-        name: "Manage Project",
-        component: Student_ManageProject,
-        meta: { title: "Manage Project | PMS" }
+        path: "documents",
+        name: "Documents",
+        component: Student_Documents,
+        meta: { title: "Documents | PMS" }
       },
       {
         path: "progression_record",
@@ -170,6 +171,12 @@ const routes = [
         name: "Form Preview",
         component: Student_FormPreview,
         meta: { title: "Form Preview | PMS" }
+      },
+      {
+        path: "all_project",
+        name: "All Project",
+        component: Student_AllProject,
+        meta: { title: "All Project | PMS" }
       }
     ]
   },
@@ -194,10 +201,10 @@ const routes = [
         meta: { title: "App Environment Configuration | PMS" }
       },
       {
-        path: "manage_group",
-        name: "Manage Group",
-        component: Teacher_ManageGroup,
-        meta: { title: "Manage Group | PMS" }
+        path: "all_project",
+        name: "All Projects",
+        component: Teacher_AllProject,
+        meta: { title: "All Projects | PMS" }
       },
       {
         path: "manage_project",

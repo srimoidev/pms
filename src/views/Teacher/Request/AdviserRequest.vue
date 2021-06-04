@@ -100,12 +100,24 @@ export default {
       this.windowHeight = window.innerHeight - 64 - 64 - 16 - 59;
     },
     async showDetail(project) {
+      //TODO ส่ง UserID กับ array Project_ID ไป
       const advisor = await this.Project.Advisor(project.Project_ID, this.user.User_ID);
-      await this.Project.ConfirmProjectAdviser(advisor[0].Advisor_ID);
+      console.log(advisor);
+      await this.Project.ConfirmProjectAdviser(advisor[0].Advisor_ID).then(() => {
+        this.loadData();
+        console.log(this.data);
+      });
       this.loadData();
+      console.log(this.data);
     },
     approveSelectedList() {
       if (this.selectedList.length > 0) {
+        this.selectedList.forEach(item => {
+          console.log(item);
+          this.showDetail(item).then(() => {
+            this.loadData();
+          });
+        });
         alert("c" + this.selectedList.length);
       } else {
         this.$swal.fire({

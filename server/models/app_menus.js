@@ -11,6 +11,10 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.INTEGER,
         field: "ParentID"
       },
+      Sequence:{
+        type: Sequelize.INTEGER,
+        field: "Sequence"
+      },
       MenuName: {
         type: Sequelize.STRING,
         field: "MenuName"

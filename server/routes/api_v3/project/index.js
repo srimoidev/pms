@@ -30,12 +30,12 @@ router.get("/", async (req, res) => {
         Project_StatusID: req.query.statusid
       });
     }
-    if (req.query.advisorid && req.query.reqStatus) {
+    if (req.query.advisorid) {
       whereStr.push({
         "$Project_Advisors.User_ID$": req.query.advisorid,
         [Op.and]: [
           {
-            "$Project_Advisors.Advisors.Advisor_RequestStatus$": req.query.reqStatus
+            "$Project_Advisors.Advisors.Advisor_RequestStatus$": req.query.reqStatus ? req.query.reqStatus : null
           }
         ]
       });
@@ -101,7 +101,8 @@ router.get("/", async (req, res) => {
         }
       ],
       where: whereStr,
-      attributes: { exclude: ["Project_TypeID", "Project_SectionID", "Project_StatusID"] }
+      attributes: { exclude: ["Project_TypeID", "Project_SectionID", "Project_StatusID"] },
+      //TODO order ตาม กลุ่มที่ยังไม่เต็ม และ ตาม create by
     });
     return res.json(data);
   } catch (error) {
@@ -195,7 +196,7 @@ router.post("/create", async (req, res) => {
         {
           Advisor_ProjectID: project.Project_ID,
           Advisor_UserID: item,
-          Advisor_RequestStatusID: 1 //1 Wait Approved
+          // Advisor_RequestStatusID: 1 //1 Wait Approved
         },
         {
           transaction: transaction

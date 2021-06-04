@@ -208,6 +208,10 @@ export default {
     alltype: {
       type: Array,
       default: () => []
+    },
+    teacher: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -223,7 +227,11 @@ export default {
     };
   },
   beforeMount() {
-    this.members.push(this.createUser.User_ID);
+    if (this.teacher) {
+      this.advisors.push(this.createUser.User_ID);
+    } else {
+      this.members.push(this.createUser.User_ID);
+    }
   },
   methods: {
     async submit() {
@@ -267,7 +275,11 @@ export default {
       this.advisors = [];
       this.$refs.observer.reset();
       this.members = [];
-      this.members.push(this.createUser.User_ID);
+      if (this.teacher) {
+        this.advisors.push(this.createUser.User_ID);
+      } else {
+        this.members.push(this.createUser.User_ID);
+      }
       this.$emit("close");
     }
   }

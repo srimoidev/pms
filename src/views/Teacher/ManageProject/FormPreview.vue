@@ -47,7 +47,7 @@
           <div class="ml-2 font-weight-bold" style="font-size:28px">Comment</div>
           <v-spacer></v-spacer>
           <v-btn icon @click="cancelComment" color="blue" class="mr-2">
-            <v-icon>mdi-file-document-multiple-outline</v-icon>
+            <v-icon>mdi-sticker-plus-outline</v-icon>
           </v-btn>
         </div>
         <div v-if="newComment" class="ma-2">
@@ -56,7 +56,7 @@
             counter
             class="ma-2"
             outlined
-            rows="2"
+            rows="3"
             auto-grow
             label="Add a comment"
             background-color="amber lighten-5"

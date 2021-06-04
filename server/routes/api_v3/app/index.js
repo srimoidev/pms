@@ -1,4 +1,5 @@
 const router = require("express").Router();
+const { sequelize } = require("../../../models");
 const db = require("../../../models");
 
 // read
@@ -6,9 +7,9 @@ router.get("/", async (req, res) => {
   await db.app_privileges
     .findAll({
       include: [{ model: db.app_menus }],
-      attributes: { exclude: ["UserTypeID", "MenuID"] }
-      ,
-      where: { UserTypeID: req.query.usertype }
+      attributes: { exclude: ["UserTypeID", "MenuID"] },
+      where: { UserTypeID: req.query.usertype },
+      order: [[db.app_menus, "Sequence"]]
     })
     .then(data => res.json(data))
     .catch(err =>

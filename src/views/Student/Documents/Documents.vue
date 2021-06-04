@@ -70,7 +70,7 @@
     <div v-else class="text-center" style="height:inherit">
       <div style="padding-top:19%">
         <v-icon size="128">mdi-alert-circle-outline</v-icon>
-        <p>โปรดไปที่เมนู "จัดการกลุ่ม" เพื่อเข้าร่วมกลุ่มก่อนจัดการโปรเจ็ค</p>
+        <p>โปรดไปที่เมนู "โปรเจ็คทั้งหมด" เพื่อสร้างกลุ่มใหม่หรือเข้าร่วมกลุ่มก่อนจัดการโปรเจ็ค</p>
       </div>
     </div>
   </div>
