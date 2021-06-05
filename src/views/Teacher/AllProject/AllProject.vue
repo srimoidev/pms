@@ -58,11 +58,11 @@
         {{ `${item.Project_NameTH} (${item.Project_NameEN})` }}
       </template>
       <template v-slot:[`item.Project_Section`]="{ item }">
-          {{ item.Project_Section.Section_Name }}
-        </template>
+        {{ item.Project_Section.Section_Name }}
+      </template>
       <template v-slot:[`item.Project_Status`]="{ item }">
-          <group-status :status="item.Project_Status.ProjectStatus_ID"></group-status>
-        </template>
+        <group-status :status="item.Project_Status.ProjectStatus_ID"></group-status>
+      </template>
       <template v-slot:[`item.actions`]="{ item }">
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
@@ -80,19 +80,19 @@
     <template>
       <modal-container :active="proposal_modal" :cancellable="1" @close="hideModal">
         <new-topic
-            @close="hideModal"
-            @newProject="newProject"
-            :teachers="allTeacher"
-            :alltype="allType"
-            :students="allStudent"
-            :createUser="user"
-            teacher
-          ></new-topic>
+          @close="hideModal"
+          @newProject="newProject"
+          :teachers="allTeacher"
+          :alltype="allType"
+          :students="allStudent"
+          :createUser="user"
+          teacher
+        ></new-topic>
       </modal-container>
     </template>
     <template>
-      <modal-container :active="joinProjectModal" :cancellable="1" @close="joinProjectModal = !joinProjectModal">
-        <project-modal-detail @submit="joinProject" @close="hideModal" :data="selectedProject" view> </project-modal-detail>
+      <modal-container :active="detailModal" :cancellable="1">
+        <project-modal-detail @close="detailModal = !detailModal" :data="selectedProject"> </project-modal-detail>
       </modal-container>
     </template>
   </v-card>
@@ -109,7 +109,7 @@ export default {
     ProjectModalDetail,
     ModalContainer,
     GroupStatus,
-    NewTopic,
+    NewTopic
   },
   data() {
     return {
@@ -117,7 +117,7 @@ export default {
       loading: true,
       typeFilter: 0,
       proposal_modal: false,
-      joinProjectModal: false,
+      detailModal: false,
       statusFilter: 0,
       GroupData: [],
       selfGroup: {},
@@ -126,7 +126,7 @@ export default {
       allStatus: [],
       allProject: [],
       allTeacher: [],
-      allStudent:[],
+      allStudent: [],
       selectedProject: {},
       windowHeight: 0,
       data: {},
@@ -191,18 +191,19 @@ export default {
       this.allProject = await this.Project.GetAll();
       this.loading = false;
     },
-    async newProject(val) {
-      await this.Project.New(val).then(() => {
+    async newProject(project, advisors, members) {
+      project.createBy = this.user.User_ID;
+      await this.Project.New(project, advisors, members).then(() => {
         this.loadData();
       });
     },
     projectModal(pProject) {
       this.selectedProject = pProject;
-      this.joinProjectModal = true;
+      this.detailModal = true;
     },
     hideModal() {
       this.proposal_modal = false;
-      this.joinProjectModal = false;
+      this.detailModal = false;
     },
     showProposalModal() {
       // this.getAllTeacher();
@@ -226,18 +227,6 @@ export default {
 };
 </script>
 <style scoped>
-/* Hardware */
-.type-1 {
-  background-color: #69f0ae !important;
-}
-/* Software */
-.type-2 {
-  background-color: #ffd54f !important;
-}
-/* Sofware and Hardware */
-.type-3 {
-  background-color: #b388ff !important;
-}
 .tb-row {
   height: calc(100% / 20);
 }

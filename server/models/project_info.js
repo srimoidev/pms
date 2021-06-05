@@ -39,7 +39,23 @@ module.exports = (sequelize, Sequelize) => {
       isAdvisorsConfirm: {
         type:Sequelize.BOOLEAN,
         field:"isAdvisorsConfirm"
-      }
+      },
+      createBy: {
+        type:Sequelize.INTEGER,
+        field:"createBy"
+      },
+      createTime: {
+        type:Sequelize.DATE,
+        field:"createTime"
+      },
+      updateBy: {
+        type:Sequelize.INTEGER,
+        field:"updateBy"
+      },
+      updateTime: {
+        type:Sequelize.DATE,
+        field:"updateTime"
+      },
     },
     {
       timestamps: false,

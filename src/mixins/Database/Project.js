@@ -118,7 +118,7 @@ export async function GetProjectByAdvisor(uID) {
 }
 //project รอ advisor รับเป็นที่ปรึกษา
 export async function WaitAdviserConfirmProject(uID) {
-  return await HTTP.get(`/project?advisorid=${uID}`).then(res => {
+  return await HTTP.get(`/project?advisorid=${uID}&statusid=2`).then(res => {
     return res.data;
   });
 }
@@ -142,14 +142,14 @@ export async function Join(pID, uID) {
   });
 }
 
-export async function Leave(uID) {
-  await HTTP.delete(`/project/member?userid=${uID}`).catch(() => {
+export async function Leave(pID,uID) {
+  await HTTP.delete(`/project/member?projectid=${pID}&userid=${uID}`).catch(() => {
     //
   });
 }
 
-export async function ConfirmProjectAdviser(pAdvisorID) {
-  await HTTP.put(`/project/advisor/${pAdvisorID}`, { Advisor_RequestStatus: 1 }).catch(() => {
+export async function ConfirmOrRejectProject(pStatus,pAdvisorID) {
+  await HTTP.put(`/project/advisor/${pAdvisorID}`, { Advisor_RequestStatus: pStatus }).catch(() => {
     //
   });
 }

@@ -66,7 +66,13 @@
       <template v-slot:[`item.actions`]="{ item }">
         <v-tooltip v-if="!user.User_ProjectID" bottom>
           <template v-slot:activator="{ on, attrs }">
-            <v-icon v-if="item.Project_Members.length < item.Project_MaxMember" v-bind="attrs" v-on="on" class="mr-2" @click="projectModal(item)">
+            <v-icon
+              v-if="item.Project_Members.length < item.Project_MaxMember && [1, 2].includes(item.Project_Status.ProjectStatus_ID)"
+              v-bind="attrs"
+              v-on="on"
+              class="mr-2"
+              @click="projectModal(item)"
+            >
               mdi-account-arrow-right-outline
             </v-icon>
             <v-icon v-else v-bind="attrs" v-on="on" class="mr-2" @click="projectModal(item)" size="20">
@@ -100,7 +106,7 @@
     </template>
     <template>
       <modal-container :active="joinProjectModal" :cancellable="1" @close="hideModal">
-        <project-modal-detail @submit="joinProject" @close="hideModal" :data="selectedProject" :view="isJoinable"> </project-modal-detail>
+        <project-modal-detail @submit="joinProject" @close="hideModal" :data="selectedProject" :join="isJoinable"> </project-modal-detail>
       </modal-container>
     </template>
   </v-card>
@@ -175,31 +181,34 @@ export default {
     this.loadData(); //จับตอน เปลี่ยน route
   },
   watch: {
-    user() {
-      this.loadData(); //จับตอน reload
-    }
+    // user() {
+    //   this.loadData(); //จับตอน reload
+    // }
   },
   methods: {
     async loadData() {
-      const type = await this.Project.AllType();
-      this.allStatus = await this.Project.AllStatus();
-      this.allTeacher = await this.User.UserTeacher();
-      this.allStudent = await this.User.UserStudent();
-      // this.allStudent = this.allStudent.filter(item => item.User_ID != this.user.User_ID);
-      this.projectType = type.slice();
-      this.allType = type.slice();
-      this.projectType.push({
-        ProjectType_ID: 0,
-        ProjectType_Name: "ทั้งหมด"
+      this.$store.dispatch("user/getLoggedInUserData").then(async () => {
+        const type = await this.Project.AllType();
+        this.allStatus = await this.Project.AllStatus();
+        this.allTeacher = await this.User.UserTeacher();
+        this.allStudent = await this.User.UserStudent();
+        // this.allStudent = this.allStudent.filter(item => item.User_ID != this.user.User_ID);
+        this.projectType = type.slice();
+        this.allType = type.slice();
+        this.projectType.push({
+          ProjectType_ID: 0,
+          ProjectType_Name: "ทั้งหมด"
+        });
+        this.allStatus.push({
+          ProjectStatus_ID: 0,
+          ProjectStatus_Name: "ทั้งหมด"
+        });
+        this.allProject = await this.Project.GetAll();
+        this.loading = false;
       });
-      this.allStatus.push({
-        ProjectStatus_ID: 0,
-        ProjectStatus_Name: "ทั้งหมด"
-      });
-      this.allProject = await this.Project.GetAll();
-      this.loading = false;
     },
     async newProject(project, advisors, members) {
+      project.createBy = this.user.User_ID;
       await this.Project.New(project, advisors, members).then(() => {
         // this.loadData();
         // location.reload();
@@ -207,13 +216,16 @@ export default {
       });
     },
     projectModal(pProject) {
-      console.log(pProject);
       this.selectedProject = pProject;
-      //ถ้ามีกลุ่มแล้ว หรือ สมาชิกกลุ่มนั้นๆเต็มแล้ว หรือ สถานะ != 1(Draft) และ 2(WaitAdvisor) จะไม่สามารถเข้าร่วมกลุ่มได้
-      if(this.user.User_ProjectID || pProject.Project_Members.length == pProject.Project_MaxMember || ![1,2].includes(pProject.Project_Status.ProjectStatus_ID)){
-        this.isJoinable = true;
-      } else {
+      //ถ้ามีกลุ่มแล้ว หรือ สมาชิกกลุ่มนั้นๆเต็มแล้ว หรือ สถานะ != 1(Draft) จะไม่สามารถเข้าร่วมกลุ่มได้
+      if (
+        !!this.user.User_ProjectID ||
+        pProject.Project_Members.length == pProject.Project_MaxMember ||
+        pProject.Project_Status.ProjectStatus_ID != 1
+      ) {
         this.isJoinable = false;
+      } else {
+        this.isJoinable = true;
       }
       this.joinProjectModal = true;
     },
@@ -269,18 +281,6 @@ export default {
 };
 </script>
 <style scoped>
-/* Hardware */
-.type-1 {
-  background-color: #69f0ae !important;
-}
-/* Software */
-.type-2 {
-  background-color: #ffd54f !important;
-}
-/* Sofware and Hardware */
-.type-3 {
-  background-color: #b388ff !important;
-}
 .tb-row {
   height: calc(100% / 20);
 }

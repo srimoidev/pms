@@ -17,6 +17,20 @@
 }
 @include ellipsis-x;
 
+/* Hardware */
+.type-1 {
+  background-color: #69f0ae !important;
+}
+/* Software */
+.type-2 {
+  background-color: #ffd54f !important;
+}
+/* Sofware and Hardware */
+.type-3 {
+  background-color: #b388ff !important;
+}
+
+
 //scrollbar
 // ::-webkit-scrollbar {
 //   width: 12px;

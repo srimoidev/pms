@@ -57,7 +57,21 @@ router.get("/:id", async (req, res) => {
 router.post("/", async (req, res) => {
   await db.project_member
     .create(req.body)
-    .then(data => {
+    .then(async data => {
+      const members = await db.project_member.findAndCountAll({
+        where: { Member_ProjectID: req.body.Member_ProjectID }
+      });
+      const project = await db.project_info.findOne({
+        where: { Project_ID: req.body.Member_ProjectID }
+      });
+      const createBy = await db.user_profile.findOne({ where: { User_ID: project.createBy } });
+      if (members.count == project.Project_MaxMember) {
+        /***อัพเดต Project_StatusID ถ้า Member เข้าร่วมกลุ่มครบตามจำนวน
+         * เป็น 2 (Wait Advisor เมื่อนักศึกษาเป็นคนสร้างกลุ่ม)
+         * เป็น 3 (Inprogress) เมื่ออาจารย์เป็นคนสร้างกลุ่ม
+         ***/
+        db.project_info.update({ Project_StatusID: createBy.User_TypeID == 1 ? 2 : 3 }, { where: { Project_ID: req.body.Member_ProjectID } });
+      }
       res.send(data);
     })
     .catch(err => {
@@ -75,7 +89,7 @@ router.put("/:id", async (req, res) => {
         Member_ID: req.params.id
       }
     })
-    .then(num => {
+    .then(async num => {
       if (num == 1) {
         res.send({
           message: "Updated successfully!"
@@ -110,6 +124,18 @@ router.delete("/", async (req, res) => {
         where: whereStr
       })
       .then(num => {
+        db.project_info
+          .findOne({
+            where: {
+              Project_ID: req.query.projectid
+            }
+          })
+          .then(res => {
+            console.log(res.Project_StatusID);
+            if (res.Project_StatusID == 2) {
+              db.project_info.update({ Project_StatusID: 1 }, { where: { Project_ID: req.query.projectid } }); //เปลี่ยนกลับเป็น Draft ถ้า Project Status เป็น 2
+            }
+          });
         if (num == 1) {
           res.send({
             message: "Deleted successfully!"

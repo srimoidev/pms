@@ -103,7 +103,7 @@ export default {
         })
         .then(result => {
           if (result.isConfirmed) {
-            this.Project.Leave(this.user.User_ID);
+            this.Project.Leave(this.user.User_ProjectID,this.user.User_ID);
             this.$router.push("/student/all_project");
           }
         });
@@ -119,19 +119,4 @@ export default {
 };
 </script>
 <style scoped>
-/* Hardware */
-.type-1 {
-  background-color: #69f0ae !important;
-}
-/* Software */
-.type-2 {
-  background-color: #ffd54f !important;
-}
-/* Sofware and Hardware */
-.type-3 {
-  background-color: #b388ff !important;
-}
-.tb-row {
-  height: calc(100% / 20);
-}
 </style>

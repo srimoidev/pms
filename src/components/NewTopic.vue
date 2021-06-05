@@ -18,7 +18,7 @@
           <ValidationProvider v-slot="{ errors }" name="ชื่อภาษาอังกฤษ" rules="required|engLang">
             <v-text-field v-model="en_name" :error-messages="errors" label="ชื่อภาษาอังกฤษ" outlined dense></v-text-field>
           </ValidationProvider>
-          <ValidationProvider v-slot="{ errors }" name="สมาชิก" :rules="'select_required|maxSelected:' + number">
+          <ValidationProvider v-slot="{ errors }" name="สมาชิก" :rules="memberRules">
             <v-autocomplete
               :error-messages="errors"
               v-model="members"
@@ -77,7 +77,7 @@
             </ValidationProvider>
             <ValidationProvider v-slot="{ errors }" name="Section" rules="select_required">
               <v-select
-                v-model="section"
+                v-model="selectedSection"
                 :items="sections"
                 label="Section"
                 item-text="sec"
@@ -197,10 +197,10 @@ export default {
       type: Array,
       default: () => []
     },
-    section: {
-      type: Array,
-      default: () => []
-    },
+    // section: {
+    //   type: Array,
+    //   default: () => []
+    // },
     createUser: {
       type: Object,
       default: () => {}
@@ -216,15 +216,22 @@ export default {
   },
   data() {
     return {
-      th_name: "",
-      en_name: "",
-      detail: "",
+      th_name: "ระบบบริหารและจัดการโปรเจ็ค",
+      en_name: "Project Management System",
+      selectedSection:{},
+      detail:
+        "เราคงเคยพบว่า เมื่อทำอะไรไม่ได้วางแผนหรือมองการณ์ไกล ถึงเวลาเลยรับมือไม่ได้ มันก็เสียหาย แต่บางที ทั้งตั้งใจ และวางแผนเอาไว้ดิบดีก็มีอะไรมาทำให้พังไม่เป็นท่า อุตส่าห์ลงทุนอะไรไปมากมาย แล้วเราคาดเดาอะไรได้บ้าง!?",
       number: 1,
       type: null,
       advisors: [],
       members: [],
       sections: [{ Section_ID: 1, sec: 1, teacher: "จาร 1 - จาร 2", time_period: "13.00 - 15.00", day: "พุธ" }]
     };
+  },
+  computed: {
+    memberRules() {
+      return !this.teacher ? "select_required|maxSelected:" + this.number : "";
+    }
   },
   beforeMount() {
     if (this.teacher) {
@@ -250,7 +257,6 @@ export default {
           Project_TypeID: this.type,
           Project_MaxMember: this.number,
           Project_SectionID: 1,
-          Project_StatusID: 2 //Wait Revisors
         },
         this.advisors,
         this.members
@@ -272,8 +278,8 @@ export default {
       this.detail = "";
       this.type = "";
       this.number = 1;
-      this.advisors = [];
       this.$refs.observer.reset();
+      this.advisors = [];
       this.members = [];
       if (this.teacher) {
         this.advisors.push(this.createUser.User_ID);

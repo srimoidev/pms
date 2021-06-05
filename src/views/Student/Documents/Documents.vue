@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-card v-if="user.User_ProjectID" v-resize="onResize" class="ma-2 elevation-1" tile :height="windowHeight">
+    <v-card v-if="isUserAllow && user.User_ProjectID" v-resize="onResize" class="ma-2 elevation-1" tile :height="windowHeight">
       <v-data-table
         :headers="headers"
         :items="data"
@@ -85,6 +85,7 @@ export default {
   },
   data: () => ({
     loading: true,
+    isUserAllow: true,
     windowHeight: 0,
     actionMenu: [
       { title: "Preview", method: "previewDoc" },
@@ -133,24 +134,30 @@ export default {
   methods: {
     async loadData() {
       if (this.user.User_ProjectID) {
-        const initData = await this.Form.Type();
-        const preq = await this.Form.Prerequisite();
-        const latest = await this.Form.LatestEachForm(this.user.User_ProjectID);
-        let deadline = await this.Form.Deadline();
+        await this.Project.GetSelf(this.user.User_ProjectID).then(async res => {
+          if ([1, 2].includes(res.Project_Status.ProjectStatus_ID)) {
+            this.isUserAllow = false;
+            return;
+          }
+          const initData = await this.Form.Type();
+          const preq = await this.Form.Prerequisite();
+          const latest = await this.Form.LatestEachForm(this.user.User_ProjectID);
+          let deadline = await this.Form.Deadline();
 
-        if (latest) {
-          initData.map(element => {
-            element.LatestForm = latest.find(item => item.Form_TypeID == element.FormType_ID) || null;
-            element.Prerequisite = preq.filter(item => item.Pre_FormTypeID == element.FormType_ID);
-            element.Deadline = deadline.find(item => item.Deadline_FormTypeID == element.FormType_ID) || undefined;
-            element.isReachDeadline = (new Date(element?.Deadline?.Deadline_DateTime) - new Date()) / (1000 * 3600 * 24);
-            element.Prerequisite.map(item => {
-              item.Status = latest.find(t => t.Form_TypeID == item.Pre_FormReqTypeID)?.Form_StatusID;
+          if (latest) {
+            initData.map(element => {
+              element.LatestForm = latest.find(item => item.Form_TypeID == element.FormType_ID) || null;
+              element.Prerequisite = preq.filter(item => item.Pre_FormTypeID == element.FormType_ID);
+              element.Deadline = deadline.find(item => item.Deadline_FormTypeID == element.FormType_ID) || undefined;
+              element.isReachDeadline = (new Date(element?.Deadline?.Deadline_DateTime) - new Date()) / (1000 * 3600 * 24);
+              element.Prerequisite.map(item => {
+                item.Status = latest.find(t => t.Form_TypeID == item.Pre_FormReqTypeID)?.Form_StatusID;
+              });
             });
-          });
-        }
-        this.data = initData;
-        this.loading = false;
+          }
+          this.data = initData;
+          this.loading = false;
+        });
       }
     },
     onResize() {

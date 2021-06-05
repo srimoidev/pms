@@ -34,7 +34,11 @@
         </v-row>
       </v-card>
       <div class="d-flex mr-2 justify-end">
-        <v-btn v-if="!view" class="mr-2" color="success" @click="submit" small>Join</v-btn>
+        <div v-if="confirm">
+          <v-btn class="mr-2" color="primary" @click="submit(1)" small>Confirm</v-btn>
+          <v-btn class="mr-2" color="error" @click="submit(2)" small>Reject</v-btn>
+        </div>
+        <v-btn v-if="join" class="mr-2" color="success" @click="submit" small>Join</v-btn>
         <v-btn color="white elevation-0" small @click="close">Close</v-btn>
       </div>
     </v-container>
@@ -48,7 +52,11 @@ export default {
       type: Object,
       default: () => {}
     },
-    view: {
+    join: {
+      type: Boolean,
+      default: false
+    },
+    confirm: {
       type: Boolean,
       default: false
     }
@@ -66,8 +74,11 @@ export default {
     };
   },
   methods: {
-    submit() {
-      this.$emit("submit", this.data.Project_ID);
+    submit(val) {
+      if(val == 1)
+        this.$emit("submit",1, this.data.Project_ID);
+      else
+        this.$emit("submit",2, this.data.Project_ID);
     },
     close() {
       this.$emit("close");

@@ -101,7 +101,7 @@ router.get("/", async (req, res) => {
         }
       ],
       where: whereStr,
-      attributes: { exclude: ["Project_TypeID", "Project_SectionID", "Project_StatusID"] },
+      attributes: { exclude: ["Project_TypeID", "Project_SectionID", "Project_StatusID", "createBy", "createTime", "updateBy", "updateTime"] }
       //TODO order ตาม กลุ่มที่ยังไม่เต็ม และ ตาม create by
     });
     return res.json(data);
@@ -158,7 +158,7 @@ router.get("/:id", async (req, res) => {
           as: "Project_Progresses"
         }
       ],
-      where: {Project_ID:req.params.id},
+      where: { Project_ID: req.params.id },
       attributes: { exclude: ["Project_TypeID", "Project_SectionID", "Project_StatusID"] }
     });
     return res.json(data);
@@ -185,9 +185,27 @@ router.post("/", async (req, res) => {
 
 //สร้างกลุ่ม เพิ่่มอาจารย์ที่ปรึกษา เพิ่มสมาชิก
 router.post("/create", async (req, res) => {
+  let initStatus;
+  console.log(req.body.project.createBy);
+  const createBy = await db.user_profile.findOne({ where: { User_ID: req.body.project.createBy } });
+  //กรณีนักศึกษาเป็นผู้สร้าง
+  console.log(createBy.User_TypeID,req.body.project.Project_MaxMember,req.body.member?.length);
+  if (createBy.User_TypeID == 1) {
+    if (req.body.project.Project_MaxMember == req.body.members?.length) {
+      initStatus = 2; //Wait Advisor ถ้า Add member มาเต็มจำนวน
+    } else {
+      initStatus = 1; //Draft ถ้า Add มาไม่เต็ม
+    }
+  } else {
+    if (req.body.project.Project_MaxMember == req.body.members?.length) {
+      initStatus = 3; //Wait Advisor ถ้า Add member มาเต็มจำนวน
+    } else {
+      initStatus = 1; //Draft ถ้า Add มาไม่เต็ม
+    }
+  }
+  req.body.project.Project_StatusID = initStatus;
   const transaction = await db.sequelize.transaction();
   try {
-    console.log(req.body);
     const project = await db.project_info.create(req.body.project, {
       transaction: transaction
     });
@@ -195,8 +213,7 @@ router.post("/create", async (req, res) => {
       await db.project_advisor.create(
         {
           Advisor_ProjectID: project.Project_ID,
-          Advisor_UserID: item,
-          // Advisor_RequestStatusID: 1 //1 Wait Approved
+          Advisor_UserID: item
         },
         {
           transaction: transaction
@@ -204,7 +221,6 @@ router.post("/create", async (req, res) => {
       );
     }
     for (const item of req.body.members) {
-      console.log(item);
       await db.project_member.create(
         {
           Member_UserID: item,
