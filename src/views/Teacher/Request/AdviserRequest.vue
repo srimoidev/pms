@@ -1,5 +1,5 @@
 <template>
-  <v-card class="ma-2" tile style="height:inherit" v-resize="onResize">
+  <v-card class="ma-2 elevation-1" tile style="height:inherit" v-resize="onResize">
     <v-data-table
       v-model="selectedList"
       :headers="headers"
@@ -7,7 +7,6 @@
       :loading="loading"
       :search="searchText"
       loading-text="Loading... Please wait"
-      class="elevation-1"
       :height="windowHeight"
       show-select
       item-key="Project_ID"
@@ -123,10 +122,10 @@ export default {
       this.selectedProject = project;
       this.modal = true;
     },
-    async Confirm(pStatus,pProjectID) {
+    async Confirm(pProjectID, pStatus) {
       //TODO ส่ง UserID กับ array Project_ID ไป
       const advisor = await this.Project.Advisor(pProjectID, this.user.User_ID);
-      await this.Project.ConfirmOrRejectProject(pStatus,advisor[0].Advisor_ID).then(() => {
+      await this.Project.ConfirmOrRejectProject(advisor[0].Advisor_ID, pStatus).then(() => {
         this.$swal.fire({
           timer: 3000,
           timerProgressBar: true,

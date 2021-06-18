@@ -134,6 +134,7 @@ export async function New(pProject, pAdvisors, pMember) {
 }
 
 export async function Join(pID, uID) {
+  console.log(pID, uID);
   await HTTP.post("/project/member", {
     Member_ProjectID: pID,
     Member_UserID: uID
@@ -142,13 +143,13 @@ export async function Join(pID, uID) {
   });
 }
 
-export async function Leave(pID,uID) {
+export async function Leave(pID, uID) {
   await HTTP.delete(`/project/member?projectid=${pID}&userid=${uID}`).catch(() => {
     //
   });
 }
 
-export async function ConfirmOrRejectProject(pStatus,pAdvisorID) {
+export async function ConfirmOrRejectProject(pAdvisorID, pStatus) {
   await HTTP.put(`/project/advisor/${pAdvisorID}`, { Advisor_RequestStatus: pStatus }).catch(() => {
     //
   });

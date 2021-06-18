@@ -27,7 +27,8 @@ export default {
         { text: "In Progress", detail: "กำลังดำเนินการ" },
         { text: "Incomplete", detail: "ไม่สมบูรณ์" },
         { text: "Failure", detail: "สอบตก" },
-        { text: "Completed", detail: "สมบูรณ์" }
+        { text: "Completed", detail: "สมบูรณ์" },
+        { text: "Rejected", detail: "ไม่อนุมัติเป็นที่ปรึกษา" }
       ]
     };
   }
@@ -40,29 +41,5 @@ export default {
   height: 12px;
   border-radius: 50%;
   display: inline-flex;
-}
-/* Draft */
-.status-1 {
-  background-color: #adadad !important;
-}
-/* Wait Adviser */
-.status-2 {
-  background-color: #ffea00 !important;
-}
-/* In Progress */
-.status-3 {
-  background-color: #29b6f6 !important;
-}
-/* Incomplete */
-.status-4 {
-  background-color: #fb6340 !important;
-}
-/* Failure */
-.status-5 {
-  background-color: #f5365c !important;
-}
-/* Completed */
-.status-6 {
-  background-color: #2dce89 !important;
 }
 </style>

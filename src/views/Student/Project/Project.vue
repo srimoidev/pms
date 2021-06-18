@@ -2,11 +2,18 @@
   <div v-if="user.User_ProjectID" class="d-flex ma-2">
     <v-card class="elevation-1 mr-2" style="width:70%; min-height:89vh" tile :height="windowHeight">
       <v-toolbar flat color="white">
-        <v-toolbar-title>
+        <v-toolbar-title style="max-width:50%">
           {{ "Manage Group - " + (data.Project_NameTH ? data.Project_NameTH : "") }}
         </v-toolbar-title>
         <v-divider class="mx-4" inset vertical></v-divider>
-        <v-chip v-if="!data.isAdvisorsConfirm" label color="orange" text-color="white" small>รอการรับรองเป็นอาจารยที่ปรึกษา</v-chip>
+        <v-chip
+          v-if="showLblIsAdvisorConfirmOrReject"
+          label
+          :color="data.Project_Status.ProjectStatus_ID == 7 ? 'red' : 'orange'"
+          text-color="white"
+          small
+          >{{ txtInfoLabel }}</v-chip
+        >
         <v-spacer></v-spacer>
         <v-btn class="error white--text" @click="leaveProject">
           <v-icon class="mr-2">mdi-account-cancel-outline</v-icon>
@@ -30,9 +37,8 @@
           </template>
         </v-list>
       </v-card>
-      <v-card tile class="elevation-1"
-        ><v-card-text v-if="data.isAdvisorsConfirm">{{ "อาจารย์ที่ปรึกษา" }}</v-card-text>
-        <v-card-text v-else>{{ "ว่าที่อาจารย์ที่ปรึกษา" }}</v-card-text>
+      <v-card tile class="elevation-1 mb-2"
+        ><v-card-text>{{ "อาจารย์ที่ปรึกษา" }}</v-card-text>
         <v-divider></v-divider>
         <v-list>
           <template v-for="(item, index) in data.Project_Advisors">
@@ -43,6 +49,14 @@
           </template>
         </v-list>
       </v-card>
+      <div v-if="data.Project_Status.ProjectStatus_ID == 7">
+        <v-card tile class="elevation-1 mb-2">
+          <v-card-text>Remark</v-card-text>
+          <v-divider></v-divider>
+          <v-textarea rows="5" outlined class="ma-2 pb-2" background-color="amber lighten-5" readonly hide-details> </v-textarea>
+        </v-card>
+        <v-btn color="success" block>ส่งใหม่</v-btn>
+      </div>
     </div>
   </div>
   <div v-else class="text-center" style="height:inherit">
@@ -61,9 +75,29 @@ export default {
     return {
       loading: false,
       selfGroup: {},
+      showLblIsAdvisorConfirmOrReject: false,
+      txtInfoLabel: "aa",
       windowHeight: 0,
       data: {}
     };
+  },
+  watch: {
+    data() {
+      //เช็ค สถานะเป็น 1(Draft) 2(Wait Advisor) หรือ 7(Rejected) ให้แสดง label
+      this.showLblIsAdvisorConfirmOrReject = [1, 2, 7].includes(this.data.Project_Status.ProjectStatus_ID);
+      switch (this.data.Project_Status.ProjectStatus_ID) {
+        case 1:
+        case 2:
+          this.txtInfoLabel = "รอการรับรองเป็นอาจารยที่ปรึกษา";
+          break;
+        case 7:
+          this.txtInfoLabel = "อาจารย์ปฏิเสธเป็นที่ปรึกษา";
+          break;
+        default:
+          break;
+      }
+      //TODO lbl หน้า project รอรับเป็นที่ปรึกษา กับ อาจารย์ ปฎิเสธ
+    }
   },
   computed: {
     ...mapGetters({
@@ -84,6 +118,7 @@ export default {
     async loadData() {
       this.$store.dispatch("user/getLoggedInUserData").then(async () => {
         this.data = await this.Project.GetSelf(this.user.User_ProjectID);
+        console.log(this.data, this.user.User_ProjectID);
         this.loading = true;
       });
 
@@ -103,7 +138,7 @@ export default {
         })
         .then(result => {
           if (result.isConfirmed) {
-            this.Project.Leave(this.user.User_ProjectID,this.user.User_ID);
+            this.Project.Leave(this.user.User_ProjectID, this.user.User_ID);
             this.$router.push("/student/all_project");
           }
         });
@@ -118,5 +153,4 @@ export default {
   }
 };
 </script>
-<style scoped>
-</style>
+<style scoped></style>

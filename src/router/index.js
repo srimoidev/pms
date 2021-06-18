@@ -26,7 +26,7 @@ import Student_Documents from "../views/Student/Documents/Documents.vue";
 import Student_ProgressionRecord from "../views/Student/ProgressionRecord/ProgressionRecord.vue";
 import Student_FormCE from "../views/Student/Documents/FormCE.vue";
 import Student_FormPreview from "../views/Student/Documents/FormPreview.vue";
-import Student_AllProject from "../views/Student/AllProject/AllProject.vue"
+import Student_AllProject from "../views/Student/AllProject/AllProject.vue";
 
 //teacher pages
 import Teacher_Overview from "../views/Teacher/Overview/Overview.vue";
@@ -37,6 +37,8 @@ import Teacher_ApprovementReq from "../views/Teacher/Request/ApprovementRequest.
 import Teacher_ProjectManual from "../views/Teacher/ProjectManual/ProjectManual.vue";
 import Teacher_FormPreview from "../views/Teacher/ManageProject/FormPreview.vue";
 import Teacher_AdviserRequest from "../views/Teacher/Request/AdviserRequest.vue";
+import Teacher_Documents from "../views/Teacher/ManageProject/Documents";
+import Teacher_FormCE from "../views/Teacher/ManageProject/FormCE";
 //App Environment Configuration
 import App_EnvConfig from "../views/AppEnvironments/AppEnvironment.vue";
 
@@ -207,7 +209,7 @@ const routes = [
         meta: { title: "All Projects | PMS" }
       },
       {
-        path: "manage_project",
+        path: "project",
         name: "Manage Project",
         component: Teacher_ManageProject,
         meta: { title: "Topic Proposal | PMS" }
@@ -241,6 +243,18 @@ const routes = [
         name: "Form Preview",
         component: Teacher_FormPreview,
         meta: { title: "Form Preview | PMS" }
+      },
+      {
+        path: "documents",
+        name: "Document",
+        component: Teacher_Documents,
+        meta: { title: "Document | PMS" }
+      },
+      {
+        path: "form_ce",
+        name: "Form CE",
+        component: Teacher_FormCE,
+        meta: { title: "Form CE | PMS" }
       }
     ]
   },

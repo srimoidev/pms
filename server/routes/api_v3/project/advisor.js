@@ -19,7 +19,7 @@ router.get("/", async (req, res) => {
       whereStr.push({
         Advisor_RequestStatusID: req.query.statusid
       });
-    } 
+    }
     const data = await db.project_advisor.findAll({
       include: [
         {
@@ -117,7 +117,19 @@ router.put("/:id", async (req, res) => {
           Advisor_ID: req.params.id
         }
       });
+      //ถ้า Advisor_RequestStatus เป็น null แสดงว่าอาจารย์ยังไม่กดเลือก Confirm หรือ Reject
       const isAllConfirm = await db.project_advisor.findAll({
+        where: {
+          Advisor_ProjectID: temp.Advisor_ProjectID,
+          [Op.and]: {
+            Advisor_RequestStatus: {
+              [Op.eq]: null
+            }
+          }
+        }
+      });
+      console.log(isAllConfirm);
+      const isSomeAdvisorReject = await db.project_advisor.findAll({
         where: {
           Advisor_ProjectID: temp.Advisor_ProjectID,
           [Op.and]: {
@@ -125,19 +137,38 @@ router.put("/:id", async (req, res) => {
           }
         }
       });
-      return isAllConfirm.length == 0 ? temp.Advisor_ProjectID : null;
+      console.log(isSomeAdvisorReject);
+      if (isSomeAdvisorReject.length != 0) {
+        return { code: "REJECT", pID: temp.Advisor_ProjectID };
+      } else if (isAllConfirm.length == 0) {
+        return { code: "ALLCONFIRM", pID: temp.Advisor_ProjectID };
+      } else {
+        return;
+      }
     })
     .then(async result => {
-      if (result) {
-        await db.project_info.update(
-          { Project_StatusID: 3, isAdvisorsConfirm: 1 }, //set that all teachers confirm to be advisor
-          {
-            // transaction: transaction,
-            where: {
-              Project_ID: result
+      switch (result.code) {
+        case "ALLCONFIRM":
+          await db.project_info.update(
+            { Project_StatusID: 3 }, //set that all teachers confirm to be advisor
+            {
+              where: {
+                Project_ID: result.pID
+              }
             }
-          }
-        );
+          );
+          break;
+        case "REJECT":
+          console.log("reject");
+          await db.project_info.update(
+            { Project_StatusID: 7 }, //set to Rejected
+            {
+              where: {
+                Project_ID: result.pID
+              }
+            }
+          );
+          break;
       }
     })
     .then(() => {

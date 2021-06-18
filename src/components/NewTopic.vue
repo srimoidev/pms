@@ -218,7 +218,7 @@ export default {
     return {
       th_name: "ระบบบริหารและจัดการโปรเจ็ค",
       en_name: "Project Management System",
-      selectedSection:{},
+      selectedSection: {},
       detail:
         "เราคงเคยพบว่า เมื่อทำอะไรไม่ได้วางแผนหรือมองการณ์ไกล ถึงเวลาเลยรับมือไม่ได้ มันก็เสียหาย แต่บางที ทั้งตั้งใจ และวางแผนเอาไว้ดิบดีก็มีอะไรมาทำให้พังไม่เป็นท่า อุตส่าห์ลงทุนอะไรไปมากมาย แล้วเราคาดเดาอะไรได้บ้าง!?",
       number: 1,
@@ -230,7 +230,8 @@ export default {
   },
   computed: {
     memberRules() {
-      return !this.teacher ? "select_required|maxSelected:" + this.number : "";
+      //ถ้าเป็นอาจารย์ไม่จำเป็นต้องเพิ่มนักศึกษา แต่ถ้าเพิ่มต้องไม่เกินที่กำหนด
+      return !this.teacher ? "select_required|maxSelected:" + this.number : "maxSelected:" + this.number;
     }
   },
   beforeMount() {
@@ -256,7 +257,7 @@ export default {
           Project_Detail: this.detail,
           Project_TypeID: this.type,
           Project_MaxMember: this.number,
-          Project_SectionID: 1,
+          Project_SectionID: 1
         },
         this.advisors,
         this.members

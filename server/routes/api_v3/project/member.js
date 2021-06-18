@@ -55,6 +55,7 @@ router.get("/:id", async (req, res) => {
 
 // create
 router.post("/", async (req, res) => {
+  console.log(req.body);
   await db.project_member
     .create(req.body)
     .then(async data => {
@@ -100,7 +101,7 @@ router.put("/:id", async (req, res) => {
         });
       }
     })
-    .catch(err => {
+    .catch(() => {
       res.status(500).send({
         message: "Error updating!"
       });

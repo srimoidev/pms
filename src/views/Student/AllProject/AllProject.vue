@@ -61,7 +61,7 @@
         {{ item.Project_Section.Section_Name }}
       </template>
       <template v-slot:[`item.Project_Status`]="{ item }">
-        <group-status :status="item.Project_Status.ProjectStatus_ID"></group-status>
+        <project-status :status="item.Project_Status.ProjectStatus_ID"></project-status>
       </template>
       <template v-slot:[`item.actions`]="{ item }">
         <v-tooltip v-if="!user.User_ProjectID" bottom>
@@ -115,13 +115,13 @@
 <script>
 import { mapGetters } from "vuex";
 import ModalContainer from "@/components/ModalContainer";
-import GroupStatus from "@/components/GroupStatus";
+import ProjectStatus from "@/components/ProjectStatus";
 import NewTopic from "@/components/NewTopic";
 import ProjectModalDetail from "@/components/ProjectModalDetail";
 export default {
   components: {
     ModalContainer,
-    GroupStatus,
+    ProjectStatus,
     NewTopic,
     ProjectModalDetail
   },

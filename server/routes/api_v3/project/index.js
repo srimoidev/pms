@@ -186,10 +186,8 @@ router.post("/", async (req, res) => {
 //สร้างกลุ่ม เพิ่่มอาจารย์ที่ปรึกษา เพิ่มสมาชิก
 router.post("/create", async (req, res) => {
   let initStatus;
-  console.log(req.body.project.createBy);
   const createBy = await db.user_profile.findOne({ where: { User_ID: req.body.project.createBy } });
   //กรณีนักศึกษาเป็นผู้สร้าง
-  console.log(createBy.User_TypeID,req.body.project.Project_MaxMember,req.body.member?.length);
   if (createBy.User_TypeID == 1) {
     if (req.body.project.Project_MaxMember == req.body.members?.length) {
       initStatus = 2; //Wait Advisor ถ้า Add member มาเต็มจำนวน
@@ -260,7 +258,7 @@ router.put("/:id", async (req, res) => {
         });
       }
     })
-    .catch(err => {
+    .catch(() => {
       res.status(500).send({
         message: "Error updating!"
       });
@@ -288,7 +286,7 @@ router.delete("/:id", async (req, res) => {
         });
       }
     })
-    .catch(err => {
+    .catch(() => {
       res.status(500).send({
         message: "Error deleting!"
       });
