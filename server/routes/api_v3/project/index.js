@@ -98,10 +98,15 @@ router.get("/", async (req, res) => {
         {
           model: db.project_progress,
           as: "Project_Progresses"
+        },
+        {
+          model: db.user_profile,
+          as: "UpdatedUser",
+          attributes: { exclude: ["User_UserName", "User_Password", "User_StudentID", "User_AcademicYear"] }
         }
       ],
       where: whereStr,
-      attributes: { exclude: ["Project_TypeID", "Project_SectionID", "Project_StatusID", "createBy", "createTime", "updateBy", "updateTime"] }
+      attributes: { exclude: ["Project_TypeID", "Project_SectionID", "Project_StatusID"] }
       //TODO order ตาม กลุ่มที่ยังไม่เต็ม และ ตาม create by
     });
     return res.json(data);
@@ -156,6 +161,11 @@ router.get("/:id", async (req, res) => {
         {
           model: db.project_progress,
           as: "Project_Progresses"
+        },
+        {
+          model: db.user_profile,
+          as: "UpdatedUser",
+          attributes: { exclude: ["User_UserName", "User_Password", "User_StudentID", "User_AcademicYear"] }
         }
       ],
       where: { Project_ID: req.params.id },
@@ -264,7 +274,45 @@ router.put("/:id", async (req, res) => {
       });
     });
 });
-
+//ขออนุมัติโปรเจ็คใหม่กรณีถูก Reject
+router.put("/resend/:id", async (req, res) => {
+  req.body.project.Project_StatusID = 2; //set 2 Wait Advisor
+  await db.project_info
+    .update(req.body.project, {
+      where: {
+        Project_ID: req.params.id
+      }
+    })
+    .then(async () => {
+      await db.project_advisor
+        .destroy({
+          where: {
+            Advisor_ProjectID: req.params.id
+          }
+        })
+        .then(async () => {
+          for (const item of req.body.advisors) {
+            await db.project_advisor.create({ Advisor_ProjectID: req.params.id, Advisor_UserID: item });
+          }
+        });
+    })
+    .then(num => {
+      if (num == 1) {
+        res.send({
+          message: "Updated successfully!"
+        });
+      } else {
+        res.send({
+          message: `Cann't update, Maybe not found or req.body is empty!`
+        });
+      }
+    })
+    .catch(() => {
+      res.status(500).send({
+        message: "Error updating!"
+      });
+    });
+});
 // delete
 router.delete("/:id", async (req, res) => {
   await db.project_info

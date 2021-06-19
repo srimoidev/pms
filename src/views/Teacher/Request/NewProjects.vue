@@ -36,13 +36,7 @@
     </v-data-table>
     <template>
       <modal-container :active="modal" :cancellable="1">
-        <project-modal-detail
-          @submit="Confirm"
-          @close="modal = !modal"
-          confirm
-          :data="selectedProject"
-          :bypass="selectedProject.isAllowBypass"
-        ></project-modal-detail>
+        <project-modal-detail @submit="Confirm" @close="modal = !modal" confirm :data="selectedProject"></project-modal-detail>
       </modal-container>
     </template>
   </v-card>
@@ -113,17 +107,7 @@ export default {
     async loadData() {
       if (this.user.User_ID) {
         this.allType = await this.Project.AllType();
-        //โปรเจ็ครอรับเป็นที่ปรึกษา
-        this.data = await this.Project.WaitConfirmProject(this.user.User_ID, 2);
-        console.log(this.data);
-        this.data.map(async item => {
-          await this.Project.Advisor(item.Project_ID).then(res => {
-            if (res?.length == 1) {
-              //คนอนุมัติคนสุดท้ายเป็นที่ปรึกษาและเป็นประจำวิชา
-              item.isAllowBypass = this.user.User_ID == res[0].Advisor_UserID && this.typeID == 3;
-            }
-          });
-        });
+        this.data = await this.Project.WaitConfirmProject();
       }
       this.loading = false;
     },
@@ -138,10 +122,10 @@ export default {
       this.selectedProject = project;
       this.modal = true;
     },
-    async Confirm(pProjectID, pStatus, pIsBypass, pRemark) {
+    async Confirm(pProjectID, pStatus) {
       //TODO ส่ง UserID กับ array Project_ID ไป
-      const advisor = await this.Project.Advisor(pProjectID, this.user.User_ID);
-      await this.Project.ConfirmOrRejectProject(this.user.User_ID, advisor[0].Advisor_ID, pStatus, pIsBypass, pRemark).then(() => {
+      //status 1(confirm) ส่ง status 4(In Progress) ไป ถ้า 0(!Confirm) ส่ง 7(Reject)
+      await this.Project.InstructorConfirmOrRejectProject(this.user.User_ID, pProjectID, pStatus == 1 ? 4 : 8).then(() => {
         this.$swal.fire({
           timer: 3000,
           timerProgressBar: true,

@@ -10,56 +10,56 @@ module.exports = (sequelize, Sequelize) => {
       },
       Project_NameTH: {
         type: Sequelize.STRING,
-        field: "Project_NameTH",
+        field: "Project_NameTH"
       },
       Project_NameEN: {
         type: Sequelize.STRING,
-        field: "Project_NameEN",
+        field: "Project_NameEN"
       },
       Project_Detail: {
         type: Sequelize.STRING,
-        field: "Project_Detail",
+        field: "Project_Detail"
       },
       Project_TypeID: {
         type: Sequelize.STRING,
-        field: "Project_TypeID",
+        field: "Project_TypeID"
       },
       Project_MaxMember: {
         type: Sequelize.INTEGER,
-        field: "Project_MaxMember",
+        field: "Project_MaxMember"
       },
       Project_SectionID: {
         type: Sequelize.INTEGER,
-        field: "Project_SectionID",
+        field: "Project_SectionID"
       },
       Project_StatusID: {
         type: Sequelize.INTEGER,
-        field: "Project_StatusID",
+        field: "Project_StatusID"
       },
-      isAdvisorsConfirm: {
-        type:Sequelize.BOOLEAN,
-        field:"isAdvisorsConfirm"
+      CreatedBy: {
+        type: Sequelize.INTEGER,
+        field: "CreatedBy"
       },
-      createBy: {
-        type:Sequelize.INTEGER,
-        field:"createBy"
+      CreatedTime: {
+        type: Sequelize.DATE,
+        field: "CreatedTime"
       },
-      createTime: {
-        type:Sequelize.DATE,
-        field:"createTime"
+      UpdatedBy: {
+        type: Sequelize.INTEGER,
+        field: "UpdatedBy"
       },
-      updateBy: {
-        type:Sequelize.INTEGER,
-        field:"updateBy"
+      UpdatedTime: {
+        type: Sequelize.DATE,
+        field: "UpdatedTime"
       },
-      updateTime: {
-        type:Sequelize.DATE,
-        field:"updateTime"
-      },
+      RejectedRemark: {
+        type: Sequelize.STRING,
+        field: "RejectedRemark"
+      }
     },
     {
       timestamps: false,
-      freezeTableName: true,
+      freezeTableName: true
     }
   );
   return project_info;

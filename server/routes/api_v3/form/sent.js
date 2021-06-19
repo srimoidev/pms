@@ -1,10 +1,6 @@
 const router = require("express").Router();
 const db = require("../../../models");
-const {
-  Op
-} = require("sequelize");
-var multer  = require('multer')
-var upload = multer({ dest: 'uploads/' })
+const { Op } = require("sequelize");
 const fs = require("fs");
 
 router.get("/", async (req, res) => {
@@ -26,7 +22,8 @@ router.get("/", async (req, res) => {
       });
     }
     const data = await db.form_sent.findAll({
-      include: [{
+      include: [
+        {
           model: db.form_type,
           as: "Form_Type"
         },
@@ -37,7 +34,8 @@ router.get("/", async (req, res) => {
         {
           model: db.project_info,
           as: "Form_Project",
-          include: [{
+          include: [
+            {
               model: db.project_status,
               as: "Project_Status"
             },
@@ -48,7 +46,7 @@ router.get("/", async (req, res) => {
             {
               model: db.project_type,
               as: "Project_Type"
-            },
+            }
           ]
         }
       ],
@@ -62,10 +60,9 @@ router.get("/", async (req, res) => {
   }
 });
 router.get("/:id/latest", async (req, res) => {
-  await db.form_sent.findAll({
-      attributes: [
-        [db.sequelize.fn('max', db.sequelize.col('Form_ID')), 'Form_IDMax'],
-      ],
+  await db.form_sent
+    .findAll({
+      attributes: [[db.sequelize.fn("max", db.sequelize.col("Form_ID")), "Form_IDMax"]],
       group: ["Form_TypeID"],
       where: {
         Form_ProjectID: req.params.id
@@ -74,30 +71,33 @@ router.get("/:id/latest", async (req, res) => {
       nast: true
     })
     .then(async maxIds => {
-      var formMaxIds = []
+      var formMaxIds = [];
       maxIds.forEach(item => {
-        formMaxIds.push(item.Form_IDMax)
+        formMaxIds.push(item.Form_IDMax);
       });
-      await db.form_sent.findAll({
-        where: {
-          Form_ID: {
-            [Op.in]: formMaxIds
+      await db.form_sent
+        .findAll({
+          where: {
+            Form_ID: {
+              [Op.in]: formMaxIds
+            }
           }
-        }
-      }).then(result => {
-        res.json(result)
-      })
+        })
+        .then(result => {
+          res.json(result);
+        });
     })
     .catch(err => {
       res.json({
         err: err.message
-      })
-    })
-})
+      });
+    });
+});
 router.get("/:id", async (req, res) => {
   try {
     const data = await db.form_sent.findOne({
-      include: [{
+      include: [
+        {
           model: db.form_type,
           as: "Form_Type"
         },
@@ -108,7 +108,8 @@ router.get("/:id", async (req, res) => {
         {
           model: db.project_info,
           as: "Form_Project",
-          include: [{
+          include: [
+            {
               model: db.project_status,
               as: "Project_Status"
             },
@@ -119,13 +120,15 @@ router.get("/:id", async (req, res) => {
             {
               model: db.project_type,
               as: "Project_Type"
-            },
+            }
           ]
         }
       ],
-      where: [{
-        Form_ID: req.params.id
-      }]
+      where: [
+        {
+          Form_ID: req.params.id
+        }
+      ]
     });
     return res.json(data);
   } catch (error) {
@@ -142,7 +145,7 @@ router.post("/", async (req, res) => {
       Form_ProjectID: req.body.Form_ProjectID,
       Form_TypeID: req.body.Form_TypeID,
       Form_FileName: req.files[0].filename,
-      Form_StatusID: 1,
+      Form_StatusID: 1
     })
     .then(data => {
       res.send(data);
@@ -173,7 +176,7 @@ router.put("/:id", async (req, res) => {
         });
       }
     })
-    .catch(err => {
+    .catch(() => {
       res.status(500).send({
         message: "Error updating!"
       });
@@ -184,9 +187,11 @@ router.put("/:id", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   await db.form_sent
     .destroy({
-      where: [{
-        Form_ID: req.params.id
-      }]
+      where: [
+        {
+          Form_ID: req.params.id
+        }
+      ]
     })
     .then(num => {
       if (num == 1) {
@@ -199,7 +204,7 @@ router.delete("/:id", async (req, res) => {
         });
       }
     })
-    .catch(err => {
+    .catch(() => {
       res.status(500).send({
         message: "Error deleting!"
       });
@@ -207,23 +212,22 @@ router.delete("/:id", async (req, res) => {
 });
 
 //form pdf
-router.get("/pdf/:id", async (req,res) => {
+router.get("/pdf/:id", async (req, res) => {
   try {
-    console.log("aaa");
     const data = await db.form_sent.findOne({
-      where: [{
-        Form_ID: req.params.id
-      }]
+      where: [
+        {
+          Form_ID: req.params.id
+        }
+      ]
     });
     var file = fs.createReadStream(`./uploads/${data.Form_FileName}`);
-    console.log(data.Form_FileName);
     return file.pipe(res);
   } catch (error) {
     return res.status(500).json({
       msg: error
     });
   }
-  
-})
+});
 
 module.exports = router;

@@ -135,7 +135,7 @@ export default {
     async loadData() {
       if (this.user.User_ProjectID) {
         await this.Project.GetSelf(this.user.User_ProjectID).then(async res => {
-          if ([1, 2].includes(res.Project_Status.ProjectStatus_ID)) {
+          if ([1, 2, 3].includes(res.Project_Status.ProjectStatus_ID)) {
             this.isUserAllow = false;
             return;
           }

@@ -2,7 +2,7 @@
   <v-tooltip bottom>
     <template v-slot:activator="{ on, attrs }">
       <span v-bind="attrs" v-on="on" style="cursor: default;">
-        <span class="circle-dot mr-2" :class="`status-${status}`"> </span>
+        <span class="circle-dot mr-2" :class="`p-status-${status}`"> </span>
         {{ statusText[status].text }}
       </span>
     </template>
@@ -23,7 +23,8 @@ export default {
       statusText: [
         {},
         { text: "Draft", detail: "เตรียมการจัดกลุ่ม" },
-        { text: "Wait Adviser", detail: "รอการรับเป็นที่ปรึกษา" },
+        { text: "Wait Adviser", detail: "รอการรับรองเป็นที่ปรึกษา" },
+        { text: "Wait Instructor", detail: "รอการอนุมัติจากอาจารย์ประจำวิชา" },
         { text: "In Progress", detail: "กำลังดำเนินการ" },
         { text: "Incomplete", detail: "ไม่สมบูรณ์" },
         { text: "Failure", detail: "สอบตก" },

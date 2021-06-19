@@ -12,10 +12,10 @@
     <v-container>
       <ValidationObserver ref="observer">
         <form class="new-topic">
-          <ValidationProvider v-slot="{ errors }" name="ชื่อภาษาไทย" rules="required|thaiLang">
+          <ValidationProvider v-slot="{ errors }" name="ชื่อภาษาไทย" rules="required">
             <v-text-field v-model="th_name" :error-messages="errors" label="ชื่อภาษาไทย" outlined dense></v-text-field>
           </ValidationProvider>
-          <ValidationProvider v-slot="{ errors }" name="ชื่อภาษาอังกฤษ" rules="required|engLang">
+          <ValidationProvider v-slot="{ errors }" name="ชื่อภาษาอังกฤษ" rules="required">
             <v-text-field v-model="en_name" :error-messages="errors" label="ชื่อภาษาอังกฤษ" outlined dense></v-text-field>
           </ValidationProvider>
           <ValidationProvider v-slot="{ errors }" name="สมาชิก" :rules="memberRules">
@@ -55,7 +55,7 @@
               </template>
             </v-autocomplete>
           </ValidationProvider>
-          <v-textarea v-model="detail" outlined rows="3" no-resize label="รายละเอียด"></v-textarea>
+          <v-textarea v-model="detail" outlined rows="3" no-resize label="รายละเอียด" :error-messages="errors"></v-textarea>
           <div class="d-flex">
             <ValidationProvider v-slot="{ errors }" name="จำนวน" rules="required">
               <v-text-field v-model.number="number" :error-messages="errors" label="จำนวน" type="number" min="1" outlined dense class="mr-5">
@@ -164,14 +164,14 @@ extend("select_required", {
 
 extend("max", {
   ...max,
-  message: "{_field_} may not be greater than {length} characters"
+  message: "{_field_} จำกัด {length} ตัวอักษร"
 });
 // extend("memberValidation",{
 //   message: "{_field_} exceeded member count",
 //   validate: function()
 // })
 extend("maxSelected", {
-  message: "{_field_} limit exceeded {length}",
+  message: "{_field_} จำกัด {length} คน",
   validate: (value, maxCount) => !!(value.length <= maxCount[0])
 });
 extend("thaiLang", {

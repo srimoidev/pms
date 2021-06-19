@@ -15,11 +15,20 @@ router.get("/", async (req, res) => {
         Advisor_UserID: req.query.userid
       });
     }
-    if (req.query.statusid) {
-      whereStr.push({
-        Advisor_RequestStatusID: req.query.statusid
-      });
+    if (req.query.all != "true") {
+      if (req.query.statusid) {
+        whereStr.push({
+          Advisor_RequestStatusID: req.query.statusid
+        });
+      } else {
+        whereStr.push({
+          Advisor_RequestStatus: {
+            [Op.is]: null
+          }
+        });
+      }
     }
+
     const data = await db.project_advisor.findAll({
       include: [
         {
@@ -43,7 +52,6 @@ router.get("/", async (req, res) => {
       ],
       where: whereStr
     });
-    console.log(whereStr);
     return res.json(data);
   } catch (error) {
     return res.status(500).json({
@@ -106,7 +114,7 @@ router.post("/", async (req, res) => {
 // update
 router.put("/:id", async (req, res) => {
   await db.project_advisor
-    .update(req.body, {
+    .update(req.body.updateObj, {
       where: {
         Advisor_ID: req.params.id
       }
@@ -128,7 +136,6 @@ router.put("/:id", async (req, res) => {
           }
         }
       });
-      console.log(isAllConfirm);
       const isSomeAdvisorReject = await db.project_advisor.findAll({
         where: {
           Advisor_ProjectID: temp.Advisor_ProjectID,
@@ -137,7 +144,6 @@ router.put("/:id", async (req, res) => {
           }
         }
       });
-      console.log(isSomeAdvisorReject);
       if (isSomeAdvisorReject.length != 0) {
         return { code: "REJECT", pID: temp.Advisor_ProjectID };
       } else if (isAllConfirm.length == 0) {
@@ -149,19 +155,32 @@ router.put("/:id", async (req, res) => {
     .then(async result => {
       switch (result.code) {
         case "ALLCONFIRM":
-          await db.project_info.update(
-            { Project_StatusID: 3 }, //set that all teachers confirm to be advisor
-            {
-              where: {
-                Project_ID: result.pID
+          console.log(req.query.isbypass == "true", result.pID);
+          if (req.query.isbypass == "true") {
+            await db.project_info.update(
+              { Project_StatusID: 4 }, //ถ้า isbypass เป็น true set 4(In Progress)
+              {
+                where: {
+                  Project_ID: result.pID
+                }
               }
-            }
-          );
+            );
+          } else {
+            await db.project_info.update(
+              { Project_StatusID: 3 }, //set 3(Wait Instructor)
+              {
+                where: {
+                  Project_ID: result.pID
+                }
+              }
+            );
+          }
+
           break;
         case "REJECT":
           console.log("reject");
           await db.project_info.update(
-            { Project_StatusID: 7 }, //set to Rejected
+            { Project_StatusID: 8, RejectedRemark: req.body.remark, UpdatedBy: req.body.userid }, //set to Rejected
             {
               where: {
                 Project_ID: result.pID
@@ -227,7 +246,7 @@ router.delete("/:id", async (req, res) => {
         });
       }
     })
-    .catch(err => {
+    .catch(() => {
       res.status(500).send({
         message: "Error deleting!"
       });

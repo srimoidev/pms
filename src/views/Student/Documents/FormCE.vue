@@ -20,7 +20,8 @@
                   </v-card-title>
                   <div class="pa-5">
                     <v-file-input
-                      accept="application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                      accept="application/pdf"
+                      type="file"
                       show-size
                       truncate-length="50"
                       outlined

@@ -103,26 +103,44 @@ export async function SelfProject(uID) {
 
 //advisor
 export async function Advisor(pProjectID, pUserID) {
-  return HTTP.get(`project/advisor?projectid=${pProjectID}&userid=${pUserID}`).then(res => {
+  let paramsStr = "";
+  if (pProjectID) {
+    paramsStr += `projectid=${pProjectID}`;
+  }
+  if (pUserID) {
+    paramsStr += `&userid=${pUserID}&all=true`;
+  }
+  console.log(`project/advisor?${paramsStr}`);
+  return HTTP.get(`project/advisor?${paramsStr}`).then(res => {
     return res.data;
   });
 }
 
 //project ของ แต่ละ advisor
 export async function GetProjectByAdvisor(uID) {
-  console.log(uID);
   return await HTTP.get(`/project?advisorid=${uID}&reqStatus=1`).then(res => {
     console.log(res.data);
     return res.data;
   });
 }
-//project รอ advisor รับเป็นที่ปรึกษา
-export async function WaitAdviserConfirmProject(uID) {
-  return await HTTP.get(`/project?advisorid=${uID}&statusid=2`).then(res => {
+//project รอ Confirm จากที่ปรึกษา และ ประจำวิชา
+export async function WaitConfirmProject(uID) {
+  if (uID) {
+    return await HTTP.get(`/project?advisorid=${uID}&statusid=2`).then(res => {
+      return res.data;
+    });
+  } else {
+    return await HTTP.get(`/project?statusid=3`).then(res => {
+      return res.data;
+    });
+  }
+}
+//ที่ปรึกษาที่ยังไม่ได้ Confirm เป็นที่ปรึกษาแต่ละโปรเจ็ค
+export async function GetAllNotConfirmAdvisorByProjectID(pID) {
+  return await HTTP.get(`/project/advisor?projectid=${pID}`).then(res => {
     return res.data;
   });
 }
-
 //#endregion outbound
 
 //#region inbound
@@ -149,8 +167,23 @@ export async function Leave(pID, uID) {
   });
 }
 
-export async function ConfirmOrRejectProject(pAdvisorID, pStatus) {
-  await HTTP.put(`/project/advisor/${pAdvisorID}`, { Advisor_RequestStatus: pStatus }).catch(() => {
+export async function ConfirmOrRejectProject(pUserID, pAdvisorID, pStatus, pIsBypass, pRemark) {
+  await HTTP.put(`/project/advisor/${pAdvisorID}?isbypass=${pIsBypass}`, {
+    updateObj: { Advisor_RequestStatus: pStatus },
+    remark: pRemark,
+    userid: pUserID
+  }).catch(() => {
+    //
+  });
+}
+
+export async function InstructorConfirmOrRejectProject(pUserID, pProjectID, pStatus) {
+  await HTTP.put(`/project/${pProjectID}`, { updateBy: pUserID, Project_StatusID: pStatus }).catch(() => {
+    //
+  });
+}
+export async function Resend(pProjectID, pUpdateObj, pAdvisors) {
+  await HTTP.put(`/project/resend/${pProjectID}`, { project: pUpdateObj, advisors: pAdvisors }).catch(() => {
     //
   });
 }
