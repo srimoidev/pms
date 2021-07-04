@@ -162,7 +162,7 @@ export default {
           return !this.filterStatus || item.Meeting_RequestStatusID == this.filterStatus;
         })
         .filter(item => {
-          return item.Meeting_TeacherID == this.user.User_ID;
+          return item.Meeting_TeacherID == this.user.UserID;
         });
     }
   },
@@ -179,7 +179,7 @@ export default {
       this.allMeeting = await this.Meeting.GetAll();
       this.allTeacher = await this.User.UserTeacher();
       this.allProject = await this.Project.GetAll();
-      this.meetingType = this.user.User_TypeID;
+      this.meetingType = this.user.UserTypeID;
       this.loading = false;
     },
     async submit(pData) {
@@ -187,12 +187,12 @@ export default {
         //นักศึกษานัดอาจารย์
         await this.Meeting.New({
           Meeting_Name: pData.Meeting_Name,
-          Meeting_ProjectID: this.user.User_ProjectID,
+          Meeting_ProjectID: this.user.ProjectID,
           Meeting_Detail: pData.Meeting_Detail,
           Meeting_TeacherID: pData.Meeting_TeacherID,
           Meeting_TypeID: this.meetingType,
           Meeting_DateTime: pData.Meeting_DateTime,
-          Meeting_CreatedBy: this.user.User_ID,
+          Meeting_CreatedBy: this.user.UserID,
           Meeting_RequestStatusID: "1"
         }).then(() => {
           this.loadData();
@@ -203,10 +203,10 @@ export default {
           Meeting_Name: pData.Meeting_Name,
           Meeting_ProjectID: pData.Meeting_ProjectID,
           Meeting_Detail: pData.Meeting_Detail,
-          Meeting_TeacherID: this.user.User_ID,
+          Meeting_TeacherID: this.user.UserID,
           Meeting_TypeID: this.meetingType,
           Meeting_DateTime: pData.Meeting_DateTime,
-          Meeting_CreatedBy: this.user.User_ID,
+          Meeting_CreatedBy: this.user.UserID,
           Meeting_RequestStatusID: "1"
         }).then(() => {
           this.loadData();

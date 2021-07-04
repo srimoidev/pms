@@ -14,7 +14,7 @@
             </v-col>
             <v-col class="shrink">
               <v-icon
-                v-if="meetingData.Meeting_TypeID !== this.user.User_TypeID"
+                v-if="meetingData.Meeting_TypeID !== this.user.UserTypeID"
                 large
                 class="mr-2"
                 color="green"
@@ -25,7 +25,7 @@
             </v-col>
             <v-col class="shrink">
               <v-icon
-                v-if="meetingData.Meeting_TypeID !== this.user.User_TypeID"
+                v-if="meetingData.Meeting_TypeID !== this.user.UserTypeID"
                 large
                 class="mr-2"
                 color="red"
@@ -35,7 +35,7 @@
               </v-icon>
             </v-col>
             <v-col class="shrink">
-              <v-icon v-if="meetingData.Meeting_TypeID == this.user.User_TypeID" large class="mr-2" @click="deleteItem(meetingData.Meeting_ID)">
+              <v-icon v-if="meetingData.Meeting_TypeID == this.user.UserTypeID" large class="mr-2" @click="deleteItem(meetingData.Meeting_ID)">
                 mdi-delete
               </v-icon>
             </v-col>
@@ -59,7 +59,7 @@
                 <div v-show="showProject">
                   <v-divider></v-divider>
                   <v-card-text>
-                    {{ meetingData.Meeting_Project.Project_NameTH }}
+                    {{ meetingData.Meeting_Project.ProjectNameTH }}
                   </v-card-text>
                 </div>
               </v-expand-transition>
@@ -77,7 +77,7 @@
               <v-expand-transition>
                 <div v-show="showTeacher">
                   <v-divider></v-divider>
-                  <v-card-text> {{ meetingData.Meeting_Teacher.User_Firstname }} {{ meetingData.Meeting_Teacher.User_Lastname }} </v-card-text>
+                  <v-card-text> {{ meetingData.Meeting_Teacher.Firstname }} {{ meetingData.Meeting_Teacher.Lastname }} </v-card-text>
                 </div>
               </v-expand-transition>
             </v-card>
@@ -95,9 +95,7 @@
                 <div v-show="showMember">
                   <v-divider></v-divider>
                   <v-card-text>
-                    <p v-for="(item, index) in meetingData.Meeting_Project.Project_Members" :key="index">
-                      {{ item.User_Firstname }} {{ item.User_Lastname }}
-                    </p>
+                    <p v-for="(item, index) in meetingData.Meeting_Project.Project_Members" :key="index">{{ item.Firstname }} {{ item.Lastname }}</p>
                   </v-card-text>
                 </div>
               </v-expand-transition>

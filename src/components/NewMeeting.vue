@@ -24,7 +24,7 @@
               v-model="meetingTeacherID"
               label="อาจารย์"
               :error-messages="errors"
-              item-value="User_ID"
+              item-value="UserID"
               :item-text="selectText"
               bottom
               outlined
@@ -38,8 +38,8 @@
               v-model="meetingProjectID"
               label="กลุ่มโครงงาน"
               :error-messages="errors"
-              item-value="Project_ID"
-              item-text="Project_NameTH"
+              item-value="ProjectID"
+              item-text="ProjectNameTH"
               bottom
               outlined
               dense
@@ -52,6 +52,7 @@
           </ValidationProvider>
         </form>
       </ValidationObserver>
+      meetingProjectID: {{ meetingProjectID }}
       <div class="d-flex">
         <v-spacer></v-spacer>
         <v-btn class="ma-2" color="success" @click="submit">Create</v-btn>
@@ -91,8 +92,8 @@ export default {
       default: () => []
     },
     meetingType: {
-      type: String,
-      default: "1"
+      type: Number,
+      default: null
     }
   },
   data() {
@@ -107,7 +108,7 @@ export default {
   computed: {},
   methods: {
     selectText(item) {
-      return item.User_Firstname + " " + item.User_Lastname;
+      return item.Firstname + " " + item.Lastname;
     },
     async submit() {
       if (await this.$refs.observer.validate()) {

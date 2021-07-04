@@ -70,6 +70,7 @@ router.get("/:id", async (req, res) => {
 
 // create
 router.post("/", async (req, res) => {
+  console.log(req);
   await db.meeting
     .create(req.body)
     .then(data => {
