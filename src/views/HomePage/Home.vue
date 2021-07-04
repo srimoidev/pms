@@ -2,11 +2,13 @@
   <div class="home-container">
     <v-app-bar app height="60" color="transparent" elevate-on-scroll>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" v-if="$vuetify.breakpoint.mdAndDown"></v-app-bar-nav-icon>
-      <v-toolbar-title class="logo" v-if="$vuetify.breakpoint.smAndUp">
-        <v-avatar>
+      <v-toolbar-title class="logo d-flex" v-if="$vuetify.breakpoint.smAndUp">
+        <!-- <v-avatar>
           <v-icon>mdi-account-circle</v-icon>
-        </v-avatar>
-        <span v-t="{ path: 'APP.APP_NAME' }"></span>
+        </v-avatar> -->
+        <v-img src="@/assets/PMS-logo3-white.png" max-height="96" max-width="96" contain></v-img>
+        <!-- <v-img src="@/assets/20181114112806_98990.png" max-height="56" max-width="56" contain></v-img> -->
+        <!-- <span v-t="{ path: 'APP.APP_NAME' }"></span> -->
       </v-toolbar-title>
       <!-- <div :style="isLogin ? 'width:260%' : 'width:168%'"></div> -->
       <v-spacer></v-spacer>

@@ -2,19 +2,19 @@ module.exports = (sequelize, Sequelize) => {
   const project_committee_role = sequelize.define(
     "project_committee_role",
     {
-      CommitteeRole_ID: {
+      CommitteeRoleID: {
         type: Sequelize.INTEGER,
-        field: "CommitteeRole_ID",
-        primaryKey: true,
+        field: "CommitteeRoleID",
+        primaryKey: true
       },
-      CommitteeRole_Name: {
+      CommitteeRoleName: {
         type: Sequelize.STRING,
-        field: "CommitteeRole_Name",
-      },
+        field: "CommitteeRoleName"
+      }
     },
     {
       timestamps: false,
-      freezeTableName: true,
+      freezeTableName: true
     }
   );
   return project_committee_role;

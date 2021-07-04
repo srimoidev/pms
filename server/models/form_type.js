@@ -2,19 +2,39 @@ module.exports = (sequelize, Sequelize) => {
   const form_type = sequelize.define(
     "form_type",
     {
-      FormType_ID: {
+      FormTypeID: {
         type: Sequelize.INTEGER,
-        field: "FormType_ID",
-        primaryKey: true,
+        field: "FormTypeID",
+        primaryKey: true
       },
-      FormType_Name: {
+      FormTypeName: {
         type: Sequelize.STRING,
-        field: "FormType_Name",
+        field: "FormTypeName"
       },
+      FormTypeDetail: {
+        type: Sequelize.STRING,
+        field: "FormTypeDetail"
+      },
+      CreatedBy: {
+        type: Sequelize.INTEGER,
+        field: "CreatedBy"
+      },
+      CreatedTime: {
+        type: Sequelize.DATE,
+        field: "CreatedTime"
+      },
+      UpdatedBy: {
+        type: Sequelize.INTEGER,
+        field: "UpdatedBy"
+      },
+      UpdatedTime: {
+        type: Sequelize.DATE,
+        field: "UpdatedTime"
+      }
     },
     {
       timestamps: false,
-      freezeTableName: true,
+      freezeTableName: true
     }
   );
   return form_type;

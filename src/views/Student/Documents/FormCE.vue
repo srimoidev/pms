@@ -51,14 +51,14 @@
           <span>ส่งเอกสารใหม่</span>
         </v-tooltip>
       </template>
-      <template v-slot:[`item.Form_UpdatedTime`]="{ item }">
-        <router-link class="text-none" :to="{ path: 'form_preview', query: { d: item.Form_ID } }">{{
-          new Date(item.Form_UpdatedTime).toLocaleDateString()
+      <template v-slot:[`item.UpdatedTime`]="{ item }">
+        <router-link class="text-none" :to="{ path: 'form_preview', query: { d: item.FormID } }">{{
+          new Date(item.UpdatedTime).toLocaleDateString()
         }}</router-link>
         <!-- <v-badge color="red" inline content="5"></v-badge> -->
       </template>
-      <template v-slot:[`item.Form_StatusID`]="{ item }">
-        <form-status :status="item.Form_StatusID"></form-status>
+      <template v-slot:[`item.FormStatusID`]="{ item }">
+        <form-status :status="item.Form_Status"></form-status>
       </template>
     </v-data-table>
   </v-card>
@@ -91,10 +91,10 @@ export default {
           text: "อัปเดตล่าสุด",
           align: "start",
           sortable: false,
-          value: "Form_UpdatedTime"
+          value: "UpdatedTime"
         },
-        { text: "อัปเดตโดย", value: "UpdatedBy", sortable: false },
-        { text: "สถานะ", value: "Form_StatusID" }
+        { text: "อัปเดตโดย", value: "UpdatedUser.Fullname", sortable: false },
+        { text: "สถานะ", value: "FormStatusID" }
       ]
     };
   },
@@ -119,7 +119,7 @@ export default {
   methods: {
     async loadData() {
       // this.user = JSON.parse(localStorage.getItem("user"));
-      this.data = await this.Form.AllFormEachType(this.user.User_ProjectID, this.formTID);
+      this.data = await this.Form.AllFormEachType(this.user.ProjectID, this.formTID);
       console.log(this.user, this.formTID, this.data);
       // if (temp) {
       //   temp.map(async item => {
@@ -155,7 +155,7 @@ export default {
 
       this.message = "";
 
-      this.Form.Upload(this.user.User_ProjectID, this.formTID, this.currentFile, event => {
+      this.Form.Upload(this.user.UserID, this.user.ProjectID, this.formTID, this.currentFile, event => {
         this.progress = Math.round((100 * event.loaded) / event.total);
       })
         .catch(() => {

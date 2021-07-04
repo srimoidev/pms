@@ -19,8 +19,8 @@
           <v-select
             v-model="typeFilter"
             :items="projectType"
-            item-text="ProjectType_Name"
-            item-value="ProjectType_ID"
+            item-text="ProjectTypeNameTH"
+            item-value="ProjectTypeID"
             hide-details
             outlined
             dense
@@ -31,8 +31,8 @@
           <v-select
             v-model="statusFilter"
             :items="allStatus"
-            item-text="ProjectStatus_Name"
-            item-value="ProjectStatus_ID"
+            item-text="ProjectStatusName"
+            item-value="ProjectStatusID"
             hide-details
             outlined
             dense
@@ -46,22 +46,22 @@
           </v-btn>
         </v-toolbar>
       </template>
-      <template v-slot:[`item.Project_MaxMember`]="{ item }">
-        {{ item.Project_Members.length + " / " + item.Project_MaxMember }}
+      <template v-slot:[`item.MaxMember`]="{ item }">
+        {{ item.Project_Members.length + " / " + item.MaxMember }}
       </template>
       <template v-slot:[`item.Project_Type`]="{ item }">
-        <v-chip class=" white--text" :class="`type-${item.Project_Type.ProjectType_ID}`" small label>
-          {{ item.Project_Type.ProjectType_Name }}
+        <v-chip class=" white--text" :class="`type-${item.Project_Type.ProjectTypeID}`" small label>
+          {{ item.Project_Type.ProjectTypeNameTH }}
         </v-chip>
       </template>
       <template v-slot:[`item.Project_NameTH`]="{ item }">
-        {{ `${item.Project_NameTH} (${item.Project_NameEN})` }}
+        {{ `${item.ProjectNameTH} (${item.ProjectNameEN})` }}
       </template>
       <template v-slot:[`item.Project_Section`]="{ item }">
-        {{ item.Project_Section.Section_Name }}
+        {{ item.Project_Section.Detail }}
       </template>
       <template v-slot:[`item.Project_Status`]="{ item }">
-        <project-status :status="item.Project_Status.ProjectStatus_ID"></project-status>
+        <project-status :status="item.Project_Status.ProjectStatusID"></project-status>
       </template>
       <template v-slot:[`item.actions`]="{ item }">
         <v-tooltip bottom>
@@ -135,14 +135,14 @@ export default {
           text: "ชื่อโครงงาน",
           align: "start",
           sortable: true,
-          value: "Project_NameTH",
+          value: "ProjectNameTH",
           width: 500
         },
         // { text: "อาจารย์ที่ปรึกษา", value: "GROUP_ADVISOR" },
         { text: "ประเภท", value: "Project_Type", sortable: false },
         { text: "สมาชิก", value: "Project_MaxMember", sortable: false },
         // { text: "รายละเอียด", value: "Project_Detail", sortable: false },
-        { text: "ปีการศึกษา", value: "Project_Section" },
+        { text: "ปีการศึกษา", value: "Section" },
         { text: "สถานะ", value: "Project_Status" },
         { text: "Action", value: "actions" }
       ]
@@ -157,10 +157,10 @@ export default {
     filteredItems() {
       return this.allProject
         .filter(item => {
-          return !this.typeFilter || item.Project_TypeID == this.typeFilter;
+          return !this.typeFilter || item.ProjectTypeID == this.typeFilter;
         })
         .filter(item => {
-          return !this.statusFilter || item.Project_StatusID == this.statusFilter;
+          return !this.statusFilter || item.ProjectStatusID == this.statusFilter;
         });
     }
   },
@@ -181,18 +181,19 @@ export default {
       this.projectType = type.slice();
       this.allType = type.slice();
       this.projectType.push({
-        ProjectType_ID: 0,
-        ProjectType_Name: "ทั้งหมด"
+        ProjectTypeID: 0,
+        ProjectTypeNameTH: "ทั้งหมด"
       });
       this.allStatus.push({
-        ProjectStatus_ID: 0,
-        ProjectStatus_Name: "ทั้งหมด"
+        ProjectStatusID: 0,
+        ProjectStatusName: "ทั้งหมด"
       });
       this.allProject = await this.Project.GetAll();
       this.loading = false;
     },
     async newProject(project, advisors, members) {
-      project.createBy = this.user.User_ID;
+      project.CreatedBy = this.user.UserID;
+      project.UpdatedBy = this.user.UserID;
       await this.Project.New(project, advisors, members).then(() => {
         this.loadData();
       });

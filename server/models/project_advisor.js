@@ -2,32 +2,44 @@ module.exports = (sequelize, Sequelize) => {
   const project_advisor = sequelize.define(
     "project_advisor",
     {
-      Advisor_ID: {
+      AdvisorID: {
         type: Sequelize.INTEGER,
-        field: "Advisor_ID",
+        field: "AdvisorID",
         primaryKey: true,
         autoIncrement: true
       },
-      Advisor_ProjectID: {
+      ProjectID: {
         type: Sequelize.INTEGER,
-        field: "Advisor_ProjectID",
+        field: "ProjectID"
       },
-      Advisor_UserID: {
+      UserID: {
         type: Sequelize.INTEGER,
-        field: "Advisor_UserID",
+        field: "UserID"
       },
-      Advisor_RequestStatus: {
+      RequestStatus: {
         type: Sequelize.BOOLEAN,
-        field: "Advisor_RequestStatus",
+        field: "RequestStatus"
       },
-      Advisor_UpdatedTime: {
+      CreatedBy: {
+        type: Sequelize.INTEGER,
+        field: "CreatedBy"
+      },
+      CreatedTime: {
         type: Sequelize.DATE,
-        field: "Advisor_UpdatedTime",
+        field: "CreatedTime"
       },
+      UpdatedBy: {
+        type: Sequelize.INTEGER,
+        field: "UpdatedBy"
+      },
+      UpdatedTime: {
+        type: Sequelize.DATE,
+        field: "UpdatedTime"
+      }
     },
     {
       timestamps: false,
-      freezeTableName: true,
+      freezeTableName: true
     }
   );
   return project_advisor;

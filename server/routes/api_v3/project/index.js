@@ -12,44 +12,66 @@ router.get("/", async (req, res) => {
     var whereStr = [];
     if (req.query.projectid) {
       whereStr.push({
-        Project_ID: req.query.projectid
+        ProjectID: req.query.projectid
       });
     }
     if (req.query.typeid) {
       whereStr.push({
-        Project_TypeID: req.query.typeid
+        ProjectTypeID: req.query.typeid
       });
     }
     if (req.query.sectionid) {
       whereStr.push({
-        Project_SectionID: req.query.sectionid
+        SectionID: req.query.sectionid
       });
     }
     if (req.query.statusid) {
       whereStr.push({
-        Project_StatusID: req.query.statusid
+        ProjectStatusID: req.query.statusid
       });
     }
     if (req.query.advisorid) {
-      whereStr.push({
-        "$Project_Advisors.User_ID$": req.query.advisorid,
-        [Op.and]: [
-          {
-            "$Project_Advisors.Advisors.Advisor_RequestStatus$": req.query.reqStatus ? req.query.reqStatus : null
-          }
-        ]
-      });
+      if (req.query.statusid) {
+        var allProject = await db.project_advisor.findAll({
+          attributes: ["ProjectID"],
+          include: [{ model: db.project_info, as: "Project" }],
+          where: {
+            UserID: req.query.advisorid,
+            [Op.and]: [
+              {
+                RequestStatus: req.query.reqStatus ? req.query.reqStatus : null
+              }
+            ]
+          },
+          raw: true
+        });
+        console.log(allProject);
+        allProject = allProject.map(i => i.ProjectID);
+        whereStr.push({
+          ProjectID: { [Op.in]: allProject },
+          [Op.and]: [{ ProjectStatusID: req.query.statusid ? req.query.statusid : null }]
+        });
+      } else {
+        whereStr.push({
+          "$Project_Advisors.UserID$": req.query.advisorid,
+          [Op.and]: [
+            {
+              "$Project_Advisors.Advisors.RequestStatus$": req.query.reqStatus ? req.query.reqStatus : null
+            }
+          ]
+        });
+      }
     }
     if (req.query.name) {
       whereStr.push({
         [Op.or]: [
           {
-            Project_NameEN: {
+            ProjectNameEN: {
               [Op.like]: `%${req.query.name}%`
             }
           },
           {
-            Project_NameTH: {
+            ProjectNameTH: {
               [Op.like]: `%${req.query.name}%`
             }
           }
@@ -64,16 +86,16 @@ router.get("/", async (req, res) => {
           through: {
             attributes: []
           },
-          attributes: { exclude: ["User_UserName", "User_Password", "project_member"] }
+          attributes: { exclude: ["Username", "Password", "StudentID", "AcademicYear", "CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] }
         },
         {
           model: db.user_profile,
           as: "Project_Advisors",
           through: {
             as: "Advisors",
-            attributes: { exclude: ["Advisor_ProjectID", "Advisor_UserID", "Advisor_RequestStatus", "Advisor_UpdatedTime"] }
+            attributes: ["AdvisorID"]
           },
-          attributes: { exclude: ["User_UserName", "User_Password", "User_StudentID", "User_AcademicYear"] }
+          attributes: { exclude: ["Username", "Password", "StudentID", "AcademicYear", "CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] }
         },
         {
           model: db.user_profile,
@@ -85,15 +107,18 @@ router.get("/", async (req, res) => {
         },
         {
           model: db.project_status,
-          as: "Project_Status"
+          as: "Project_Status",
+          attributes: { exclude: ["CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] }
         },
         {
           model: db.section,
-          as: "Project_Section"
+          as: "Project_Section",
+          attributes: { exclude: ["CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] }
         },
         {
           model: db.project_type,
-          as: "Project_Type"
+          as: "Project_Type",
+          attributes: { exclude: ["CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] }
         },
         {
           model: db.project_progress,
@@ -102,11 +127,11 @@ router.get("/", async (req, res) => {
         {
           model: db.user_profile,
           as: "UpdatedUser",
-          attributes: { exclude: ["User_UserName", "User_Password", "User_StudentID", "User_AcademicYear"] }
+          attributes: { exclude: ["Username", "Password", "StudentID", "AcademicYear", "CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] }
         }
       ],
       where: whereStr,
-      attributes: { exclude: ["Project_TypeID", "Project_SectionID", "Project_StatusID"] }
+      attributes: { exclude: ["ProjectTypeID", "SectionID", "ProjectStatusID"] }
       //TODO order ตาม กลุ่มที่ยังไม่เต็ม และ ตาม create by
     });
     return res.json(data);
@@ -127,16 +152,16 @@ router.get("/:id", async (req, res) => {
           through: {
             attributes: []
           },
-          attributes: { exclude: ["User_UserName", "User_Password", "project_member"] }
+          attributes: { exclude: ["Username", "Password", "CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] }
         },
         {
           model: db.user_profile,
           as: "Project_Advisors",
           through: {
             as: "Advisors",
-            attributes: { exclude: ["Advisor_ProjectID", "Advisor_UserID", "Advisor_RequestStatus", "Advisor_UpdatedTime"] }
+            attributes: ["AdvisorID"]
           },
-          attributes: { exclude: ["User_UserName", "User_Password", "User_StudentID", "User_AcademicYear"] }
+          attributes: { exclude: ["Username", "Password", "StudentID", "AcademicYear", "CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] }
         },
         {
           model: db.user_profile,
@@ -148,15 +173,18 @@ router.get("/:id", async (req, res) => {
         },
         {
           model: db.project_status,
-          as: "Project_Status"
+          as: "Project_Status",
+          attributes: { exclude: ["CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] }
         },
         {
           model: db.section,
-          as: "Project_Section"
+          as: "Project_Section",
+          attributes: { exclude: ["CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] }
         },
         {
           model: db.project_type,
-          as: "Project_Type"
+          as: "Project_Type",
+          attributes: { exclude: ["CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] }
         },
         {
           model: db.project_progress,
@@ -165,11 +193,11 @@ router.get("/:id", async (req, res) => {
         {
           model: db.user_profile,
           as: "UpdatedUser",
-          attributes: { exclude: ["User_UserName", "User_Password", "User_StudentID", "User_AcademicYear"] }
+          attributes: { exclude: ["Username", "Password", "StudentID", "AcademicYear", "CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] }
         }
       ],
-      where: { Project_ID: req.params.id },
-      attributes: { exclude: ["Project_TypeID", "Project_SectionID", "Project_StatusID"] }
+      where: { ProjectID: req.params.id },
+      attributes: { exclude: ["ProjectTypeID", "SectionID", "ProjectStatusID"] }
     });
     return res.json(data);
   } catch (error) {
@@ -196,22 +224,22 @@ router.post("/", async (req, res) => {
 //สร้างกลุ่ม เพิ่่มอาจารย์ที่ปรึกษา เพิ่มสมาชิก
 router.post("/create", async (req, res) => {
   let initStatus;
-  const createBy = await db.user_profile.findOne({ where: { User_ID: req.body.project.createBy } });
+  const createBy = await db.user_profile.findOne({ where: { UserID: req.body.project.CreatedBy } });
   //กรณีนักศึกษาเป็นผู้สร้าง
-  if (createBy.User_TypeID == 1) {
-    if (req.body.project.Project_MaxMember == req.body.members?.length) {
+  if (createBy.UserTypeID == 1) {
+    if (req.body.project.MaxMember == req.body.members?.length) {
       initStatus = 2; //Wait Advisor ถ้า Add member มาเต็มจำนวน
     } else {
       initStatus = 1; //Draft ถ้า Add มาไม่เต็ม
     }
   } else {
-    if (req.body.project.Project_MaxMember == req.body.members?.length) {
+    if (req.body.project.MaxMember == req.body.members?.length) {
       initStatus = 3; //Wait Advisor ถ้า Add member มาเต็มจำนวน
     } else {
       initStatus = 1; //Draft ถ้า Add มาไม่เต็ม
     }
   }
-  req.body.project.Project_StatusID = initStatus;
+  req.body.project.ProjectStatusID = initStatus;
   const transaction = await db.sequelize.transaction();
   try {
     const project = await db.project_info.create(req.body.project, {
@@ -220,8 +248,10 @@ router.post("/create", async (req, res) => {
     for (const item of req.body.advisors) {
       await db.project_advisor.create(
         {
-          Advisor_ProjectID: project.Project_ID,
-          Advisor_UserID: item
+          ProjectID: project.ProjectID,
+          UserID: item,
+          CreatedBy: req.body.project.CreatedBy,
+          UpdatedBy: req.body.project.UpdatedBy
         },
         {
           transaction: transaction
@@ -231,8 +261,10 @@ router.post("/create", async (req, res) => {
     for (const item of req.body.members) {
       await db.project_member.create(
         {
-          Member_UserID: item,
-          Member_ProjectID: project.Project_ID
+          UserID: item,
+          ProjectID: project.ProjectID,
+          CreatedBy: req.body.project.CreatedBy,
+          UpdatedBy: req.body.project.UpdatedBy
         },
         {
           transaction: transaction
@@ -254,7 +286,7 @@ router.put("/:id", async (req, res) => {
   await db.project_info
     .update(req.body, {
       where: {
-        Project_ID: req.params.id
+        ProjectID: req.params.id
       }
     })
     .then(num => {
@@ -276,23 +308,24 @@ router.put("/:id", async (req, res) => {
 });
 //ขออนุมัติโปรเจ็คใหม่กรณีถูก Reject
 router.put("/resend/:id", async (req, res) => {
-  req.body.project.Project_StatusID = 2; //set 2 Wait Advisor
+  req.body.project.ProjectStatusID = 2; //set 2 Wait Advisor
+  req.body.project.UpdatedBy = req.body.userid;
   await db.project_info
     .update(req.body.project, {
       where: {
-        Project_ID: req.params.id
+        ProjectID: req.params.id
       }
     })
     .then(async () => {
       await db.project_advisor
         .destroy({
           where: {
-            Advisor_ProjectID: req.params.id
+            ProjectID: req.params.id
           }
         })
         .then(async () => {
           for (const item of req.body.advisors) {
-            await db.project_advisor.create({ Advisor_ProjectID: req.params.id, Advisor_UserID: item });
+            await db.project_advisor.create({ ProjectID: req.params.id, UserID: item, CreatedBy: req.body.userid, UpdatedBy: req.body.userid });
           }
         });
     })
@@ -319,7 +352,7 @@ router.delete("/:id", async (req, res) => {
     .destroy({
       where: [
         {
-          Project_ID: req.params.id
+          ProjectID: req.params.id
         }
       ]
     })

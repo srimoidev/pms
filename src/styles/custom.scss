@@ -16,6 +16,9 @@
   }
 }
 @include ellipsis-x;
+/**
+*   Project Type
+*/
 
 /* Hardware */
 .type-1 {
@@ -30,6 +33,10 @@
   background-color: #b388ff !important;
 }
 
+/**
+*   Project Status
+*/
+
 /* Draft */
 .p-status-1 {
   background-color: #adadad !important;
@@ -38,29 +45,34 @@
 .p-status-2 {
   background-color: #ffea00 !important;
 }
-/* In Progress */
+/* Wait Instructor */
 .p-status-3 {
   background-color: #29b6f6 !important;
 }
-/* Incomplete */
+/* In Progress */
 .p-status-4 {
   background-color: #fb6340 !important;
 }
-/* Failure */
+/* Incomplete */
 .p-status-5 {
   background-color: #f5365c !important;
 }
-/* Completed */
+/* Failure */
 .p-status-6 {
   background-color: #2dce89 !important;
 }
+/* Completed */
 .p-status-7 {
   background-color: mediumpurple !important ;
 }
+/* Rejected */
 .p-status-8 {
   background-color: deeppink !important;
 }
 
+/**
+*   Meeting Status
+*/
 .m-status-1 {
   background-color: #b388ff;
 }
@@ -69,6 +81,34 @@
 }
 .m-status-3 {
   background-color: red;
+}
+
+/**
+*   Form Status
+*/
+/* None */
+.f-status-0 {
+  background-color: #adadad !important;
+}
+/* pending */
+.f-status-1 {
+  background-color: #fb6340 !important;
+}
+/* Wait Adviser */
+.f-status-2 {
+  background-color: aquamarine !important;
+}
+/* Wait Instructor */
+.f-status-3 {
+  background-color: aqua !important;
+}
+/* Rejected */
+.f-status-4 {
+  background-color: #f5365c !important;
+}
+/* Approved */
+.f-status-5 {
+  background-color: #2dce89 !important;
 }
 
 //scrollbar

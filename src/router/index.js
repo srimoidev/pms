@@ -41,7 +41,7 @@ import Teacher_Documents from "../views/Teacher/ManageProject/Documents";
 import Teacher_FormCE from "../views/Teacher/ManageProject/FormCE";
 import Teacher_NewProjects from "../views/Teacher/Request/NewProjects";
 //App Environment Configuration
-import App_EnvConfig from "../views/AppEnvironments/AppEnvironment.vue";
+import App_Configs from "../views/AppConfigurations/AppConfigurations.vue";
 
 Vue.use(VueRouter);
 
@@ -198,9 +198,9 @@ const routes = [
         meta: { title: "Overview | PMS" }
       },
       {
-        path: "app_env",
+        path: "app_configs",
         name: "App Environment Configuration",
-        component: App_EnvConfig,
+        component: App_Configs,
         meta: { title: "App Environment Configuration | PMS" }
       },
       {
@@ -295,7 +295,7 @@ router.beforeEach((to, from, next) => {
   //  */
 
   if (loggedIn) {
-    const userTypeID = JSON.parse(atob(loggedIn.token.split(".")[1])).User_TypeID;
+    const userTypeID = JSON.parse(atob(loggedIn.token.split(".")[1])).UserTypeID;
     //login ครั้งละ 60 นาที
     if (new Date().getTime() < loggedIn.expiry) {
       if (to.matched.some(record => record.meta.is_student)) {

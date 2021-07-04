@@ -44,7 +44,7 @@ export const user = {
     }
   },
   getters: {
-    TypeID: state => state.data.User_TypeID,
+    TypeID: state => state.data.UserTypeID,
     UserData: state => state.data
   }
 };

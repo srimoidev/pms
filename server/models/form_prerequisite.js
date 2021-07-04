@@ -2,27 +2,39 @@ module.exports = (sequelize, Sequelize) => {
   const form_prerequisite = sequelize.define(
     "form_prerequisite",
     {
-      Pre_ID: {
+      PrerequisiteID: {
         type: Sequelize.INTEGER,
-        field: "Pre_ID",
-        primaryKey: true,
+        field: "PrerequisiteID",
+        primaryKey: true
       },
-      Pre_FormTypeID: {
+      FormTypeID: {
         type: Sequelize.INTEGER,
-        field: "Pre_FormTypeID",
+        field: "FormTypeID"
       },
-      Pre_FormReqTypeID: {
+      FormReqTypeID: {
         type: Sequelize.INTEGER,
-        field: "Pre_FormReqTypeID",
+        field: "FormReqTypeID"
       },
-      Pre_UpdateTime: {
+      CreatedBy: {
+        type: Sequelize.INTEGER,
+        field: "CreatedBy"
+      },
+      CreatedTime: {
         type: Sequelize.DATE,
-        field: "Pre_UpdateTime",
+        field: "CreatedTime"
       },
+      UpdatedBy: {
+        type: Sequelize.INTEGER,
+        field: "UpdatedBy"
+      },
+      UpdatedTime: {
+        type: Sequelize.DATE,
+        field: "UpdatedTime"
+      }
     },
     {
       timestamps: false,
-      freezeTableName: true,
+      freezeTableName: true
     }
   );
   return form_prerequisite;

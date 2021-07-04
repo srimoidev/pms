@@ -26,8 +26,8 @@
               chips
               color="blue-grey lighten-2"
               label="สมาชิก"
-              item-text="User_Firstname"
-              item-value="User_ID"
+              item-text="Fullname"
+              item-value="UserID"
               multiple
               hide-no-data
               outlined
@@ -39,7 +39,7 @@
                     <!-- <v-img :src="teacher.item.avatar"></v-img> -->
                     <v-icon>mdi-account</v-icon>
                   </v-avatar>
-                  {{ `${students.item.User_Firstname} ${students.item.User_Lastname}` }}
+                  {{ students.item.Fullname }}
                 </v-chip>
               </template>
               <template v-slot:item="students">
@@ -48,9 +48,7 @@
                   <!-- <img :src="teacher.item.avatar" /> -->
                 </v-list-item-avatar>
                 <v-list-item-content>
-                  <v-list-item-title :key="students.item.User_ID">{{
-                    `${students.item.User_Firstname} ${students.item.User_Lastname}`
-                  }}</v-list-item-title>
+                  <v-list-item-title :key="students.item.UserID">{{ students.item.Fullname }}</v-list-item-title>
                 </v-list-item-content>
               </template>
             </v-autocomplete>
@@ -66,8 +64,8 @@
                 v-model="type"
                 :items="alltype"
                 label="ประเภท"
-                item-text="ProjectType_Name"
-                item-value="ProjectType_ID"
+                item-text="ProjectTypeNameTH"
+                item-value="ProjectTypeID"
                 :error-messages="errors"
                 outlined
                 dense
@@ -106,8 +104,8 @@
               chips
               color="blue-grey lighten-2"
               label="อาจารย์ที่ปรึกษา"
-              item-text="User_Firstname"
-              item-value="User_ID"
+              item-text="Fullname"
+              item-value="UserID"
               multiple
               hide-no-data
               clearable
@@ -120,7 +118,7 @@
                     <!-- <v-img :src="teacher.item.avatar"></v-img> -->
                     <v-icon>mdi-account</v-icon>
                   </v-avatar>
-                  {{ `${teacher.item.User_Firstname} ${teacher.item.User_Lastname}` }}
+                  {{ teacher.item.Fullname }}
                 </v-chip>
               </template>
               <template v-slot:item="teacher">
@@ -129,9 +127,7 @@
                   <!-- <img :src="teacher.item.avatar" /> -->
                 </v-list-item-avatar>
                 <v-list-item-content>
-                  <v-list-item-title :key="teacher.item.User_ID">{{
-                    `${teacher.item.User_Firstname} ${teacher.item.User_Lastname}`
-                  }}</v-list-item-title>
+                  <v-list-item-title :key="teacher.item.UserID">{{ teacher.item.Fullname }}</v-list-item-title>
                 </v-list-item-content>
               </template>
             </v-autocomplete>
@@ -216,11 +212,10 @@ export default {
   },
   data() {
     return {
-      th_name: "ระบบบริหารและจัดการโปรเจ็ค",
-      en_name: "Project Management System",
+      th_name: "",
+      en_name: "",
       selectedSection: {},
-      detail:
-        "เราคงเคยพบว่า เมื่อทำอะไรไม่ได้วางแผนหรือมองการณ์ไกล ถึงเวลาเลยรับมือไม่ได้ มันก็เสียหาย แต่บางที ทั้งตั้งใจ และวางแผนเอาไว้ดิบดีก็มีอะไรมาทำให้พังไม่เป็นท่า อุตส่าห์ลงทุนอะไรไปมากมาย แล้วเราคาดเดาอะไรได้บ้าง!?",
+      detail: "",
       number: 1,
       type: null,
       advisors: [],
@@ -236,9 +231,9 @@ export default {
   },
   beforeMount() {
     if (this.teacher) {
-      this.advisors.push(this.createUser.User_ID);
+      this.advisors.push(this.createUser.UserID);
     } else {
-      this.members.push(this.createUser.User_ID);
+      this.members.push(this.createUser.UserID);
     }
   },
   methods: {
@@ -252,12 +247,12 @@ export default {
       this.$emit(
         "newProject",
         {
-          Project_NameTH: this.th_name,
-          Project_NameEN: this.en_name,
-          Project_Detail: this.detail,
-          Project_TypeID: this.type,
-          Project_MaxMember: this.number,
-          Project_SectionID: 1
+          ProjectNameTH: this.th_name,
+          ProjectNameEN: this.en_name,
+          ProjectDetail: this.detail,
+          ProjectTypeID: this.type,
+          MaxMember: this.number,
+          SectionID: 1
         },
         this.advisors,
         this.members
@@ -283,9 +278,9 @@ export default {
       this.advisors = [];
       this.members = [];
       if (this.teacher) {
-        this.advisors.push(this.createUser.User_ID);
+        this.advisors.push(this.createUser.UserID);
       } else {
-        this.members.push(this.createUser.User_ID);
+        this.members.push(this.createUser.UserID);
       }
       this.$emit("close");
     }

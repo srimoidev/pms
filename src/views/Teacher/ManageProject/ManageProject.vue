@@ -19,8 +19,8 @@
           <v-select
             v-model="typeFilter"
             :items="projectType"
-            item-text="ProjectType_Name"
-            item-value="ProjectType_ID"
+            item-text="ProjectTypeNameTH"
+            item-value="ProjectTypeID"
             hide-details
             outlined
             dense
@@ -31,17 +31,17 @@
           <v-spacer></v-spacer>
         </v-toolbar>
       </template>
-      <template v-slot:[`item.Project_NameTH`]="{ item }">
+      <template v-slot:[`item.ProjectNameTH`]="{ item }">
         <router-link :to="'/teacher/documents?pid=' + item.Project_ID" class="text-none">{{
-          item.Project_NameTH + "(" + item.Project_NameEN + ")"
+          item.ProjectNameTH + "(" + item.Project_NameEN + ")"
         }}</router-link>
       </template>
-      <template v-slot:[`item.Project_MaxMember`]="{ item }">
+      <template v-slot:[`item.MaxMember`]="{ item }">
         {{ item.Project_Members.length }}
       </template>
       <template v-slot:[`item.Project_Type`]="{ item }">
-        <v-chip class=" white--text" :class="`type-${item.Project_Type.ProjectType_ID}`" small label>
-          {{ item.Project_Type.ProjectType_Name }}
+        <v-chip class=" white--text" :class="`type-${item.Project_Type.ProjectTypeID}`" small label>
+          {{ item.Project_Type.ProjectTypeNameTH }}
         </v-chip>
       </template>
       <template v-slot:[`item.Project_Section`]="{ item }">
@@ -117,11 +117,11 @@ export default {
           text: "ชื่อโครงงาน",
           align: "start",
           sortable: true,
-          value: "Project_NameTH",
+          value: "ProjectNameTH",
           width: 500
         },
         { text: "ประเภท", value: "Project_Type", sortable: false },
-        { text: "สมาชิก", value: "Project_MaxMember", sortable: false },
+        { text: "สมาชิก", value: "MaxMember", sortable: false },
         { text: "ปีการศึกษา", value: "Project_Section" },
         { text: "สถานะ", value: "Project_Status" },
         { text: "Action", value: "actions" }
@@ -156,10 +156,10 @@ export default {
       this.projectType = type.slice();
       this.allType = type.slice();
       this.projectType.push({
-        ProjectType_ID: 0,
-        ProjectType_Name: "ทั้งหมด"
+        ProjectTypeID: 0,
+        ProjectTypeNameTH: "ทั้งหมด"
       });
-      this.allProject = await this.Project.GetProjectByAdvisor(this.user.User_ID);
+      this.allProject = await this.Project.GetProjectByAdvisor(this.user.UserID);
       this.loading = false;
     },
     projectModal(pProject) {

@@ -2,39 +2,43 @@ module.exports = (sequelize, Sequelize) => {
   const project_info = sequelize.define(
     "project_info",
     {
-      Project_ID: {
+      ProjectID: {
         type: Sequelize.INTEGER,
-        field: "Project_ID",
+        field: "ProjectID",
         primaryKey: true,
         autoIncrement: true
       },
-      Project_NameTH: {
+      ProjectNameTH: {
         type: Sequelize.STRING,
-        field: "Project_NameTH"
+        field: "ProjectNameTH"
       },
-      Project_NameEN: {
+      ProjectNameEN: {
         type: Sequelize.STRING,
-        field: "Project_NameEN"
+        field: "ProjectNameEN"
       },
-      Project_Detail: {
+      ProjectDetail: {
         type: Sequelize.STRING,
-        field: "Project_Detail"
+        field: "ProjectDetail"
       },
-      Project_TypeID: {
+      ProjectTypeID: {
         type: Sequelize.STRING,
-        field: "Project_TypeID"
+        field: "ProjectTypeID"
       },
-      Project_MaxMember: {
+      MaxMember: {
         type: Sequelize.INTEGER,
-        field: "Project_MaxMember"
+        field: "MaxMember"
       },
-      Project_SectionID: {
+      SectionID: {
         type: Sequelize.INTEGER,
-        field: "Project_SectionID"
+        field: "SectionID"
       },
-      Project_StatusID: {
+      ProjectStatusID: {
         type: Sequelize.INTEGER,
-        field: "Project_StatusID"
+        field: "ProjectStatusID"
+      },
+      RejectedRemark: {
+        type: Sequelize.STRING,
+        field: "RejectedRemark"
       },
       CreatedBy: {
         type: Sequelize.INTEGER,
@@ -51,10 +55,6 @@ module.exports = (sequelize, Sequelize) => {
       UpdatedTime: {
         type: Sequelize.DATE,
         field: "UpdatedTime"
-      },
-      RejectedRemark: {
-        type: Sequelize.STRING,
-        field: "RejectedRemark"
       }
     },
     {

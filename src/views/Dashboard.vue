@@ -43,9 +43,9 @@
         <router-link to="/" class="text-none white--text"><span class="hidden-sm-and-down" v-t="{ path: 'APP.APP_NAME' }"></span></router-link>
       </v-toolbar-title>
       <v-spacer />
-      <div class="select-lang">
+      <!-- <div class="select-lang">
         <v-select v-model="$i18n.locale" :items="langs" single-line @input="changeLang" item-text="title"></v-select>
-      </div>
+      </div> -->
       <div class="text-center">
         <dashboard-notification :noti="noti"></dashboard-notification>
       </div>
@@ -125,24 +125,25 @@ export default {
     }
   },
   watch: {
-    waitAdvisorsConfirmProject: function() {
-      const menuIdx = this.menu.findIndex(x => x.id == 40);
-      const subMenuIdx = this.menu[menuIdx].children.findIndex(x => x.id == 43);
-      this.menu[menuIdx].children[subMenuIdx].req = this.waitAdvisorsConfirmProject.length > 0 ? this.waitAdvisorsConfirmProject.length : 0;
-    }
+    // waitAdvisorsConfirmProject: function() {
+    //   const menuIdx = this.menu.findIndex(x => x.id == 40);
+    //   const subMenuIdx = this.menu[menuIdx].children.findIndex(x => x.id == 43);
+    //   this.menu[menuIdx].children[subMenuIdx].req = this.waitAdvisorsConfirmProject.length > 0 ? this.waitAdvisorsConfirmProject.length : 0;
+    // }
   },
   beforeMount() {
     this.loadData();
   },
   methods: {
     async loadData() {
+      console.log("asdasdasd");
       this.$store.dispatch("user/getLoggedInUserData").then(async () => {
         this.menu = this.initMenu(await this.App.Menus(this.typeID));
 
         //เป็นอาจารย์
-        if (this.typeID == 2) {
-          this.waitAdvisorsConfirmProject = await this.Project.WaitAdviserConfirmProject(this.user.User_ID);
-        }
+        // if (this.typeID == 2) {
+        //   this.waitAdvisorsConfirmProject = await this.Project.WaitAdviserConfirmProject(this.user.UserID);
+        // }
         // console.log(this.waitAdvisorsConfirmProject);
       });
       // console.log(this.menu, this.user);

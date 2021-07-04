@@ -63,24 +63,23 @@ db.user_type = require("./user_type")(sequelize, Sequelize);
 
 // ALLRELATIONSHIP
 
-//app
-// db.app_menus.hasMany(db.app_privileges,{
-//   foreignKey: "MenuID"
-// });
+//#region App
 db.app_privileges.belongsTo(db.app_menus, {
   foreignKey: "MenuID"
 });
 
-// ProjectMember
+//#endregion
+
+//#region Project
 db.project_info.belongsToMany(db.user_profile, {
   through: db.project_member,
   as: "Project_Members",
-  foreignKey: "Member_ProjectID"
+  foreignKey: "ProjectID"
 });
 
 db.user_profile.belongsToMany(db.project_info, {
   through: db.project_member,
-  foreignKey: "Member_UserID"
+  foreignKey: "UserID"
 });
 db.project_info.belongsTo(db.user_profile, {
   as: "UpdatedUser",
@@ -88,67 +87,48 @@ db.project_info.belongsTo(db.user_profile, {
 });
 
 db.project_member.belongsTo(db.project_info, {
-  foreignKey: "Member_ProjectID",
+  foreignKey: "ProjectID",
   as: "Project_Info"
-});
-
-db.form_prerequisite.belongsTo(db.form_type, {
-  as: "Pre_FormType",
-  foreignKey: "Pre_FormTypeID"
-});
-db.form_prerequisite.belongsTo(db.form_type, {
-  as: "Pre_FormReqType",
-  foreignKey: "Pre_FormReqTypeID"
 });
 //ProjectType
 db.project_info.belongsTo(db.project_type, {
   as: "Project_Type",
-  foreignKey: "Project_TypeID"
+  foreignKey: "ProjectTypeID"
 });
 
 //ProjectSection
 db.project_info.belongsTo(db.section, {
   as: "Project_Section",
-  foreignKey: "Project_SectionID"
+  foreignKey: "SectionID"
 });
 
 //ProjectStatus
 db.project_info.belongsTo(db.project_status, {
   as: "Project_Status",
-  foreignKey: "Project_StatusID"
-});
-
-// FormComments
-db.form_sent.hasMany(db.form_comment, {
-  as: "Form_Comments",
-  foreignKey: "Comment_FormID"
-});
-db.form_comment.belongsTo(db.form_sent, {
-  as: "Form_Comments",
-  foreignKey: "Comment_FormID"
-});
-db.form_sent.belongsTo(db.form_type, {
-  as: "Form_Type",
-  foreignKey: "Form_TypeID"
+  foreignKey: "ProjectStatusID"
 });
 
 //ProjectAdvisor
 db.project_info.belongsToMany(db.user_profile, {
   through: db.project_advisor,
   as: "Project_Advisors",
-  foreignKey: "Advisor_ProjectID"
+  foreignKey: "ProjectID"
 });
 
 db.user_profile.belongsToMany(db.project_info, {
   through: db.project_advisor,
-  foreignKey: "Advisor_UserID"
+  foreignKey: "UserID"
 });
 
+db.project_advisor.belongsTo(db.project_info, {
+  as: "Project",
+  foreignKey: "ProjectID"
+});
 //ProjectCommittee
 db.project_info.belongsToMany(db.user_profile, {
   through: db.project_committee,
   as: "Project_Committees",
-  foreignKey: "Committee_ProjectID"
+  foreignKey: "ProjectID"
 });
 //ProjectProgress
 db.project_info.hasMany(db.project_progress, {
@@ -157,41 +137,90 @@ db.project_info.hasMany(db.project_progress, {
 });
 db.user_profile.belongsToMany(db.project_info, {
   through: db.project_committee,
-  foreignKey: "Committee_UserID"
+  foreignKey: "UserID"
 });
 
 db.project_member.belongsTo(db.user_profile, {
   as: "Member_Info",
-  foreignKey: "Member_UserID"
+  foreignKey: "UserID"
 });
 db.project_advisor.belongsTo(db.user_profile, {
   as: "Advisor_Info",
-  foreignKey: "Advisor_UserID"
+  foreignKey: "UserID"
 });
 db.project_committee.belongsTo(db.user_profile, {
   as: "Committee_Info",
-  foreignKey: "Committee_UserID"
+  foreignKey: "UserID"
 });
 db.project_committee.belongsTo(db.project_committee_role, {
   as: "Committee_Role",
-  foreignKey: "Committee_RoleID"
+  foreignKey: "CommitteeRoleID"
 });
+
+//#endregion
+
+//#region Form
 db.form_sent.belongsTo(db.project_info, {
   as: "Project_Info",
-  foreignKey: "Form_ProjectID"
+  foreignKey: "ProjectID"
 });
 db.form_sent.belongsTo(db.form_status, {
   as: "Form_Status",
-  foreignKey: "Form_StatusID"
+  foreignKey: "FormStatusID"
+});
+db.form_sent.belongsTo(db.project_advisor, {
+  as: "Advisors",
+  targetKey: "ProjectID",
+  foreignKey: "ProjectID"
 });
 db.form_comment.belongsTo(db.user_profile, {
   as: "Comment_User",
-  foreignKey: "Comment_UserID"
+  foreignKey: "CreatedBy"
 });
 db.form_comment.belongsTo(db.form_sent, {
   as: "Comment_Form",
-  foreignKey: "Comment_FormID"
+  foreignKey: "FormID"
 });
+
+db.form_sent.hasMany(db.form_comment, {
+  as: "Form_Comments",
+  foreignKey: "FormID"
+});
+db.form_comment.belongsTo(db.form_sent, {
+  as: "Form_Comments",
+  foreignKey: "FormID"
+});
+db.form_sent.belongsTo(db.form_type, {
+  as: "Form_Type",
+  foreignKey: "FormTypeID"
+});
+db.form_prerequisite.belongsTo(db.form_type, {
+  as: "FormType",
+  foreignKey: "FormTypeID"
+});
+db.form_prerequisite.belongsTo(db.form_type, {
+  as: "RequireForm",
+  foreignKey: "FormReqTypeID"
+});
+db.deadline.belongsTo(db.form_type, {
+  as: "Deadline_FormType",
+  foreignKey: "FormTypeID"
+});
+db.deadline.belongsTo(db.section, {
+  as: "Deadline_Section",
+  foreignKey: "SectionID"
+});
+db.form_sent.belongsTo(db.project_info, {
+  as: "Form_Project",
+  foreignKey: "ProjectID"
+});
+db.form_sent.belongsTo(db.user_profile, {
+  as: "UpdatedUser",
+  foreignKey: "UpdatedBy"
+});
+//#endregion
+
+//#region Meeting
 db.meeting.belongsTo(db.project_info, {
   as: "Meeting_Project",
   foreignKey: "Meeting_ProjectID"
@@ -208,23 +237,6 @@ db.meeting_note.belongsTo(db.meeting, {
   as: "MeetingNote_Meeting",
   foreignKey: "MeetingNote_MeetingID"
 });
-
-db.deadline.belongsTo(db.form_type, {
-  as: "Deadline_FormType",
-  foreignKey: "Deadline_FormTypeID"
-});
-db.deadline.belongsTo(db.section, {
-  as: "Deadline_Section",
-  foreignKey: "Deadline_SectionID"
-});
-db.form_sent.belongsTo(db.project_info, {
-  as: "Form_Project",
-  foreignKey: "Form_ProjectID"
-});
-
-db.project_advisor.belongsTo(db.project_info, {
-  as: "Advisor_Project",
-  foreignKey: "Advisor_ProjectID"
-});
+//#endregion
 
 module.exports = db;

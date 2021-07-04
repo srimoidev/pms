@@ -5,15 +5,18 @@ const Op = db.Sequelize.Op;
 router.get("/", async (req, res) => {
   try {
     var whereStr = [];
-    console.log(req.query);
     if (req.query.typeid) {
       whereStr.push({
-        User_TypeID: {
+        UserTypeID: {
           [Op.in]: req.query.typeid
         }
       });
     }
     const data = await db.user_profile.findAll({
+      attributes: {
+        include: [[db.Sequelize.fn("concat", db.Sequelize.col("Firstname"), " ", db.Sequelize.col("Lastname")), "Fullname"]],
+        exclude: ["Username", "Password", "CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"]
+      },
       where: whereStr
     });
     return res.json(data);
@@ -27,9 +30,13 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
   try {
     const data = await db.user_profile.findOne({
+      attributes: {
+        include: [[db.Sequelize.fn("concat", db.Sequelize.col("Firstname"), " ", db.Sequelize.col("Lastname")), "Fullname"]],
+        exclude: ["Username", "Password", "CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"]
+      },
       where: [
         {
-          User_ID: req.params.id
+          UserID: req.params.id
         }
       ]
     });

@@ -11,10 +11,25 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.INTEGER,
         field: "MenuID"
       },
-
       Route: {
         type: Sequelize.STRING,
         field: "Route"
+      },
+      CreatedBy: {
+        type: Sequelize.INTEGER,
+        field: "CreatedBy"
+      },
+      CreatedTime: {
+        type: Sequelize.DATE,
+        field: "CreatedTime"
+      },
+      UpdatedBy: {
+        type: Sequelize.INTEGER,
+        field: "UpdatedBy"
+      },
+      UpdatedTime: {
+        type: Sequelize.DATE,
+        field: "UpdatedTime"
       }
     },
     {

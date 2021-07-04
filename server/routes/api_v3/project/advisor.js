@@ -7,22 +7,22 @@ router.get("/", async (req, res) => {
     var whereStr = [];
     if (req.query.projectid) {
       whereStr.push({
-        Advisor_ProjectID: req.query.projectid
+        ProjectID: req.query.projectid
       });
     }
     if (req.query.userid) {
       whereStr.push({
-        Advisor_UserID: req.query.userid
+        UserID: req.query.userid
       });
     }
     if (req.query.all != "true") {
       if (req.query.statusid) {
         whereStr.push({
-          Advisor_RequestStatusID: req.query.statusid
+          RequestStatusID: req.query.statusid
         });
       } else {
         whereStr.push({
-          Advisor_RequestStatus: {
+          RequestStatus: {
             [Op.is]: null
           }
         });
@@ -33,19 +33,23 @@ router.get("/", async (req, res) => {
       include: [
         {
           model: db.project_info,
-          as: "Advisor_Project",
+          as: "Project",
+          attributes: { exclude: ["CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] },
           include: [
             {
               model: db.project_status,
-              as: "Project_Status"
+              as: "Project_Status",
+              attributes: { exclude: ["CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] }
             },
             {
               model: db.section,
-              as: "Project_Section"
+              as: "Project_Section",
+              attributes: { exclude: ["CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] }
             },
             {
               model: db.project_type,
-              as: "Project_Type"
+              as: "Project_Type",
+              attributes: { exclude: ["CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] }
             }
           ]
         }
@@ -116,21 +120,21 @@ router.put("/:id", async (req, res) => {
   await db.project_advisor
     .update(req.body.updateObj, {
       where: {
-        Advisor_ID: req.params.id
+        AdvisorID: req.params.id
       }
     })
     .then(async () => {
       const temp = await db.project_advisor.findOne({
         where: {
-          Advisor_ID: req.params.id
+          AdvisorID: req.params.id
         }
       });
       //ถ้า Advisor_RequestStatus เป็น null แสดงว่าอาจารย์ยังไม่กดเลือก Confirm หรือ Reject
       const isAllConfirm = await db.project_advisor.findAll({
         where: {
-          Advisor_ProjectID: temp.Advisor_ProjectID,
+          ProjectID: temp.ProjectID,
           [Op.and]: {
-            Advisor_RequestStatus: {
+            RequestStatus: {
               [Op.eq]: null
             }
           }
@@ -138,16 +142,16 @@ router.put("/:id", async (req, res) => {
       });
       const isSomeAdvisorReject = await db.project_advisor.findAll({
         where: {
-          Advisor_ProjectID: temp.Advisor_ProjectID,
+          ProjectID: temp.ProjectID,
           [Op.and]: {
-            Advisor_RequestStatus: 0
+            RequestStatus: 0
           }
         }
       });
       if (isSomeAdvisorReject.length != 0) {
-        return { code: "REJECT", pID: temp.Advisor_ProjectID };
+        return { code: "REJECT", pID: temp.ProjectID };
       } else if (isAllConfirm.length == 0) {
-        return { code: "ALLCONFIRM", pID: temp.Advisor_ProjectID };
+        return { code: "ALLCONFIRM", pID: temp.ProjectID };
       } else {
         return;
       }
@@ -158,19 +162,19 @@ router.put("/:id", async (req, res) => {
           console.log(req.query.isbypass == "true", result.pID);
           if (req.query.isbypass == "true") {
             await db.project_info.update(
-              { Project_StatusID: 4 }, //ถ้า isbypass เป็น true set 4(In Progress)
+              { ProjectStatusID: 4, UpdatedBy: req.body.userid }, //ถ้า isbypass เป็น true set 4(In Progress)
               {
                 where: {
-                  Project_ID: result.pID
+                  ProjectID: result.pID
                 }
               }
             );
           } else {
             await db.project_info.update(
-              { Project_StatusID: 3 }, //set 3(Wait Instructor)
+              { ProjectStatusID: 3, UpdatedBy: req.body.userid }, //set 3(Wait Instructor)
               {
                 where: {
-                  Project_ID: result.pID
+                  ProjectID: result.pID
                 }
               }
             );
@@ -180,10 +184,10 @@ router.put("/:id", async (req, res) => {
         case "REJECT":
           console.log("reject");
           await db.project_info.update(
-            { Project_StatusID: 8, RejectedRemark: req.body.remark, UpdatedBy: req.body.userid }, //set to Rejected
+            { ProjectStatusID: 8, RejectedRemark: req.body.remark, UpdatedBy: req.body.userid }, //set to Rejected
             {
               where: {
-                Project_ID: result.pID
+                ProjectID: result.pID
               }
             }
           );

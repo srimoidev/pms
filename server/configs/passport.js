@@ -7,26 +7,22 @@ const passport = require("passport"),
   LocalStrategy = require("passport-local").Strategy;
 
 const database = require("../database/index");
+
 passport.use(
   new LocalStrategy(
     {
       usernameField: "username",
-      passwordField: "password",
+      passwordField: "password"
     },
     (username, password, cb) => {
       //this one is typically a DB call.
-      const sqlStr =
-        `SELECT * FROM user_profile ` +
-        `WHERE User_Username = "${username}" AND User_Password = "${password}"`;
-      console.log(sqlStr);
+      const sqlStr = `SELECT * FROM user_profile ` + `WHERE Username = "${username}" AND Password = "${password}"`;
       database.query(sqlStr, (err, rows) => {
         var data, msg;
         if (rows.length > 0) {
           data = {
-            User_ID: rows[0].User_ID,
-            User_TypeID: rows[0].User_TypeID
-            // User_Firstname: rows[0].User_Firstname,
-            // User_Lastname: rows[0].User_Lastname,
+            UserID: rows[0].UserID,
+            UserTypeID: rows[0].UserTypeID
           };
           msg = "Logged In Successfully!";
         } else {
@@ -42,7 +38,7 @@ passport.use(
   new JWTStrategy(
     {
       jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
-      secretOrKey: process.env.JWT_SECRET,
+      secretOrKey: process.env.JWT_SECRET
     },
     (jwtPayload, cb) => {
       try {

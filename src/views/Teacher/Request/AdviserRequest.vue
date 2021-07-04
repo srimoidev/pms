@@ -9,7 +9,7 @@
       loading-text="Loading... Please wait"
       :height="windowHeight"
       show-select
-      item-key="Project_ID"
+      item-key="ProjectID"
     >
       <template v-slot:top>
         <v-toolbar flat color="white">
@@ -19,13 +19,13 @@
           <v-divider class="mx-4" inset vertical></v-divider>
           <v-text-field v-model="searchText" append-icon="mdi-magnify" label="Search" single-line hide-details class="mr-2"></v-text-field>
           <v-spacer></v-spacer>
-          <!-- <v-btn class="mr-2" color="success" small @click="approveSelectedList">อนุมัติรายการที่เลือก</v-btn>
-          <v-btn color="error" small @click="rejectSelectedList">ไม่อนุมัติรายการที่เลือก</v-btn> -->
+          <v-btn class="mr-2" color="success" small @click="approveSelectedList">อนุมัติรายการที่เลือก</v-btn>
+          <!-- <v-btn color="error" small @click="rejectSelectedList">ไม่อนุมัติรายการที่เลือก</v-btn> -->
         </v-toolbar>
       </template>
       <template v-slot:[`item.Project_Type`]="{ item }">
-        <v-chip class=" white--text" :class="`type-${item.Project_Type.ProjectType_ID}`" small label>
-          {{ allType[item.Project_Type.ProjectType_ID - 1].ProjectType_Name }}
+        <v-chip class=" white--text" :class="`type-${item.Project_Type.ProjectTypeID}`" small label>
+          {{ allType[item.Project_Type.ProjectTypeID - 1].ProjectTypeNameTH }}
         </v-chip>
       </template>
       <template v-slot:[`item.actions`]="{ item }">
@@ -70,7 +70,7 @@ export default {
           text: "ชื่อโครงงาน",
           align: "start",
           sortable: true,
-          value: "Project_NameTH",
+          value: "ProjectNameTH",
           width: 500
         },
         {
@@ -79,12 +79,12 @@ export default {
         },
         {
           text: "จำนวนนักศึกษา",
-          value: "Project_MaxMember",
+          value: "MaxMember",
           sortable: true
         },
         {
           text: "คาบเรียน",
-          value: "Project_Section.Section_Name"
+          value: "Project_Section.Detail"
         },
         {
           value: "actions",
@@ -111,16 +111,16 @@ export default {
   },
   methods: {
     async loadData() {
-      if (this.user.User_ID) {
+      if (this.user.UserID) {
         this.allType = await this.Project.AllType();
         //โปรเจ็ครอรับเป็นที่ปรึกษา
-        this.data = await this.Project.WaitConfirmProject(this.user.User_ID, 2);
+        this.data = await this.Project.WaitConfirmProject(this.user.UserID, 2);
         console.log(this.data);
         this.data.map(async item => {
-          await this.Project.Advisor(item.Project_ID).then(res => {
+          await this.Project.Advisor(item.ProjectID).then(res => {
             if (res?.length == 1) {
               //คนอนุมัติคนสุดท้ายเป็นที่ปรึกษาและเป็นประจำวิชา
-              item.isAllowBypass = this.user.User_ID == res[0].Advisor_UserID && this.typeID == 3;
+              item.isAllowBypass = this.user.UserID == res[0].UserID && this.typeID == 3;
             }
           });
         });
@@ -138,10 +138,10 @@ export default {
       this.selectedProject = project;
       this.modal = true;
     },
-    async Confirm(pProjectID, pStatus, pIsBypass, pRemark) {
-      //TODO ส่ง UserID กับ array Project_ID ไป
-      const advisor = await this.Project.Advisor(pProjectID, this.user.User_ID);
-      await this.Project.ConfirmOrRejectProject(this.user.User_ID, advisor[0].Advisor_ID, pStatus, pIsBypass, pRemark).then(() => {
+    async Confirm(pProjectID, pStatus, pRemark, pIsBypass) {
+      //TODO ส่ง UserID กับ array ProjectID ไป
+      const advisor = await this.Project.Advisor(pProjectID, this.user.UserID);
+      await this.Project.ConfirmOrRejectProject(this.user.UserID, advisor[0].AdvisorID, pStatus, pIsBypass, pRemark).then(() => {
         this.$swal.fire({
           timer: 3000,
           timerProgressBar: true,
