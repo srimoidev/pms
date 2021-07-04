@@ -8,48 +8,68 @@ router.get("/", async (req, res) => {
     var whereStr = [];
     if (req.query.projectid) {
       whereStr.push({
-        Form_ProjectID: req.query.projectid
+        ProjectID: req.query.projectid
       });
     }
     if (req.query.formtypeid) {
       whereStr.push({
-        Form_TypeID: req.query.formtypeid
+        FormTypeID: req.query.formtypeid
       });
     }
-    if (req.query.statusid) {
+    if (req.query.status) {
       whereStr.push({
-        Form_StatusID: req.query.statusid
+        FormStatusID: req.query.status
+      });
+    }
+    if (req.query.advisorid) {
+      whereStr.push({
+        "$Form_Project.Project_Advisors.User_ID$": req.query.advisorid
       });
     }
     const data = await db.form_sent.findAll({
       include: [
         {
           model: db.form_type,
-          as: "Form_Type"
+          as: "Form_Type",
+          attributes: { exclude: ["CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] }
         },
         {
           model: db.form_status,
-          as: "Form_Status"
+          as: "Form_Status",
+          attributes: { exclude: ["CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] }
         },
         {
           model: db.project_info,
-          as: "Form_Project",
-          include: [
-            {
-              model: db.project_status,
-              as: "Project_Status"
-            },
-            {
-              model: db.section,
-              as: "Project_Section"
-            },
-            {
-              model: db.project_type,
-              as: "Project_Type"
-            }
-          ]
+          as: "Form_Project"
+          // attributes: []
+          // attributes: { exclude: ["Project_TypeID", "Project_MaxMember", "Project_SectionID", "Project_StatusID", "RejectedRemark"] }
+          // include: [
+          //   {
+          //     model: db.project_status,
+          //     as: "Project_Status"
+          //   },
+          //   {
+          //     model: db.project_type,
+          //     as: "Project_Type"
+          //   },
+          //   {
+          //     model: db.user_profile,
+          //     as: "Project_Advisors",
+          //     through: {
+          //       as: "Advisors",
+          //       attributes: []
+          //     },
+          //     attributes: []
+          //   }
+          // ]
+        },
+        {
+          model: db.user_profile,
+          as: "UpdatedUser",
+          attributes: ["UserID", [db.Sequelize.fn("concat", db.Sequelize.col("Firstname"), " ", db.Sequelize.col("Lastname")), "Fullname"]]
         }
       ],
+      // attributes: { exclude: [""] },
       where: whereStr
     });
     return res.json(data);
@@ -62,10 +82,13 @@ router.get("/", async (req, res) => {
 router.get("/:id/latest", async (req, res) => {
   await db.form_sent
     .findAll({
-      attributes: [[db.sequelize.fn("max", db.sequelize.col("Form_ID")), "Form_IDMax"]],
-      group: ["Form_TypeID"],
+      attributes: [
+        [db.sequelize.fn("COUNT", "*"), "Count"],
+        [db.sequelize.fn("max", db.sequelize.col("FormID")), "Form_IDMax"]
+      ],
+      group: ["FormTypeID"],
       where: {
-        Form_ProjectID: req.params.id
+        ProjectID: req.params.id
       },
       raw: true,
       nast: true
@@ -77,13 +100,29 @@ router.get("/:id/latest", async (req, res) => {
       });
       await db.form_sent
         .findAll({
+          include: [
+            {
+              model: db.form_type,
+              as: "Form_Type",
+              attributes: { exclude: ["CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] }
+            },
+            {
+              model: db.form_status,
+              as: "Form_Status",
+              attributes: { exclude: ["CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] }
+            }
+          ],
           where: {
-            Form_ID: {
+            FormID: {
               [Op.in]: formMaxIds
             }
-          }
+          },
+          raw: true,
+          nest: true,
+          attributes: { exclude: ["FormStatusID"] }
         })
         .then(result => {
+          result.map(item => (item.Rev = maxIds[result.indexOf(item)].Count));
           res.json(result);
         });
     })
@@ -99,34 +138,37 @@ router.get("/:id", async (req, res) => {
       include: [
         {
           model: db.form_type,
-          as: "Form_Type"
+          as: "Form_Type",
+          attributes: { exclude: ["CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] }
         },
         {
           model: db.form_status,
-          as: "Form_Status"
+          as: "Form_Status",
+          attributes: { exclude: ["CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] }
         },
         {
           model: db.project_info,
           as: "Form_Project",
-          include: [
-            {
-              model: db.project_status,
-              as: "Project_Status"
-            },
-            {
-              model: db.section,
-              as: "Project_Section"
-            },
-            {
-              model: db.project_type,
-              as: "Project_Type"
-            }
-          ]
+          attributes: { exclude: ["CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] }
+          // include: [
+          //   {
+          //     model: db.project_status,
+          //     as: "Project_Status"
+          //   },
+          //   {
+          //     model: db.section,
+          //     as: "Project_Section"
+          //   },
+          //   {
+          //     model: db.project_type,
+          //     as: "Project_Type"
+          //   }
+          // ]
         }
       ],
       where: [
         {
-          Form_ID: req.params.id
+          FormID: req.params.id
         }
       ]
     });
@@ -142,10 +184,12 @@ router.get("/:id", async (req, res) => {
 router.post("/", async (req, res) => {
   await db.form_sent
     .create({
-      Form_ProjectID: req.body.Form_ProjectID,
-      Form_TypeID: req.body.Form_TypeID,
-      Form_FileName: req.files[0].filename,
-      Form_StatusID: 1
+      ProjectID: req.body.ProjectID,
+      FormTypeID: req.body.FormTypeID,
+      CreatedBy: req.body.CreatedBy,
+      UpdatedBy: req.body.UpdatedBy,
+      FileName: req.files[0].filename,
+      FormStatusID: 1
     })
     .then(data => {
       res.send(data);
@@ -159,12 +203,24 @@ router.post("/", async (req, res) => {
 
 // update
 router.put("/:id", async (req, res) => {
+  console.log(req.body);
+  var isAdvisor = await db.project_advisor.findOne({ where: { ProjectID: req.body.ProjectID, UserID: req.body.UserID }, raw: true });
+  var status;
+  if (isAdvisor?.length > 0) {
+    status = req.body.FormStatusID ? 2 : 3; //ถ้าอนุมัติโดยที่ปรึกษาเปลี่ยนสถานะเป็น 2(Wait Instructor) ถ้าไม่อนุมัติเป็น 3(Advisor Rejected)
+  } else {
+    status = req.body.FormStatusID ? 5 : 4; //ถ้าอนุมัติโดยประจำวิชาเปลี่ยนสถานะเป็น 5(Approved) ถ้าไม่อนุมัติเป็น 4(Instructor Rejected)
+  }
+  console.log(status);
   await db.form_sent
-    .update(req.body, {
-      where: {
-        Form_ID: req.params.id
+    .update(
+      { FormStatusID: status, UpdatedBy: req.body.UpdatedBy },
+      {
+        where: {
+          FormID: req.params.id
+        }
       }
-    })
+    )
     .then(num => {
       if (num == 1) {
         res.send({
@@ -217,11 +273,11 @@ router.get("/pdf/:id", async (req, res) => {
     const data = await db.form_sent.findOne({
       where: [
         {
-          Form_ID: req.params.id
+          FormID: req.params.id
         }
       ]
     });
-    var file = fs.createReadStream(`./uploads/${data.Form_FileName}`);
+    var file = fs.createReadStream(`./uploads/${data.FileName}`);
     return file.pipe(res);
   } catch (error) {
     return res.status(500).json({

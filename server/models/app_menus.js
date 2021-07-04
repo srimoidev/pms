@@ -11,7 +11,7 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.INTEGER,
         field: "ParentID"
       },
-      Sequence:{
+      Sequence: {
         type: Sequelize.INTEGER,
         field: "Sequence"
       },
@@ -23,9 +23,25 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.STRING,
         field: "Icon"
       },
-      IconAlt:{
+      IconAlt: {
         type: Sequelize.STRING,
         field: "IconAlt"
+      },
+      CreatedBy: {
+        type: Sequelize.INTEGER,
+        field: "CreatedBy"
+      },
+      CreatedTime: {
+        type: Sequelize.DATE,
+        field: "CreatedTime"
+      },
+      UpdatedBy: {
+        type: Sequelize.INTEGER,
+        field: "UpdatedBy"
+      },
+      UpdatedTime: {
+        type: Sequelize.DATE,
+        field: "UpdatedTime"
       }
     },
     {

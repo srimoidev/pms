@@ -5,10 +5,11 @@ import { SelfProject } from "@/mixins/Database/Project.js";
 function login(username, password) {
   return HTTP.post("/login", JSON.stringify({ username, password })).then(res => {
     if (res.data.token) {
-      const userType = JSON.parse(atob(res.data.token.split(".")[1]))?.User_TypeID;
+      const userType = JSON.parse(atob(res.data.token.split(".")[1]))?.UserTypeID;
       const ttl = 1 * 60 * 60 * 1000; //ล็อกอินหมดอายุทุกๆ 1 ชม.
       const expiry = new Date().getTime() + ttl;
       localStorage.setItem("user", JSON.stringify({ token: res.data.token, expiry: expiry }));
+      console.log(userType);
       if (userType == 1) {
         return "student";
       } else if (userType == 2 || userType == 3) {
@@ -28,9 +29,10 @@ function logout() {
 
 async function loggedInUserDate() {
   const jwt = JSON.parse(localStorage.getItem("user")).token;
-  const loggedInUserID = JSON.parse(atob(jwt.split(".")[1]))?.User_ID;
+  const loggedInUserID = JSON.parse(atob(jwt.split(".")[1]))?.UserID;
   const userProfile = await Profile(loggedInUserID);
-  userProfile.User_ProjectID = await SelfProject(loggedInUserID);
+  userProfile.ProjectID = await SelfProject(loggedInUserID);
+  console.log(userProfile);
   return userProfile;
 }
 

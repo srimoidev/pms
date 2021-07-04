@@ -39,7 +39,7 @@
         </div>
         <v-row>
           <v-col cols="3">
-            <v-select :items="allType" item-text="ProjectType_Name" item-value="ProjectType_ID" solo dense> </v-select>
+            <v-select v-model="a" :items="allType" item-text="ProjectType_Name" item-value="ProjectType_ID" solo dense> </v-select>
           </v-col>
           <v-col cols="9">
             <div class="overflow-y-auto pr-2" style="max-height: calc(100vh - 180px);">
@@ -49,8 +49,8 @@
                     <router-link to="/student" class="text-none">{{ `${item.Project_NameTH} (${item.Project_NameEN})` }} </router-link>
                   </v-card-title>
                   <div class="mt-5 mx-5">
-                    <v-chip class=" white--text" :class="`type-${item.Project_TypeID}`" small label>
-                      {{ allType[item.Project_TypeID - 1].ProjectType_Name }}
+                    <v-chip class=" white--text" :class="`type-${item.Project_Type.ProjectType_ID}`" small label>
+                      {{ item.Project_Type.ProjectType_Name }}
                     </v-chip>
                   </div>
                 </div>
@@ -93,14 +93,18 @@ export default {
         { id: 3, title: "วันที่เพิ่ม (เก่าสุด)" }
       ],
       searchResult: [],
-      allType: []
+      allType: [],
+      a: 1
     };
   },
   methods: {
     async submitSearch() {
       this.isSearch = true;
-      this.allType = await this.Project.AllType();
+      // this.allType = await this.Project.AllType();
+      this.allType = [{ ProjectType_ID: 1, ProjectType_Name: "ทั้งหมด" }];
       this.searchResult = await this.Project.GetAll(this.searchText.trim());
+      console.log(this.searchResult);
+      console.log(this.allType);
     },
     sort(val) {
       console.log(val);

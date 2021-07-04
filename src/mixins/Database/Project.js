@@ -97,7 +97,7 @@ export async function AllStatus() {
 //project กลุ่มตัวเอง
 export async function SelfProject(uID) {
   return HTTP.get(`/project/member?userid=${uID}`).then(res => {
-    return res?.data[0]?.Member_ProjectID;
+    return res?.data[0]?.ProjectID;
   });
 }
 
@@ -169,7 +169,7 @@ export async function Leave(pID, uID) {
 
 export async function ConfirmOrRejectProject(pUserID, pAdvisorID, pStatus, pIsBypass, pRemark) {
   await HTTP.put(`/project/advisor/${pAdvisorID}?isbypass=${pIsBypass}`, {
-    updateObj: { Advisor_RequestStatus: pStatus },
+    updateObj: { RequestStatus: pStatus, UpdatedBy: pUserID },
     remark: pRemark,
     userid: pUserID
   }).catch(() => {
@@ -177,13 +177,13 @@ export async function ConfirmOrRejectProject(pUserID, pAdvisorID, pStatus, pIsBy
   });
 }
 
-export async function InstructorConfirmOrRejectProject(pUserID, pProjectID, pStatus) {
-  await HTTP.put(`/project/${pProjectID}`, { updateBy: pUserID, Project_StatusID: pStatus }).catch(() => {
+export async function InstructorConfirmOrRejectProject(pUserID, pProjectID, pStatus, pRemark) {
+  await HTTP.put(`/project/${pProjectID}`, { UpdatedBy: pUserID, ProjectStatusID: pStatus, RejectedRemark: pRemark }).catch(() => {
     //
   });
 }
-export async function Resend(pProjectID, pUpdateObj, pAdvisors) {
-  await HTTP.put(`/project/resend/${pProjectID}`, { project: pUpdateObj, advisors: pAdvisors }).catch(() => {
+export async function Resend(pUserID, pProjectID, pUpdateObj, pAdvisors) {
+  await HTTP.put(`/project/resend/${pProjectID}`, { userid: pUserID, project: pUpdateObj, advisors: pAdvisors }).catch(() => {
     //
   });
 }

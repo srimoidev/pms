@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-card v-if="isUserAllow && user.User_ProjectID" v-resize="onResize" class="ma-2 elevation-1" tile :height="windowHeight">
+    <v-card v-if="isUserAllow && user.ProjectID" v-resize="onResize" class="ma-2 elevation-1" tile :height="windowHeight">
       <v-data-table
         :headers="headers"
         :items="data"
@@ -18,37 +18,37 @@
           </v-toolbar>
         </template>
         <template v-slot:[`item.Prerequisite`]="{ item }">
-          <div class="d-flex align-baseline" v-for="pre in item.Prerequisite" :key="pre.Pre_ID">
+          <div class="d-flex align-baseline" v-for="pre in item.Prerequisite" :key="pre.PrerequisiteID">
             <v-icon class="mr-2" :color="pre.Status == 5 ? 'success' : 'error'" small>{{
               pre.Status == 5 ? "mdi-check-circle-outline" : "mdi-close-circle-outline"
             }}</v-icon>
-            <span>{{ pre.Pre_FormReqType.FormType_Name }}</span>
+            <span>{{ pre.RequireForm.FormTypeName }}</span>
           </div>
         </template>
         <template v-slot:[`item.LatestForm`]="{ item }">
-          <form-status v-if="item.LatestForm" :status="item.LatestForm.Form_StatusID"></form-status>
+          <form-status v-if="item.LatestForm" :status="item.LatestForm.Form_Status"></form-status>
           <form-status v-else></form-status>
         </template>
-        <template v-slot:[`item.FormType_Name`]="{ item }">
+        <template v-slot:[`item.FormTypeName`]="{ item }">
           <router-link
             class="text-none"
             :to="{
               path: 'form_ce',
-              query: { type: item.FormType_ID }
+              query: { type: item.FormTypeID }
             }"
           >
-            {{ item.FormType_Name }}
+            {{ item.FormTypeName }}
           </router-link>
         </template>
-        <template v-slot:[`item.Form_UpdatedTime`]="{ item }">
+        <template v-slot:[`item.UpdatedTime`]="{ item }">
           <span v-if="item.LatestForm">
-            {{ new Date(item.LatestForm.Form_UpdatedTime).toLocaleDateString() }}
+            {{ new Date(item.LatestForm.UpdatedTime).toLocaleString() }}
           </span>
         </template>
         <template v-slot:[`item.Deadline`]="{ item }">
           <div v-if="item.Deadline != undefined">
             <div style="font-size: 16px">
-              {{ new Date(item.Deadline.Deadline_DateTime).toLocaleString("th-TH") }}
+              {{ new Date(item.Deadline.OnDate).toLocaleString("th-TH") }}
             </div>
             <v-chip
               v-if="item.isReachDeadline <= 10 && item.isReachDeadline > 0"
@@ -95,10 +95,10 @@ export default {
     dialog: false,
     dialogDelete: false,
     headers: [
-      { text: "ชื่อเอกสาร", value: "FormType_Name" },
+      { text: "ชื่อเอกสาร", value: "FormTypeName" },
       { text: "จำเป็นต้องทำก่อน", value: "Prerequisite", sortable: false },
-      { text: "อัปเดตครั้งที่", value: "rev", sortable: false },
-      { text: "อัปเดตล่าสุด", value: "Form_UpdatedTime", sortable: false },
+      { text: "อัปเดตล่าสุด", value: "UpdatedTime", sortable: false },
+      { text: "อัปเดตครั้งที่", value: "LatestForm.Rev", sortable: false },
       { text: "วันกำหนดส่ง", value: "Deadline", sortable: false },
       { text: "สถานะ", value: "LatestForm", sortable: false }
     ],
@@ -133,28 +133,30 @@ export default {
 
   methods: {
     async loadData() {
-      if (this.user.User_ProjectID) {
-        await this.Project.GetSelf(this.user.User_ProjectID).then(async res => {
-          if ([1, 2, 3].includes(res.Project_Status.ProjectStatus_ID)) {
+      if (this.user.ProjectID) {
+        await this.Project.GetSelf(this.user.ProjectID).then(async res => {
+          console.log(res);
+          if ([1, 2, 3, 8].includes(res.Project_Status.ProjectStatusID)) {
             this.isUserAllow = false;
             return;
           }
           const initData = await this.Form.Type();
           const preq = await this.Form.Prerequisite();
-          const latest = await this.Form.LatestEachForm(this.user.User_ProjectID);
+          const latest = await this.Form.LatestEachForm(this.user.ProjectID);
           let deadline = await this.Form.Deadline();
 
           if (latest) {
             initData.map(element => {
-              element.LatestForm = latest.find(item => item.Form_TypeID == element.FormType_ID) || null;
-              element.Prerequisite = preq.filter(item => item.Pre_FormTypeID == element.FormType_ID);
-              element.Deadline = deadline.find(item => item.Deadline_FormTypeID == element.FormType_ID) || undefined;
-              element.isReachDeadline = (new Date(element?.Deadline?.Deadline_DateTime) - new Date()) / (1000 * 3600 * 24);
+              element.LatestForm = latest.find(item => item.FormTypeID == element.FormTypeID) || null;
+              element.Prerequisite = preq.filter(item => item.FormTypeID == element.FormTypeID);
+              element.Deadline = deadline.find(item => item.FormTypeID == element.FormTypeID) || undefined;
+              element.isReachDeadline = (new Date(element?.Deadline?.OnDate) - new Date()) / (1000 * 3600 * 24);
               element.Prerequisite.map(item => {
-                item.Status = latest.find(t => t.Form_TypeID == item.Pre_FormReqTypeID)?.Form_StatusID;
+                item.Status = latest.find(t => t.FormTypeID == item.PrerequisiteID)?.FormStatusID;
               });
             });
           }
+          console.log(initData);
           this.data = initData;
           this.loading = false;
         });

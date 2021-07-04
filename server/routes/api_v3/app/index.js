@@ -1,13 +1,12 @@
 const router = require("express").Router();
-const { sequelize } = require("../../../models");
 const db = require("../../../models");
 
 // read
 router.get("/", async (req, res) => {
   await db.app_privileges
     .findAll({
-      include: [{ model: db.app_menus }],
-      attributes: { exclude: ["UserTypeID", "MenuID"] },
+      include: [{ model: db.app_menus, attributes: { exclude: ["Sequence", "CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] } }],
+      attributes: { exclude: ["UserTypeID", "MenuID", "CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] },
       where: { UserTypeID: req.query.usertype },
       order: [[db.app_menus, "Sequence"]]
     })
@@ -19,40 +18,7 @@ router.get("/", async (req, res) => {
     );
 });
 
-// router.get("/:id", async (req, res) => {
-//   await db.document
-//     .findAll({
-//       where: [
-//         {
-//           Document_ID: req.params.id
-//         }
-//       ]
-//     })
-//     .then(data => res.json(data))
-//     .catch(err =>
-//       res.status(500).json({
-//         message: err.message || "Some error occurred while retrieving!"
-//       })
-//     );
-// });
-
-// // create
-// router.post("/", async (req, res) => {
-//   await db.document
-//     .create({
-//       Document_Name: req.body.Document_Name,
-//       Document_FileName: req.body.Document_FileName,
-//       Document_DateTime: req.body.Document_DateTime
-//     })
-//     .then(data => {
-//       res.send(data);
-//     })
-//     .catch(err => {
-//       res.status(500).send({
-//         message: err.message || "Some error occurred while creating!"
-//       });
-//     });
-// });
+//TODO เปิดให้อาจารย์ประจำวิชาสามาถแก้ไขลำดับเมนูหรือสิทธิ์ในการเห็นหน้าต่างๆได้
 
 // // update
 // router.put("/:id", async (req, res) => {
@@ -80,32 +46,5 @@ router.get("/", async (req, res) => {
 //     });
 // });
 
-// // delete
-// router.delete("/:id", async (req, res) => {
-//   await db.document
-//     .destroy({
-//       where: [
-//         {
-//           Document_ID: req.params.id
-//         }
-//       ]
-//     })
-//     .then(num => {
-//       if (num == 1) {
-//         res.send({
-//           message: "Deleted successfully!"
-//         });
-//       } else {
-//         res.send({
-//           message: `Can't delete, Maybe not found!`
-//         });
-//       }
-//     })
-//     .catch(err => {
-//       res.status(500).send({
-//         message: "Error deleting!"
-//       });
-//     });
-// });
 
 module.exports = router;

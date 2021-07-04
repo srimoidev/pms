@@ -6,31 +6,48 @@ router.get("/", async (req, res) => {
   var whereStr = [];
   if (req.query.formid) {
     whereStr.push({
-      Comment_FormID: req.query.formid
+      FormID: req.query.formid
     });
   }
   if (req.query.userid) {
     whereStr.push({
-      Comment_UserID: req.query.userid
+      UserID: req.query.userid
     });
   }
   await db.form_comment
     .findAll({
-      include: [{
-        model: db.user_profile,
-        as: "Comment_User"
-      }, {
-        model: db.form_sent,
-        as: "Comment_Form",
-        include: [{
-          model: db.form_type,
-          as: "Form_Type"
-        },{
-          model: db.form_status,
-          as: "Form_Status"
-        }]
-      }],
-      where: whereStr
+      include: [
+        {
+          model: db.user_profile,
+          as: "Comment_User",
+          attributes: [
+            "UserID",
+            "Firstname",
+            "Lastname",
+            "StudentID",
+            "Email",
+            "TelephoneNo",
+            "AcademicYear",
+            [db.Sequelize.fn("concat", db.Sequelize.col("Firstname"), " ", db.Sequelize.col("Lastname")), "Fullname"]
+          ]
+        }
+        // {
+        //   model: db.form_sent,
+        //   as: "Comment_Form",
+        //   include: [
+        //     {
+        //       model: db.form_type,
+        //       as: "Form_Type"
+        //     },
+        //     {
+        //       model: db.form_status,
+        //       as: "Form_Status"
+        //     }
+        //   ]
+        // }
+      ],
+      where: whereStr,
+      order: [["CreatedTime", "DESC"]]
     })
     .then(data => res.json(data))
     .catch(err =>
@@ -43,23 +60,31 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
   try {
     const data = await db.form_comment.findAll({
-      include: [{
-        model: db.user_profile,
-        as: "Comment_User"
-      }, {
-        model: db.form_sent,
-        as: "Comment_Form",
-        include: [{
-          model: db.form_type,
-          as: "Form_Type"
-        },{
-          model: db.form_status,
-          as: "Form_Status"
-        }]
-      }],
-      where: [{
-        Comment_ID: req.params.id
-      }]
+      include: [
+        {
+          model: db.user_profile,
+          as: "Comment_User"
+        },
+        {
+          model: db.form_sent,
+          as: "Comment_Form",
+          include: [
+            {
+              model: db.form_type,
+              as: "Form_Type"
+            },
+            {
+              model: db.form_status,
+              as: "Form_Status"
+            }
+          ]
+        }
+      ],
+      where: [
+        {
+          CommentID: req.params.id
+        }
+      ]
     });
     return res.json(data);
   } catch (error) {
@@ -102,7 +127,7 @@ router.put("/:id", async (req, res) => {
         });
       }
     })
-    .catch(err => {
+    .catch(() => {
       res.status(500).send({
         message: "Error updating!"
       });
@@ -113,9 +138,11 @@ router.put("/:id", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   await db.form_comment
     .destroy({
-      where: [{
-        Comment_ID: req.params.id
-      }]
+      where: [
+        {
+          Comment_ID: req.params.id
+        }
+      ]
     })
     .then(num => {
       if (num == 1) {
@@ -128,7 +155,7 @@ router.delete("/:id", async (req, res) => {
         });
       }
     })
-    .catch(err => {
+    .catch(() => {
       res.status(500).send({
         message: "Error deleting!"
       });

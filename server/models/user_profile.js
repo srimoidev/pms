@@ -1,50 +1,68 @@
 module.exports = (sequelize, Sequelize) => {
   const user_profile = sequelize.define(
-    "user_profile", {
-      User_ID: {
+    "user_profile",
+    {
+      UserID: {
         type: Sequelize.INTEGER,
-        field: "User_ID",
-        primaryKey: true,
+        field: "UserID",
+        primaryKey: true
       },
-      User_UserName: {
+      Username: {
         type: Sequelize.STRING,
-        field: "User_UserName",
+        field: "UserName"
       },
-      User_Password: {
+      Password: {
         type: Sequelize.STRING,
-        field: "User_Password",
+        field: "Password"
       },
-      User_Firstname: {
+      Firstname: {
         type: Sequelize.STRING,
-        field: "User_Firstname",
+        field: "Firstname"
       },
-      User_Lastname: {
+      Lastname: {
         type: Sequelize.STRING,
-        field: "User_Lastname",
+        field: "Lastname"
       },
-      User_StudentID: {
+      StudentID: {
         type: Sequelize.STRING,
-        field: "User_StudentID",
+        field: "StudentID"
       },
-      User_Email: {
+      Email: {
         type: Sequelize.STRING,
-        field: "User_Email",
+        field: "Email"
       },
-      User_Tel: {
+      TelephoneNo: {
+        type: Sequelize.STRING,
+        field: "TelephoneNo"
+      },
+      AcademicYear: {
+        type: Sequelize.STRING,
+        field: "AcademicYear"
+      },
+      UserTypeID: {
         type: Sequelize.INTEGER,
-        field: "User_Tel",
+        field: "UserTypeID"
       },
-      User_AcademicYear: {
+      CreatedBy: {
         type: Sequelize.INTEGER,
-        field: "User_AcademicYear",
+        field: "CreatedBy"
       },
-      User_TypeID: {
+      CreatedTime: {
+        type: Sequelize.DATE,
+        field: "CreatedTime"
+      },
+      UpdatedBy: {
         type: Sequelize.INTEGER,
-        field: "User_TypeID",
+        field: "UpdatedBy"
       },
-    }, {
+      UpdatedTime: {
+        type: Sequelize.DATE,
+        field: "UpdatedTime"
+      }
+    },
+    {
       timestamps: false,
-      freezeTableName: true,
+      freezeTableName: true
     }
   );
   return user_profile;

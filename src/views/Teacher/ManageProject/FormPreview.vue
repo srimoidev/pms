@@ -73,22 +73,23 @@
         </div>
 
         <template v-for="item in commentData">
-          <v-card class="mb-2 mx-2 elevation-1" :key="item.Comment_ID">
-            <v-card-text>
+          <v-card class="mb-2 mx-2 elevation-1" :key="item.CommentID">
+            <v-card-text style="">
               <v-icon style="top:-5px">mdi-format-quote-open</v-icon>
-              {{ item.Comment_Text }}
+              <span>{{ item.CommentText }}</span>
               <v-icon style="top:-5px">
                 mdi-format-quote-close
               </v-icon>
             </v-card-text>
+
             <v-divider class="mx-4"></v-divider>
             <v-card-text class="d-flex">
               <span>
-                {{ "- " + item.Comment_User.User_Firstname + " " + item.Comment_User.User_Lastname }}
+                {{ "- " + item.Comment_User.Firstname + " " + item.Comment_User.Lastname }}
               </span>
               <v-spacer></v-spacer>
               <span>
-                {{ new Date(item.Comment_DateTime).toLocaleDateString("th-TH") }}
+                {{ new Date(item.UpdatedTime).toLocaleDateString("th-TH") }}
               </span>
             </v-card-text>
           </v-card>
@@ -111,10 +112,10 @@
           <v-btn icon style="float:right;z-index:10" tile @click="variant = !variant"><v-icon>mdi-comment-outline</v-icon></v-btn>
         </div>
         <div>
-          <v-btn icon style="float:right;z-index:10" tile @click="approveForm"><v-icon>mdi-check</v-icon></v-btn>
+          <v-btn icon style="float:right;z-index:10" tile @click="approveOrRejectForm(true)"><v-icon>mdi-check</v-icon></v-btn>
         </div>
         <div>
-          <v-btn icon style="float:right;z-index:10" tile @click="rejectForm"><v-icon>mdi-undo-variant</v-icon></v-btn>
+          <v-btn icon style="float:right;z-index:10" tile @click="approveOrRejectForm(false)"><v-icon>mdi-undo-variant</v-icon></v-btn>
         </div>
       </v-navigation-drawer>
     </div>
@@ -153,7 +154,7 @@ export default {
       return this.$route.query.d;
     },
     form_export_name() {
-      return `Form_${this.form?.Form_Type.FormType_Name}`;
+      return `Form_${this.form?.Form_Type.FormTypeName}`;
     }
   },
   beforeMount() {
@@ -164,10 +165,11 @@ export default {
       this.form = await this.Form.Form(this.form_id);
       this.fileUrl = await this.Form.FormPDF(this.form_id);
       this.commentData = await this.Form.Comment(this.form_id);
-      console.log(this.commentData, this.fileUrl);
+      console.log(this.form);
+      console.log(this.commentData);
     },
     async saveNewComment() {
-      await this.Form.NewComment(this.form_id, this.user.User_ID, this.newCommentData);
+      await this.Form.NewComment(this.form_id, this.user.UserID, this.newCommentData);
       this.newComment = !this.newComment;
       this.newCommentData = "";
       this.loadData();
@@ -210,7 +212,7 @@ export default {
         this.pageInput = this.page;
       }
     },
-    approveForm() {
+    approveOrRejectForm(status) {
       this.$swal
         .fire({
           title: "ยืนยันที่จะอนุมัติหรือไม่?",
@@ -221,22 +223,24 @@ export default {
           cancelButtonText: "ยกเลิก",
           confirmButtonText: "ยืนยัน!"
         })
-        .then(result => {
-          if (result.isConfirmed) {
-            this.$swal.fire({
-              toast: true,
-              icon: "success",
-              title: "Approved",
-              position: "top-end",
-              showConfirmButton: false,
-              timer: 2000,
-              timerProgressBar: true,
-              didOpen: toast => {
-                toast.addEventListener("mouseenter", this.$swal.stopTimer);
-                toast.addEventListener("mouseleave", this.$swal.resumeTimer);
-              }
-            });
-          }
+        .then(async result => {
+          await this.Form.ApproveOrReject(this.user.UserID, this.user.ProjectID, this.form_id, status).then(() => {
+            if (result.isConfirmed) {
+              this.$swal.fire({
+                toast: true,
+                icon: "success",
+                title: "Approved",
+                position: "top-end",
+                showConfirmButton: false,
+                timer: 2000,
+                timerProgressBar: true,
+                didOpen: toast => {
+                  toast.addEventListener("mouseenter", this.$swal.stopTimer);
+                  toast.addEventListener("mouseleave", this.$swal.resumeTimer);
+                }
+              });
+            }
+          });
         });
     },
     rejectForm() {

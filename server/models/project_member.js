@@ -2,31 +2,43 @@ module.exports = (sequelize, Sequelize) => {
   const project_member = sequelize.define(
     "project_member",
     {
-      Member_ID: {
+      MemberID: {
         type: Sequelize.INTEGER,
-        field: "Member_ID",
-        primaryKey: true,
+        field: "MemberID",
+        primaryKey: true
       },
-      Member_UserID: {
+      UserID: {
         type: Sequelize.INTEGER,
-        field: "Member_UserID",
+        field: "UserID"
       },
-      Member_ProjectID: {
+      ProjectID: {
         type: Sequelize.INTEGER,
-        field: "Member_ProjectID",
+        field: "ProjectID"
       },
-      Member_RequestStatusID: {
+      RequestStatusID: {
         type: Sequelize.INTEGER,
-        field: "Member_RequestStatusID",
+        field: "RequestStatusID"
       },
-      Member_UpdateTime: {
+      CreatedBy: {
+        type: Sequelize.INTEGER,
+        field: "CreatedBy"
+      },
+      CreatedTime: {
         type: Sequelize.DATE,
-        field: "Member_UpdateTime",
+        field: "CreatedTime"
       },
+      UpdatedBy: {
+        type: Sequelize.INTEGER,
+        field: "UpdatedBy"
+      },
+      UpdatedTime: {
+        type: Sequelize.DATE,
+        field: "UpdatedTime"
+      }
     },
     {
       timestamps: false,
-      freezeTableName: true,
+      freezeTableName: true
     }
   );
   return project_member;

@@ -9,7 +9,7 @@
       loading-text="Loading... Please wait"
       :height="windowHeight"
       show-select
-      item-key="Project_ID"
+      item-key="ProjectID"
     >
       <template v-slot:top>
         <v-toolbar flat color="white">
@@ -24,8 +24,8 @@
         </v-toolbar>
       </template>
       <template v-slot:[`item.Project_Type`]="{ item }">
-        <v-chip class=" white--text" :class="`type-${item.Project_Type.ProjectType_ID}`" small label>
-          {{ allType[item.Project_Type.ProjectType_ID - 1].ProjectType_Name }}
+        <v-chip class=" white--text" :class="`type-${item.Project_Type.ProjectTypeID}`" small label>
+          {{ item.Project_Type.ProjectTypeNameTH }}
         </v-chip>
       </template>
       <template v-slot:[`item.actions`]="{ item }">
@@ -64,7 +64,7 @@ export default {
           text: "ชื่อโครงงาน",
           align: "start",
           sortable: true,
-          value: "Project_NameTH",
+          value: "ProjectNameTH",
           width: 500
         },
         {
@@ -73,12 +73,12 @@ export default {
         },
         {
           text: "จำนวนนักศึกษา",
-          value: "Project_MaxMember",
+          value: "MaxMember",
           sortable: true
         },
         {
           text: "คาบเรียน",
-          value: "Project_Section.Section_Name"
+          value: "Project_Section.Detail"
         },
         {
           value: "actions",
@@ -105,7 +105,7 @@ export default {
   },
   methods: {
     async loadData() {
-      if (this.user.User_ID) {
+      if (this.user.UserID) {
         this.allType = await this.Project.AllType();
         this.data = await this.Project.WaitConfirmProject();
       }
@@ -122,10 +122,10 @@ export default {
       this.selectedProject = project;
       this.modal = true;
     },
-    async Confirm(pProjectID, pStatus) {
+    async Confirm(pProjectID, pStatus, pRemark) {
       //TODO ส่ง UserID กับ array Project_ID ไป
       //status 1(confirm) ส่ง status 4(In Progress) ไป ถ้า 0(!Confirm) ส่ง 7(Reject)
-      await this.Project.InstructorConfirmOrRejectProject(this.user.User_ID, pProjectID, pStatus == 1 ? 4 : 8).then(() => {
+      await this.Project.InstructorConfirmOrRejectProject(this.user.UserID, pProjectID, pStatus == 1 ? 4 : 8, pRemark).then(() => {
         this.$swal.fire({
           timer: 3000,
           timerProgressBar: true,

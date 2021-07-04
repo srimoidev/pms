@@ -19,8 +19,8 @@
           <v-select
             v-model="typeFilter"
             :items="projectType"
-            item-text="ProjectType_Name"
-            item-value="ProjectType_ID"
+            item-text="ProjectTypeNameTH"
+            item-value="ProjectTypeID"
             hide-details
             outlined
             dense
@@ -31,8 +31,8 @@
           <v-select
             v-model="statusFilter"
             :items="allStatus"
-            item-text="ProjectStatus_Name"
-            item-value="ProjectStatus_ID"
+            item-text="ProjectStatusName"
+            item-value="ProjectStatusID"
             hide-details
             outlined
             dense
@@ -40,34 +40,34 @@
             style="width:2%"
           ></v-select>
           <v-spacer></v-spacer>
-          <v-btn v-if="!user.User_ProjectID" class="primary white--text" @click="showProposalModal">
+          <v-btn v-if="!user.ProjectID" class="primary white--text" @click="showProposalModal">
             <v-icon class="mr-2">mdi-text-box-plus-outline</v-icon>
             เสนอหัวข้อใหม่
           </v-btn>
         </v-toolbar>
       </template>
-      <template v-slot:[`item.Project_NameTH`]="{ item }">
-        {{ `${item.Project_NameTH} (${item.Project_NameEN})` }}
+      <template v-slot:[`item.ProjectNameTH`]="{ item }">
+        {{ `${item.ProjectNameTH} (${item.ProjectNameEN})` }}
       </template>
       <template v-slot:[`item.Project_Type`]="{ item }">
-        <v-chip class=" white--text" :class="`type-${item.Project_Type.ProjectType_ID}`" small label>
-          {{ allType[item.Project_Type.ProjectType_ID - 1].ProjectType_Name }}
+        <v-chip class=" white--text" :class="`type-${item.Project_Type.ProjectTypeID}`" small label>
+          {{ allType[item.Project_Type.ProjectTypeID - 1].ProjectTypeNameTH }}
         </v-chip>
       </template>
-      <template v-slot:[`item.Project_MaxMember`]="{ item }">
-        {{ item.Project_Members.length + " / " + item.Project_MaxMember }}
+      <template v-slot:[`item.MaxMember`]="{ item }">
+        {{ item.Project_Members.length + " / " + item.MaxMember }}
       </template>
       <template v-slot:[`item.Project_Section`]="{ item }">
-        {{ item.Project_Section.Section_Name }}
+        {{ item.Project_Section.Detail }}
       </template>
       <template v-slot:[`item.Project_Status`]="{ item }">
-        <project-status :status="item.Project_Status.ProjectStatus_ID"></project-status>
+        <project-status :status="item.Project_Status.ProjectStatusID"></project-status>
       </template>
       <template v-slot:[`item.actions`]="{ item }">
-        <v-tooltip v-if="!user.User_ProjectID" bottom>
+        <v-tooltip v-if="!user.ProjectID" bottom>
           <template v-slot:activator="{ on, attrs }">
             <v-icon
-              v-if="item.Project_Members.length < item.Project_MaxMember && [1, 2].includes(item.Project_Status.ProjectStatus_ID)"
+              v-if="item.Project_Members.length < item.MaxMember && [1, 2].includes(item.Project_Status.ProjectStatusID)"
               v-bind="attrs"
               v-on="on"
               class="mr-2"
@@ -79,7 +79,7 @@
               mdi-open-in-new
             </v-icon>
           </template>
-          <span v-if="item.Project_Members.length < item.Project_MaxMember">เข้าร่วมกลุ่ม</span>
+          <span v-if="item.Project_Members.length < item.MaxMember">เข้าร่วมกลุ่ม</span>
           <span v-else>ดูรายละเอียด</span>
         </v-tooltip>
         <v-tooltip v-else bottom>
@@ -111,6 +111,7 @@
     </template>
   </v-card>
 </template>
+_
 
 <script>
 import { mapGetters } from "vuex";
@@ -149,12 +150,12 @@ export default {
           text: "ชื่อโครงงาน",
           align: "start",
           sortable: true,
-          value: "Project_NameTH",
+          value: "ProjectNameTH",
           width: 300
         },
 
         { text: "ประเภท", value: "Project_Type", sortable: false },
-        { text: "สมาชิก", value: "Project_MaxMember", sortable: false },
+        { text: "สมาชิก", value: "MaxMember", sortable: false },
         { text: "Section", value: "Project_Section" },
         { text: "สถานะ", value: "Project_Status" },
         { text: "Action", value: "actions" }
@@ -170,10 +171,10 @@ export default {
     filteredItems() {
       return this.allProject
         .filter(item => {
-          return !this.typeFilter || item.Project_Type.ProjectType_ID == this.typeFilter;
+          return !this.typeFilter || item.Project_Type.ProjectTypeID == this.typeFilter;
         })
         .filter(item => {
-          return !this.statusFilter || item.Project_Status.ProjectStatus_ID == this.statusFilter;
+          return !this.statusFilter || item.Project_Status.ProjectStatusID == this.statusFilter;
         });
     }
   },
@@ -192,37 +193,33 @@ export default {
         this.allStatus = await this.Project.AllStatus();
         this.allTeacher = await this.User.UserTeacher();
         this.allStudent = await this.User.UserStudent();
-        // this.allStudent = this.allStudent.filter(item => item.User_ID != this.user.User_ID);
         this.projectType = type.slice();
         this.allType = type.slice();
         this.projectType.push({
-          ProjectType_ID: 0,
-          ProjectType_Name: "ทั้งหมด"
+          ProjectTypeID: 0,
+          ProjectTypeNameTH: "ทั้งหมด"
         });
         this.allStatus.push({
-          ProjectStatus_ID: 0,
-          ProjectStatus_Name: "ทั้งหมด"
+          ProjectStatusID: 0,
+          ProjectStatusName: "ทั้งหมด"
         });
+        console.log(this.allStatus, this.allType);
         this.allProject = await this.Project.GetAll();
+        console.log(this.allProject);
         this.loading = false;
       });
     },
     async newProject(project, advisors, members) {
-      project.createBy = this.user.User_ID;
+      project.CreatedBy = this.user.UserID;
+      project.UpdatedBy = this.user.UserID;
       await this.Project.New(project, advisors, members).then(() => {
-        // this.loadData();
-        // location.reload();
         this.$router.push("/student/project");
       });
     },
     projectModal(pProject) {
       this.selectedProject = pProject;
       //ถ้ามีกลุ่มแล้ว หรือ สมาชิกกลุ่มนั้นๆเต็มแล้ว หรือ สถานะ != 1(Draft) จะไม่สามารถเข้าร่วมกลุ่มได้
-      if (
-        !!this.user.User_ProjectID ||
-        pProject.Project_Members.length == pProject.Project_MaxMember ||
-        pProject.Project_Status.ProjectStatus_ID != 1
-      ) {
+      if (!!this.user.ProjectID || pProject.Project_Members.length == pProject.MaxMember || pProject.Project_Status.ProjectStatusID != 1) {
         this.isJoinable = false;
       } else {
         this.isJoinable = true;
@@ -230,7 +227,7 @@ export default {
       this.joinProjectModal = true;
     },
     joinProject(pProjectID) {
-      this.Project.Join(pProjectID, this.user.User_ID).then(() => {
+      this.Project.Join(pProjectID, this.user.UserID).then(() => {
         // location.reload();
         this.$router.push("/student/project");
       });
@@ -249,7 +246,7 @@ export default {
         })
         .then(result => {
           if (result.isConfirmed) {
-            this.Project.Leave(this.user.User_ID).then(() => {
+            this.Project.Leave(this.user.UserID).then(() => {
               location.reload();
             });
           }

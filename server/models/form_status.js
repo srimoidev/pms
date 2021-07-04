@@ -2,19 +2,39 @@ module.exports = (sequelize, Sequelize) => {
   const form_status = sequelize.define(
     "form_status",
     {
-      FormStatus_ID: {
+      FormStatusID: {
         type: Sequelize.INTEGER,
-        field: "FormStatus_ID",
-        primaryKey: true,
+        field: "FormStatusID",
+        primaryKey: true
       },
-      FormStatus_Name: {
+      StatusName: {
         type: Sequelize.STRING,
-        field: "FormStatus_Name",
+        field: "StatusName"
       },
+      StatusDetail: {
+        type: Sequelize.STRING,
+        field: "StatusDetail"
+      },
+      CreatedBy: {
+        type: Sequelize.INTEGER,
+        field: "CreatedBy"
+      },
+      CreatedTime: {
+        type: Sequelize.DATE,
+        field: "CreatedTime"
+      },
+      UpdatedBy: {
+        type: Sequelize.INTEGER,
+        field: "UpdatedBy"
+      },
+      UpdatedTime: {
+        type: Sequelize.DATE,
+        field: "UpdatedTime"
+      }
     },
     {
       timestamps: false,
-      freezeTableName: true,
+      freezeTableName: true
     }
   );
   return form_status;

@@ -2,31 +2,43 @@ module.exports = (sequelize, Sequelize) => {
   const deadline = sequelize.define(
     "deadline",
     {
-      Deadline_ID: {
+      DeadlineID: {
         type: Sequelize.INTEGER,
-        field: "Deadline_ID",
-        primaryKey: true,
+        field: "DeadlineID",
+        primaryKey: true
       },
-      Deadline_SectionID: {
+      SectionID: {
         type: Sequelize.INTEGER,
-        field: "Deadline_SectionID",
+        field: "SectionID"
       },
-      Deadline_FormTypeID: {
+      FormTypeID: {
         type: Sequelize.INTEGER,
-        field: "Deadline_FormTypeID",
+        field: "FormTypeID"
       },
-      Deadline_DateTime: {
+      OnDate: {
         type: Sequelize.DATE,
-        field: "Deadline_DateTime",
+        field: "OnDate"
       },
-      Deadline_UpdatedTime: {
+      CreatedBy: {
+        type: Sequelize.INTEGER,
+        field: "CreatedBy"
+      },
+      CreatedTime: {
         type: Sequelize.DATE,
-        field: "Deadline_UpdatedTime",
+        field: "CreatedTime"
       },
+      UpdatedBy: {
+        type: Sequelize.INTEGER,
+        field: "UpdatedBy"
+      },
+      UpdatedTime: {
+        type: Sequelize.DATE,
+        field: "UpdatedTime"
+      }
     },
     {
       timestamps: false,
-      freezeTableName: true,
+      freezeTableName: true
     }
   );
   return deadline;

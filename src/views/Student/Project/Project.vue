@@ -1,5 +1,5 @@
 <template>
-  <div v-if="user.User_ProjectID" class="d-flex ma-2">
+  <div v-if="user.ProjectID" class="d-flex ma-2">
     <v-card class="elevation-1 mr-2" style="width:70%;" tile v-resize="onResize" :height="windowHeight">
       <v-toolbar flat color="white">
         <v-toolbar-title style="max-width:50%">
@@ -9,7 +9,7 @@
         <v-chip
           v-if="showLblIsAdvisorConfirmOrReject"
           label
-          :color="data.Project_Status.ProjectStatus_ID == 8 ? 'red' : 'orange'"
+          :color="data.Project_Status.ProjectStatusID == 8 ? 'red' : 'orange'"
           text-color="white"
           small
           >{{ txtInfoLabel }}</v-chip
@@ -42,20 +42,19 @@
                   </template>
                 </div>
                 <div v-else-if="item.name == 'Project_Section'">
-                  {{ data[item.name].Section_Name }}
+                  {{ data[item.name].Detail }}
                 </div>
                 <div v-else-if="item.name == 'Project_Status'">
-                  <span>{{ data.Project_Status.ProjectStatus_Name }}</span>
+                  <span>{{ data.Project_Status.ProjectStatusName }}</span>
                 </div>
-                <div v-else-if="item.name == 'Project_Detail'">
+                <div v-else-if="item.name == 'ProjectDetail'">
                   <v-textarea
                     v-model="data[item.name]"
                     outlined
                     rows="5"
                     counter
                     no-resize
-                    :readonly="data.Project_Status.ProjectStatus_ID != 8"
-                    :error-messages="errors"
+                    :readonly="data.Project_Status.ProjectStatusID != 8"
                   ></v-textarea>
                 </div>
 
@@ -65,7 +64,7 @@
                       v-model="data[item.name]"
                       dense
                       outlined
-                      :readonly="data.Project_Status.ProjectStatus_ID != 8"
+                      :readonly="data.Project_Status.ProjectStatusID != 8"
                       :error-messages="errors"
                     ></v-text-field>
                   </ValidationProvider>
@@ -82,13 +81,13 @@
         <v-divider></v-divider>
         <v-list>
           <template v-for="(item, index) in data.Project_Members">
-            <v-list-item :key="item.User_ID">
+            <v-list-item :key="item.UserID">
               <v-list-item-content>
-                <v-list-item-title>{{ item.User_Firstname + " " + item.User_Lastname }}</v-list-item-title>
-                <v-list-item-subtitle>{{ `รหัส : ${item.User_StudentID} ปีการศึกษา : ${item.User_AcademicYear}` }}</v-list-item-subtitle>
+                <v-list-item-title>{{ item.Firstname + " " + item.Lastname }}</v-list-item-title>
+                <v-list-item-subtitle>{{ `รหัส : ${item.StudentID} ปีการศึกษา : ${item.AcademicYear}` }}</v-list-item-subtitle>
               </v-list-item-content>
             </v-list-item>
-            <v-divider v-if="index != data.Project_Members.length - 1" class="mx-2" :key="item"></v-divider>
+            <v-divider v-if="index != data.Project_Members.length - 1" class="mx-2" :key="item.UserID"></v-divider>
           </template>
         </v-list>
       </v-card>
@@ -96,7 +95,7 @@
         <v-card-text class="d-flex">
           <span class="align-self-center">อาจารย์ที่ปรึกษา</span>
           <v-spacer></v-spacer>
-          <v-btn v-if="data.Project_Status.ProjectStatus_ID == 8" icon @click="modalEditTeacher = !modalEditTeacher" small>
+          <v-btn v-if="data.Project_Status.ProjectStatusID == 8" icon @click="modalEditTeacher = !modalEditTeacher" small>
             <v-icon>mdi-square-edit-outline</v-icon>
           </v-btn>
         </v-card-text>
@@ -111,8 +110,8 @@
                 :items="allTeacher"
                 color="blue-grey lighten-2"
                 label="อาจารย์ที่ปรึกษา"
-                :item-text="User_Firstname + ' ' + User_Lastname"
-                item-value="User_ID"
+                :item-text="Firstname + ' ' + Lastname"
+                item-value="UserID"
                 multiple
                 hide-no-data
                 clearable
@@ -121,13 +120,13 @@
               >
                 <template v-slot:selection="teacher">
                   <v-chip v-bind="teacher.attrs" :input-value="teacher.selected" @click="teacher.select" @click:close="remove(teacher.item)" small>
-                    {{ `${teacher.item.User_Firstname} ${teacher.item.User_Lastname}` }}
+                    {{ `${teacher.item.Firstname} ${teacher.item.Lastname}` }}
                   </v-chip>
                 </template>
                 <template v-slot:item="teacher">
                   <v-list-item-content>
-                    <v-list-item-title :key="teacher.item.User_ID">
-                      {{ `${teacher.item.User_Firstname} ${teacher.item.User_Lastname}` }}
+                    <v-list-item-title :key="teacher.item.UserID">
+                      {{ `${teacher.item.Firstname} ${teacher.item.Lastname}` }}
                     </v-list-item-title>
                   </v-list-item-content>
                 </template>
@@ -142,14 +141,14 @@
         </div>
         <v-list v-if="!modalEditTeacher">
           <template v-for="(item, index) in newAdvisors">
-            <v-list-item :key="item.User_ID">
-              {{ item.User_Firstname + " " + item.User_Lastname }}
+            <v-list-item :key="item.UserID">
+              {{ item.Firstname + " " + item.Lastname }}
             </v-list-item>
-            <v-divider v-if="index != selectedAdvisors.length - 1" class="mx-2" :key="item"></v-divider>
+            <v-divider v-if="index != selectedAdvisors.length - 1" class="mx-2" :key="item.UserID"></v-divider>
           </template>
         </v-list>
       </v-card>
-      <div v-if="data.Project_Status.ProjectStatus_ID == 8">
+      <div v-if="data.Project_Status.ProjectStatusID == 8">
         <v-card tile class="elevation-1 mb-2">
           <v-card-text>Remark</v-card-text>
           <v-divider></v-divider>
@@ -157,7 +156,7 @@
           </v-textarea>
           <div class="d-flex mx-2">
             <v-spacer></v-spacer>
-            <span class="text-caption mb-2">{{ "- " + data.UpdatedUser.User_Firstname + " " + data.UpdatedUser.User_Lastname }}</span>
+            <span class="text-caption mb-2">{{ "- " + data.UpdatedUser.Firstname + " " + data.UpdatedUser.Lastname }}</span>
           </div>
         </v-card>
         <v-btn color="success" block @click="resend">ส่งใหม่</v-btn>
@@ -209,9 +208,9 @@ export default {
       selectedAdvisors: [],
       newAdvisors: [],
       title: [
-        { name: "Project_NameTH", text: "ชื่อภาษาไทย" },
-        { name: "Project_NameEN", text: "ชื่อภาษาอังกฤษ" },
-        { name: "Project_Detail", text: "รายละเอียด" },
+        { name: "ProjectNameTH", text: "ชื่อภาษาไทย" },
+        { name: "ProjectNameEN", text: "ชื่อภาษาอังกฤษ" },
+        { name: "ProjectDetail", text: "รายละเอียด" },
         // { name: "Project_Members", text: "สมาชิก" },
         // { name: "Project_Advisors", text: "อาจารย์ที่ปรึกษา" },
         { name: "Project_Section", text: "คาบเรียน" },
@@ -223,8 +222,8 @@ export default {
   watch: {
     data() {
       //เช็ค สถานะเป็น 1(Draft) 2(Wait Advisor) หรือ 7(Rejected) ให้แสดง label
-      this.showLblIsAdvisorConfirmOrReject = [1, 2, 8].includes(this.data.Project_Status.ProjectStatus_ID);
-      switch (this.data.Project_Status.ProjectStatus_ID) {
+      this.showLblIsAdvisorConfirmOrReject = [1, 2, 8].includes(this.data.Project_Status.ProjectStatusID);
+      switch (this.data.Project_Status.ProjectStatusID) {
         case 1:
         case 2:
           this.txtInfoLabel = "รอการรับรองเป็นอาจารยที่ปรึกษา";
@@ -256,16 +255,16 @@ export default {
   methods: {
     async loadData() {
       this.$store.dispatch("user/getLoggedInUserData").then(async () => {
-        this.data = await this.Project.GetSelf(this.user.User_ProjectID);
-        this.txtHeaderNameTH = `Manage Project - ${this.data.Project_NameTH}`;
+        this.data = await this.Project.GetSelf(this.user.ProjectID);
+        this.txtHeaderNameTH = `Manage Project - ${this.data.ProjectNameTH}`;
         this.data.Project_Advisors.map(item => {
-          this.selectedAdvisors.push(item.User_ID);
+          this.selectedAdvisors.push(item.UserID);
         });
         this.newAdvisors = this.data.Project_Advisors;
         this.loading = true;
+        console.log(this.data);
       });
       this.allTeacher = await this.User.UserTeacher();
-      // console.log(this.data);
     },
     leaveProject() {
       this.$swal
@@ -281,7 +280,7 @@ export default {
         })
         .then(result => {
           if (result.isConfirmed) {
-            this.Project.Leave(this.user.User_ProjectID, this.user.User_ID);
+            this.Project.Leave(this.user.ProjectID, this.user.UserID);
             this.$router.push("/student/all_project");
           }
         });
@@ -297,7 +296,7 @@ export default {
       if (await this.$refs.obsAdvisors.validate()) {
         const temp = this.selectedAdvisors;
         this.newAdvisors = this.allTeacher.filter(item => {
-          return temp.includes(item.User_ID);
+          return temp.includes(item.UserID);
         });
         this.modalEditTeacher = false;
       }
@@ -305,17 +304,18 @@ export default {
     cancelEditTeacher() {
       this.selectedAdvisors = [];
       this.newAdvisors.map(item => {
-        this.selectedAdvisors.push(item.User_ID);
+        this.selectedAdvisors.push(item.UserID);
       });
       this.modalEditTeacher = false;
     },
     async resend() {
       const updateObj = {
-        Project_NameTH: this.data.Project_NameTH,
-        Project_NameEN: this.data.Project_NameEN,
-        Project_Detail: this.data.Project_Detail
+        ProjectNameTH: this.data.ProjectNameTH,
+        ProjectNameEN: this.data.ProjectNameEN,
+        ProjectDetail: this.data.ProjectDetail
       };
-      this.Project.Resend(this.data.Project_ID, updateObj, this.selectedAdvisors).then(() => {
+      console.log(this.user.UserID, this.data.ProjectID, updateObj, this.selectedAdvisors);
+      this.Project.Resend(this.user.UserID, this.data.ProjectID, updateObj, this.selectedAdvisors).then(() => {
         this.loadData();
       });
     }

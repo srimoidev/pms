@@ -73,10 +73,10 @@
         </div>
 
         <template v-for="item in commentData">
-          <v-card class="mb-2 mx-2 elevation-1" :key="item.Comment_ID">
+          <v-card class="mb-2 mx-2 elevation-1" :key="item.CommentID">
             <v-card-text>
               <v-icon style="top:-5px">mdi-format-quote-open</v-icon>
-              {{ item.Comment_Text }}
+              {{ item.CommentText }}
               <v-icon style="top:-5px">
                 mdi-format-quote-close
               </v-icon>
@@ -84,11 +84,11 @@
             <v-divider class="mx-4"></v-divider>
             <v-card-text class="d-flex">
               <span>
-                {{ "- " + item.Comment_User.User_Firstname + " " + item.Comment_User.User_Lastname }}
+                {{ "- " + item.Comment_User.Fullname }}
               </span>
               <v-spacer></v-spacer>
               <span>
-                {{ new Date(item.Comment_DateTime).toLocaleDateString("th-TH") }}
+                {{ new Date(item.UpdatedTime).toLocaleString("th-TH") }}
               </span>
             </v-card-text>
           </v-card>
@@ -147,7 +147,7 @@ export default {
       return this.$route.query.d;
     },
     form_export_name() {
-      return `Form_${this.form?.Form_Type.FormType_Name}`;
+      return `Form_${this.form?.Form_Type.FormTypeName}`;
     }
   },
   beforeMount() {
@@ -161,7 +161,7 @@ export default {
       console.log(this.commentData, this.fileUrl);
     },
     async saveNewComment() {
-      await this.Form.NewComment(this.form_id, this.user.User_ID, this.newCommentData);
+      await this.Form.NewComment(this.form_id, this.user.UserID, this.newCommentData);
       this.newComment = !this.newComment;
       this.newCommentData = "";
       this.loadData();

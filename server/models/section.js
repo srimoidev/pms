@@ -2,31 +2,59 @@ module.exports = (sequelize, Sequelize) => {
   const section = sequelize.define(
     "section",
     {
-      Section_ID: {
+      SectionID: {
         type: Sequelize.INTEGER,
-        field: "Section_ID",
-        primaryKey: true,
+        field: "SectionID",
+        primaryKey: true
       },
-      Section_Year: {
+      Year: {
+        type: Sequelize.DATE,
+        field: "Year"
+      },
+      Term: {
         type: Sequelize.INTEGER,
-        field: "Section_Year",
+        field: "Term"
       },
-      Section_Term: {
-        type: Sequelize.INTEGER,
-        field: "Section_Term",
-      },
-      Section_Name : {
+      Detail: {
         type: Sequelize.STRING,
-        field:"Section_Name"
+        field: "Detail"
       },
-      Section_Instructors : {
+      Instructor: {
         type: Sequelize.INTEGER,
-        field:"Section_Instructors"
+        field: "Instructor"
       },
+      DayOfWeek: {
+        type: Sequelize.INTEGER,
+        field: "DayOfWeek"
+      },
+      StartTime: {
+        type: Sequelize.DATE,
+        field: "StartTime"
+      },
+      EndTime: {
+        type: Sequelize.DATE,
+        field: "EndTime"
+      },
+      CreatedBy: {
+        type: Sequelize.INTEGER,
+        field: "CreatedBy"
+      },
+      CreatedTime: {
+        type: Sequelize.DATE,
+        field: "CreatedTime"
+      },
+      UpdatedBy: {
+        type: Sequelize.INTEGER,
+        field: "UpdatedBy"
+      },
+      UpdatedTime: {
+        type: Sequelize.DATE,
+        field: "UpdatedTime"
+      }
     },
     {
       timestamps: false,
-      freezeTableName: true,
+      freezeTableName: true
     }
   );
   return section;

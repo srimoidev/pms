@@ -2,19 +2,39 @@ module.exports = (sequelize, Sequelize) => {
   const project_status = sequelize.define(
     "project_status",
     {
-      ProjectStatus_ID: {
+      ProjectStatusID: {
         type: Sequelize.INTEGER,
-        field: "ProjectStatus_ID",
-        primaryKey: true,
+        field: "ProjectStatusID",
+        primaryKey: true
       },
-      ProjectStatus_Name: {
+      ProjectStatusName: {
         type: Sequelize.STRING,
-        field: "ProjectStatus_Name",
+        field: "ProjectStatusName"
       },
+      ProjectStatusDetail: {
+        type: Sequelize.STRING,
+        field: "ProjectStatusDetail"
+      },
+      CreatedBy: {
+        type: Sequelize.INTEGER,
+        field: "CreatedBy"
+      },
+      CreatedTime: {
+        type: Sequelize.DATE,
+        field: "CreatedTime"
+      },
+      UpdatedBy: {
+        type: Sequelize.INTEGER,
+        field: "UpdatedBy"
+      },
+      UpdatedTime: {
+        type: Sequelize.DATE,
+        field: "UpdatedTime"
+      }
     },
     {
       timestamps: false,
-      freezeTableName: true,
+      freezeTableName: true
     }
   );
   return project_status;

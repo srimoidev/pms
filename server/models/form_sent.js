@@ -2,47 +2,51 @@ module.exports = (sequelize, Sequelize) => {
   const form_sent = sequelize.define(
     "form_sent",
     {
-      Form_ID: {
+      FormID: {
         type: Sequelize.INTEGER,
-        field: "Form_ID",
-        primaryKey: true,
+        field: "FormID",
+        primaryKey: true
       },
-      Form_ProjectID: {
+      ProjectID: {
         type: Sequelize.INTEGER,
-        field: "Form_ProjectID",
+        field: "ProjectID"
       },
-      Form_TypeID: {
+      FormTypeID: {
         type: Sequelize.INTEGER,
-        field: "Form_TypeID",
+        field: "FormTypeID"
       },
-      Form_FileName: {
+      FileName: {
         type: Sequelize.STRING,
-        field: "Form_FileName",
+        field: "FileName"
       },
-      Form_CreatedTime: {
-        type: Sequelize.DATE,
-        field: "Form_CreatedTime",
-      },
-      Form_RevisedTime: {
-        type: Sequelize.DATE,
-        field: "Form_RevisedTime",
-      },
-      Form_UpdatedTime: {
-        type: Sequelize.DATE,
-        field: "Form_UpdatedTime",
-      },
-      Form_CompletedTime: {
-        type: Sequelize.DATE,
-        field: "Form_CompletedTime",
-      },
-      Form_StatusID: {
+      FormStatusID: {
         type: Sequelize.INTEGER,
-        field: "Form_StatusID",
+        field: "FormStatusID"
       },
+      CompletedTime: {
+        type: Sequelize.DATE,
+        field: "CompletedTime"
+      },
+      CreatedBy: {
+        type: Sequelize.INTEGER,
+        field: "CreatedBy"
+      },
+      CreatedTime: {
+        type: Sequelize.DATE,
+        field: "CreatedTime"
+      },
+      UpdatedBy: {
+        type: Sequelize.INTEGER,
+        field: "UpdatedBy"
+      },
+      UpdatedTime: {
+        type: Sequelize.DATE,
+        field: "UpdatedTime"
+      }
     },
     {
       timestamps: false,
-      freezeTableName: true,
+      freezeTableName: true
     }
   );
   return form_sent;

@@ -34,7 +34,7 @@
             class="text-none"
             :to="{
               path: 'form_ce',
-              query: { type: item.FormType_ID }
+              query: { project: pid, type: item.FormTypeID }
             }"
           >
             {{ item.FormType_Name }}
@@ -138,12 +138,12 @@ export default {
 
         if (latest) {
           initData.map(element => {
-            element.LatestForm = latest.find(item => item.Form_TypeID == element.FormType_ID) || null;
-            element.Prerequisite = preq.filter(item => item.Pre_FormTypeID == element.FormType_ID);
-            element.Deadline = deadline.find(item => item.Deadline_FormTypeID == element.FormType_ID) || undefined;
-            element.isReachDeadline = (new Date(element?.Deadline?.Deadline_DateTime) - new Date()) / (1000 * 3600 * 24);
+            element.LatestForm = latest.find(item => item.FormTypeID == element.FormTypeID) || null;
+            element.Prerequisite = preq.filter(item => item.PrerequisiteID == element.FormTypeID);
+            element.Deadline = deadline.find(item => item.FormTypeID == element.FormTypeID) || undefined;
+            element.isReachDeadline = (new Date(element?.Deadline?.OnDate) - new Date()) / (1000 * 3600 * 24);
             element.Prerequisite.map(item => {
-              item.Status = latest.find(t => t.Form_TypeID == item.Pre_FormReqTypeID)?.Form_StatusID;
+              item.Status = latest.find(t => t.FormTypeID == item.PrerequisiteID)?.FormStatusID;
             });
           });
         }

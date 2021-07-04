@@ -11,7 +11,7 @@
       <v-card class="ma-2 px-4 pa-2 elevation-0" outlined>
         <v-row dense v-for="item in title" :key="item.name">
           <v-col cols="3">
-            <span v-if="item.name == 'RejectedRemark' && data.Project_Status.ProjectStatus_ID != 8"></span>
+            <span v-if="item.name == 'RejectedRemark' && data.Project_Status.ProjectStatusID != 8"></span>
             <span v-else>{{ item.text }}</span>
           </v-col>
           <v-col cols="9">
@@ -22,23 +22,23 @@
                     <v-avatar left class="d-flex justify-center" color="blue">
                       <v-icon color="white" small>mdi-account</v-icon>
                     </v-avatar>
-                    <span class="grey--text text--darken-1">{{ i.User_Firstname + " " + i.User_Lastname }}</span>
+                    <span class="grey--text text--darken-1">{{ i.Firstname + " " + i.Lastname }}</span>
                   </v-chip>
                 </div>
               </template>
             </div>
             <div v-else-if="item.name == 'Project_Section'">
-              {{ data[item.name].Section_Name }}
+              {{ data[item.name].Detail }}
             </div>
             <div v-else-if="item.name == 'Project_Status'">
-              <!-- <project-status :status="data.Project_Status.ProjectStatus_ID"></project-status> -->
+              <!-- <project-status :status="data.Project_Status.ProjectStatusID"></project-status> -->
               <span>{{ data.Project_Status.ProjectStatus_Name }}</span>
             </div>
-            <div v-else-if="item.name == 'RejectedRemark' && data.Project_Status.ProjectStatus_ID == 8">
+            <div v-else-if="item.name == 'RejectedRemark' && data.Project_Status.ProjectStatusID == 8">
               <v-textarea v-model="data[item.name]" rows="3" background-color="amber lighten-5" outlined hide-details readonly></v-textarea>
               <div class="d-flex">
                 <v-spacer></v-spacer>
-                <span>{{ "- " + data["UpdatedUser"].User_Firstname + " " + data["UpdatedUser"].User_Lastname }}</span>
+                <span>{{ "- " + data["UpdatedUser"].Fullname }}</span>
               </div>
             </div>
             <span v-else class="grey--text text--darken-1">{{ data[item.name] }}</span>
@@ -70,7 +70,7 @@
         <v-checkbox v-if="bypass" v-model="isBypass" class="mt-0 ml-2" hide-details dense label="รับเป็นที่ปรึกษาและอนุมัติโปรเจ็ค"></v-checkbox>
         <v-spacer></v-spacer>
         <div v-if="confirm">
-          <v-btn class="mr-2" color="primary" @click="advisorSubmit" small>Confirm</v-btn>
+          <v-btn class="mr-2" color="primary" @click="advisorSubmit" small>Submit</v-btn>
           <!-- <v-btn class="mr-2" color="error" @click="advisorSubmit(0)" small>Reject</v-btn> -->
         </div>
         <v-btn v-if="join" class="mr-2" color="success" @click="submit" small>Join</v-btn>
@@ -120,9 +120,9 @@ export default {
   data() {
     return {
       title: [
-        { name: "Project_NameTH", text: "ชื่อภาษาไทย" },
-        { name: "Project_NameEN", text: "ชื่อภาษาอังกฤษ" },
-        { name: "Project_Detail", text: "รายละเอียด" },
+        { name: "ProjectNameTH", text: "ชื่อภาษาไทย" },
+        { name: "ProjectNameEN", text: "ชื่อภาษาอังกฤษ" },
+        { name: "ProjectDetail", text: "รายละเอียด" },
         { name: "Project_Members", text: "สมาชิก" },
         { name: "Project_Advisors", text: "อาจารย์ที่ปรึกษา" },
         { name: "Project_Section", text: "คาบเรียน" },
@@ -134,9 +134,14 @@ export default {
       txtRemark: null
     };
   },
+  beforeMount() {
+    if (this.data.Project_Status.ProjectStatusID != 8) {
+      this.title.pop(this.title.length);
+    }
+  },
   methods: {
     submit() {
-      this.$emit("submit", this.data.Project_ID);
+      this.$emit("submit", this.data.ProjectID);
     },
     async advisorSubmit() {
       if (await this.$refs.observer.validate()) {
@@ -144,16 +149,16 @@ export default {
         console.log(this.comfirmOrReject);
         if (this.bypass) {
           if (this.comfirmOrReject == 1) {
-            this.$emit("submit", this.data.Project_ID, 1, this.isBypass, this.txtRemark); //1 Confirm
+            this.$emit("submit", this.data.ProjectID, 1, this.txtRemark, this.isBypass); //1 Confirm
           } else {
             //reject ไม่สน bypass
-            this.$emit("submit", this.data.Project_ID, 0, false, this.txtRemark); //0 Reject
+            this.$emit("submit", this.data.ProjectID, 0, this.txtRemark, false); //0 Reject
           }
         } else {
           if (this.comfirmOrReject == 1) {
-            this.$emit("submit", this.data.Project_ID, 1, false, this.txtRemark); //1 Confirm
+            this.$emit("submit", this.data.ProjectID, 1, this.txtRemark, false); //1 Confirm
           } else {
-            this.$emit("submit", this.data.Project_ID, 0, false, this.txtRemark); //0 Reject
+            this.$emit("submit", this.data.ProjectID, 0, this.txtRemark, false); //0 Reject
           }
         }
       }

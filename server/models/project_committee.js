@@ -2,47 +2,59 @@ module.exports = (sequelize, Sequelize) => {
   const project_committee = sequelize.define(
     "project_committee",
     {
-      Committee_ID: {
+      CommitteeID: {
         type: Sequelize.INTEGER,
-        field: "Committee_ID",
-        primaryKey: true,
+        field: "CommitteeID",
+        primaryKey: true
       },
-      Committee_ProjectID: {
+      ProjectID: {
         type: Sequelize.INTEGER,
-        field: "Committee_ProjectID",
+        field: "ProjectID"
       },
-      Committee_UserID: {
+      UserID: {
         type: Sequelize.INTEGER,
-        field: "Committee_UserID",
+        field: "UserID"
       },
-      Committee_RoleID: {
+      CommitteeRoleID: {
         type: Sequelize.INTEGER,
-        field: "Committee_RoleID",
+        field: "CommitteeRoleID"
       },
-      Committee_PresentScore: {
+      PresentScore: {
         type: Sequelize.INTEGER,
-        field: "Committee_PresentScore",
+        field: "PresentScore"
       },
-      Committee_DocumentScore: {
+      DocumentScore: {
         type: Sequelize.INTEGER,
-        field: "Committee_DocumentScore",
+        field: "DocumentScore"
       },
-      Committee_AdvisorScore: {
+      AdvisorScore: {
         type: Sequelize.INTEGER,
-        field: "Committee_AdvisorScore",
+        field: "AdvisorScore"
       },
-      Committee_RequestStatusID: {
+      RequestStatusID: {
         type: Sequelize.INTEGER,
-        field: "Committee_RequestStatusID",
+        field: "RequestStatusID"
       },
-      Committee_UpdateTime: {
+      CreatedBy: {
+        type: Sequelize.INTEGER,
+        field: "CreatedBy"
+      },
+      CreatedTime: {
         type: Sequelize.DATE,
-        field: "Committee_UpdateTime",
+        field: "CreatedTime"
       },
+      UpdatedBy: {
+        type: Sequelize.INTEGER,
+        field: "UpdatedBy"
+      },
+      UpdatedTime: {
+        type: Sequelize.DATE,
+        field: "UpdatedTime"
+      }
     },
     {
       timestamps: false,
-      freezeTableName: true,
+      freezeTableName: true
     }
   );
   return project_committee;

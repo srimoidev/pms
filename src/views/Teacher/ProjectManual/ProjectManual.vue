@@ -1,97 +1,61 @@
 <template>
-  <v-data-table
-    :headers="headers"
-    :items="desserts"
-    :footer-props="{ disableItemsPerPage: true }"
-    :search="search"
-    class="elevation-1 scrolable"
-    height="72vh"
-  >
-    <template v-slot:top>
-      <v-toolbar flat color="white">
-        <v-toolbar-title>Associated Documents</v-toolbar-title>
-        <v-divider class="mx-4" inset vertical></v-divider>
-        <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details></v-text-field>
-        <v-spacer></v-spacer>
-
-        <v-dialog v-model="dialog" max-width="500px">
+  <v-card class="ma-2 elevation-1" v-resize="onResize" tile :height="windowHeight">
+    <v-data-table
+      :headers="headers"
+      :items="desserts"
+      :footer-props="{ disableItemsPerPage: true }"
+      :search="search"
+      :height="windowHeight - 64 - 59"
+    >
+      <template v-slot:top>
+        <v-toolbar flat color="white">
+          <v-toolbar-title>คู่มือปริญญานิพนธ์</v-toolbar-title>
+          <v-divider class="mx-4" inset vertical></v-divider>
+          <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details></v-text-field>
+          <v-spacer></v-spacer>
+          <v-btn color="primary">อัพโหลดไฟล์</v-btn>
+        </v-toolbar>
+      </template>
+      <template v-slot:[`item.actions`]="{ item }">
+        <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
-            <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on">New Item</v-btn>
+            <v-icon small class="mr-2" v-bind="attrs" v-on="on" @click="download(item)">mdi-download</v-icon>
           </template>
-          <v-card>
-            <v-card-title>
-              <span class="headline">{{ formTitle }}</span>
-            </v-card-title>
+          <span>Download</span>
+        </v-tooltip>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on, attrs }">
+            <v-icon small class="mr-2" v-bind="attrs" v-on="on" @click="download(item)">mdi-open-in-new</v-icon>
+          </template>
+          <span>Open in new tab</span>
+        </v-tooltip>
 
-            <v-card-text>
-              <v-container>
-                <v-row>
-                  <v-col cols="12" sm="6" md="4">
-                    <v-text-field v-model="editedItem.name" label="Dessert name"></v-text-field>
-                  </v-col>
-                  <v-col cols="12" sm="6" md="4">
-                    <v-text-field v-model="editedItem.calories" label="Calories"></v-text-field>
-                  </v-col>
-                  <v-col cols="12" sm="6" md="4">
-                    <v-text-field v-model="editedItem.fat" label="Fat (g)"></v-text-field>
-                  </v-col>
-                  <v-col cols="12" sm="6" md="4">
-                    <v-text-field v-model="editedItem.carbs" label="Carbs (g)"></v-text-field>
-                  </v-col>
-                  <v-col cols="12" sm="6" md="4">
-                    <v-text-field v-model="editedItem.protein" label="Protein (g)"></v-text-field>
-                  </v-col>
-                </v-row>
-              </v-container>
-            </v-card-text>
-
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
-              <v-btn color="blue darken-1" text @click="save">Save</v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-      </v-toolbar>
-    </template>
-    <template v-slot:[`item.actions`]="{ item }">
-      <v-tooltip bottom>
-        <template v-slot:activator="{ on, attrs }">
-          <v-icon small class="mr-2" v-bind="attrs" v-on="on" @click="download(item)">mdi-download</v-icon>
-        </template>
-        <span>Download</span>
-      </v-tooltip>
-      <v-tooltip bottom>
-        <template v-slot:activator="{ on, attrs }">
-          <v-icon small class="mr-2" v-bind="attrs" v-on="on" @click="download(item)">mdi-open-in-new</v-icon>
-        </template>
-        <span>Open in new tab</span>
-      </v-tooltip>
-
-      <!-- <v-icon small class="mr-2" @click="editItem(item)">mdi-pencil</v-icon>
+        <!-- <v-icon small class="mr-2" @click="editItem(item)">mdi-pencil</v-icon>
       <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>-->
-    </template>
-    <template v-slot:no-data>
-      <v-btn color="primary" @click="initialize">Reset</v-btn>
-    </template>
-  </v-data-table>
+      </template>
+      <template v-slot:no-data>
+        <v-btn color="primary" @click="initialize">Reset</v-btn>
+      </template>
+    </v-data-table>
+  </v-card>
 </template>
 <script>
 export default {
   data: () => ({
     search: "",
     dialog: false,
+    windowHeight: 0,
     headers: [
       {
-        text: "Name",
+        text: "ชื่อ",
         align: "start",
         sortable: false,
         value: "name"
       },
-      { text: "Date modified", value: "date" },
-      { text: "Type", value: "type", sortable: false },
-      { text: "Size (KB)", value: "size" },
-      { text: "Actions", value: "actions", sortable: false }
+      { text: "วันที่แก้ไข", value: "date" },
+      { text: "ชนิดไฟล์", value: "type", sortable: false },
+      { text: "ขนาด (KB)", value: "size" },
+      { text: "", value: "actions", sortable: false }
     ],
     desserts: [],
     editedIndex: -1,
@@ -153,7 +117,13 @@ export default {
         }
       ];
     },
-
+    onResize() {
+      //page header 64px
+      //table header 64px
+      //mr-2 8+8 px
+      //table footer 59px
+      this.windowHeight = window.innerHeight - 64 - 16;
+    },
     editItem(item) {
       this.editedIndex = this.desserts.indexOf(item);
       this.editedItem = Object.assign({}, item);

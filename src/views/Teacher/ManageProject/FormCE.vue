@@ -6,7 +6,7 @@
           <v-toolbar-title>{{ "CE0" + formTID }}</v-toolbar-title>
           <v-divider class="mx-4" inset vertical></v-divider>
           <v-spacer></v-spacer>
-          <v-btn @click="upNewDoc = !upNewDoc">Upload new document</v-btn>
+          <!-- <v-btn @click="upNewDoc = !upNewDoc">Upload new document</v-btn> -->
           <template>
             <modal-container :active="upNewDoc" :cancellable="1">
               <template>
@@ -51,7 +51,7 @@
         </v-tooltip>
       </template>
       <template v-slot:[`item.Form_UpdatedTime`]="{ item }">
-        <router-link class="text-none" :to="{ path: 'form_preview', query: { d: item.Form_ID } }">{{
+        <router-link class="text-none" :to="{ path: 'form_preview', query: { d: item.FormID } }">{{
           new Date(item.Form_UpdatedTime).toLocaleDateString()
         }}</router-link>
         <!-- <v-badge color="red" inline content="5"></v-badge> -->
@@ -105,6 +105,9 @@ export default {
     }),
     formTID() {
       return this.$route.query.type;
+    },
+    projectID() {
+      return this.$route.query.project;
     }
   },
   watch: {
@@ -118,7 +121,7 @@ export default {
   methods: {
     async loadData() {
       // this.user = JSON.parse(localStorage.getItem("user"));
-      this.data = await this.Form.AllFormEachType(this.user.User_ProjectID, this.formTID);
+      this.data = await this.Form.AllFormEachType(this.projectID, this.formTID);
       console.log(this.user, this.formTID, this.data);
       // if (temp) {
       //   temp.map(async item => {
@@ -154,7 +157,7 @@ export default {
 
       this.message = "";
 
-      this.Form.Upload(this.user.User_ProjectID, this.formTID, this.currentFile, event => {
+      this.Form.Upload(this.projectID, this.formTID, this.currentFile, event => {
         this.progress = Math.round((100 * event.loaded) / event.total);
       })
         .catch(() => {

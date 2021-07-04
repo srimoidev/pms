@@ -2,31 +2,39 @@ module.exports = (sequelize, Sequelize) => {
   const form_comment = sequelize.define(
     "form_comment",
     {
-      Comment_ID: {
+      CommentID: {
         type: Sequelize.INTEGER,
-        field: "Comment_ID",
-        primaryKey: true,
+        field: "CommentID",
+        primaryKey: true
       },
-      Comment_FormID: {
+      FormID: {
         type: Sequelize.INTEGER,
-        field: "Comment_FormID",
+        field: "FormID"
       },
-      Comment_UserID: {
-        type: Sequelize.INTEGER,
-        field: "Comment_UserID",
-      },
-      Comment_Text: {
+      CommentText: {
         type: Sequelize.TEXT,
-        field: "Comment_Text",
+        field: "CommentText"
       },
-      Comment_DateTime: {
+      CreatedBy: {
+        type: Sequelize.INTEGER,
+        field: "CreatedBy"
+      },
+      CreatedTime: {
         type: Sequelize.DATE,
-        field: "Comment_DateTime",
+        field: "CreatedTime"
       },
+      UpdatedBy: {
+        type: Sequelize.INTEGER,
+        field: "UpdatedBy"
+      },
+      UpdatedTime: {
+        type: Sequelize.DATE,
+        field: "UpdatedTime"
+      }
     },
     {
       timestamps: false,
-      freezeTableName: true,
+      freezeTableName: true
     }
   );
   return form_comment;
