@@ -3,12 +3,12 @@ import HTTP from "./config";
 //#region outbound
 
 export async function UserTeacher() {
-  return HTTP.get("/user?typeid=2").then(res => {
+  return HTTP.get("/user?typeid[]=2&typeid[]=3").then(res => {
     return res.data;
   });
 }
 export async function UserStudent() {
-  return HTTP.get("/user?typeid=1").then(res => {
+  return HTTP.get("/user?typeid[]=1").then(res => {
     return res.data;
   });
 }

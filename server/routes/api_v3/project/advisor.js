@@ -15,11 +15,20 @@ router.get("/", async (req, res) => {
         Advisor_UserID: req.query.userid
       });
     }
-    if (req.query.statusid) {
-      whereStr.push({
-        Advisor_RequestStatusID: req.query.statusid
-      });
-    } 
+    if (req.query.all != "true") {
+      if (req.query.statusid) {
+        whereStr.push({
+          Advisor_RequestStatusID: req.query.statusid
+        });
+      } else {
+        whereStr.push({
+          Advisor_RequestStatus: {
+            [Op.is]: null
+          }
+        });
+      }
+    }
+
     const data = await db.project_advisor.findAll({
       include: [
         {
@@ -43,7 +52,6 @@ router.get("/", async (req, res) => {
       ],
       where: whereStr
     });
-    console.log(whereStr);
     return res.json(data);
   } catch (error) {
     return res.status(500).json({
@@ -106,7 +114,7 @@ router.post("/", async (req, res) => {
 // update
 router.put("/:id", async (req, res) => {
   await db.project_advisor
-    .update(req.body, {
+    .update(req.body.updateObj, {
       where: {
         Advisor_ID: req.params.id
       }
@@ -117,7 +125,18 @@ router.put("/:id", async (req, res) => {
           Advisor_ID: req.params.id
         }
       });
+      //ถ้า Advisor_RequestStatus เป็น null แสดงว่าอาจารย์ยังไม่กดเลือก Confirm หรือ Reject
       const isAllConfirm = await db.project_advisor.findAll({
+        where: {
+          Advisor_ProjectID: temp.Advisor_ProjectID,
+          [Op.and]: {
+            Advisor_RequestStatus: {
+              [Op.eq]: null
+            }
+          }
+        }
+      });
+      const isSomeAdvisorReject = await db.project_advisor.findAll({
         where: {
           Advisor_ProjectID: temp.Advisor_ProjectID,
           [Op.and]: {
@@ -125,19 +144,50 @@ router.put("/:id", async (req, res) => {
           }
         }
       });
-      return isAllConfirm.length == 0 ? temp.Advisor_ProjectID : null;
+      if (isSomeAdvisorReject.length != 0) {
+        return { code: "REJECT", pID: temp.Advisor_ProjectID };
+      } else if (isAllConfirm.length == 0) {
+        return { code: "ALLCONFIRM", pID: temp.Advisor_ProjectID };
+      } else {
+        return;
+      }
     })
     .then(async result => {
-      if (result) {
-        await db.project_info.update(
-          { Project_StatusID: 3, isAdvisorsConfirm: 1 }, //set that all teachers confirm to be advisor
-          {
-            // transaction: transaction,
-            where: {
-              Project_ID: result
-            }
+      switch (result.code) {
+        case "ALLCONFIRM":
+          console.log(req.query.isbypass == "true", result.pID);
+          if (req.query.isbypass == "true") {
+            await db.project_info.update(
+              { Project_StatusID: 4 }, //ถ้า isbypass เป็น true set 4(In Progress)
+              {
+                where: {
+                  Project_ID: result.pID
+                }
+              }
+            );
+          } else {
+            await db.project_info.update(
+              { Project_StatusID: 3 }, //set 3(Wait Instructor)
+              {
+                where: {
+                  Project_ID: result.pID
+                }
+              }
+            );
           }
-        );
+
+          break;
+        case "REJECT":
+          console.log("reject");
+          await db.project_info.update(
+            { Project_StatusID: 8, RejectedRemark: req.body.remark, UpdatedBy: req.body.userid }, //set to Rejected
+            {
+              where: {
+                Project_ID: result.pID
+              }
+            }
+          );
+          break;
       }
     })
     .then(() => {
@@ -196,7 +246,7 @@ router.delete("/:id", async (req, res) => {
         });
       }
     })
-    .catch(err => {
+    .catch(() => {
       res.status(500).send({
         message: "Error deleting!"
       });

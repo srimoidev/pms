@@ -30,6 +30,37 @@
   background-color: #b388ff !important;
 }
 
+/* Draft */
+.p-status-1 {
+  background-color: #adadad !important;
+}
+/* Wait Adviser */
+.p-status-2 {
+  background-color: #ffea00 !important;
+}
+/* In Progress */
+.p-status-3 {
+  background-color: #29b6f6 !important;
+}
+/* Incomplete */
+.p-status-4 {
+  background-color: #fb6340 !important;
+}
+/* Failure */
+.p-status-5 {
+  background-color: #f5365c !important;
+}
+/* Completed */
+.p-status-6 {
+  background-color: #2dce89 !important;
+}
+.p-status-7 {
+  background-color: mediumpurple !important ;
+}
+.p-status-8 {
+  background-color: deeppink !important;
+}
+
 .m-status-1 {
   background-color: #b388ff !important;
 }
@@ -39,6 +70,7 @@
 .m-status-3 {
   background-color: red !important;
 }
+
 //scrollbar
 // ::-webkit-scrollbar {
 //   width: 12px;

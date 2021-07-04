@@ -40,6 +40,9 @@ import Teacher_ApprovementReq from "../views/Teacher/Request/ApprovementRequest.
 import Teacher_ProjectManual from "../views/Teacher/ProjectManual/ProjectManual.vue";
 import Teacher_FormPreview from "../views/Teacher/ManageProject/FormPreview.vue";
 import Teacher_AdviserRequest from "../views/Teacher/Request/AdviserRequest.vue";
+import Teacher_Documents from "../views/Teacher/ManageProject/Documents";
+import Teacher_FormCE from "../views/Teacher/ManageProject/FormCE";
+import Teacher_NewProjects from "../views/Teacher/Request/NewProjects";
 //App Environment Configuration
 import App_EnvConfig from "../views/AppEnvironments/AppEnvironment.vue";
 
@@ -216,7 +219,7 @@ const routes = [
         meta: { title: "All Projects | PMS" }
       },
       {
-        path: "manage_project",
+        path: "project",
         name: "Manage Project",
         component: Teacher_ManageProject,
         meta: { title: "Topic Proposal | PMS" }
@@ -262,6 +265,24 @@ const routes = [
         name: "MeetingDetail",
         component: Teacher_AppointmentDetail,
         meta: { title: "MeetingDetail | PMS" }
+      },
+      {
+        path: "documents",
+        name: "Document",
+        component: Teacher_Documents,
+        meta: { title: "Document | PMS" }
+      },
+      {
+        path: "form_ce",
+        name: "Form CE",
+        component: Teacher_FormCE,
+        meta: { title: "Form CE | PMS" }
+      },
+      {
+        path: "new_projects",
+        name: "New Projects",
+        component: Teacher_NewProjects,
+        meta: { title: "New Projects | PMS" }
       }
     ]
   },
@@ -290,8 +311,8 @@ router.beforeEach((to, from, next) => {
 
   // /***
   //  * User_typeID 1 : Student
-  //  * USer_typeID 2 : Instructor
-  //  * User_typeID 3 : Teacher
+  //  * USer_typeID 2 : Teacher
+  //  * User_typeID 3 : Instructor
   //  */
 
   if (loggedIn) {

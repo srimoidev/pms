@@ -7,7 +7,7 @@
       :item-class="rowStyle"
       :search="searchText"
       loading-text="Loading... Please wait"
-      :height="windowHeight"
+      :height="windowHeight - 64 - 59"
     >
       <template v-slot:top>
         <v-toolbar flat color="white">
@@ -61,7 +61,7 @@
         {{ item.Project_Section.Section_Name }}
       </template>
       <template v-slot:[`item.Project_Status`]="{ item }">
-        <group-status :status="item.Project_Status.ProjectStatus_ID"></group-status>
+        <project-status :status="item.Project_Status.ProjectStatus_ID"></project-status>
       </template>
       <template v-slot:[`item.actions`]="{ item }">
         <v-tooltip bottom>
@@ -101,14 +101,14 @@
 <script>
 import { mapGetters } from "vuex";
 import ModalContainer from "@/components/ModalContainer";
-import GroupStatus from "@/components/GroupStatus";
+import ProjectStatus from "@/components/ProjectStatus";
 import NewTopic from "@/components/NewTopic";
 import ProjectModalDetail from "@/components/ProjectModalDetail";
 export default {
   components: {
     ProjectModalDetail,
     ModalContainer,
-    GroupStatus,
+    ProjectStatus,
     NewTopic
   },
   data() {
@@ -218,7 +218,7 @@ export default {
       //table header 64px
       //ma-2 8+8 px
       //table footer 59px
-      this.windowHeight = window.innerHeight - 64 - 64 - 16 - 59;
+      this.windowHeight = window.innerHeight - 64 - 16;
     },
     rowStyle() {
       return "tb-row";
