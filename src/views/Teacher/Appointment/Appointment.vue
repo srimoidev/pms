@@ -162,7 +162,7 @@ export default {
           return !this.filterStatus || item.Meeting_RequestStatusID == this.filterStatus;
         })
         .filter(item => {
-          return item.Meeting_ProjectID == this.user.User_ProjectID;
+          return item.Meeting_TeacherID == this.user.User_ID;
         });
     }
   },

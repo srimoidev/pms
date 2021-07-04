@@ -123,10 +123,10 @@ export default {
       this.selectedProject = project;
       this.modal = true;
     },
-    async Confirm(pStatus,pProjectID) {
+    async Confirm(pStatus, pProjectID) {
       //TODO ส่ง UserID กับ array Project_ID ไป
       const advisor = await this.Project.Advisor(pProjectID, this.user.User_ID);
-      await this.Project.ConfirmOrRejectProject(pStatus,advisor[0].Advisor_ID).then(() => {
+      await this.Project.ConfirmOrRejectProject(pStatus, advisor[0].Advisor_ID).then(() => {
         this.$swal.fire({
           timer: 3000,
           timerProgressBar: true,

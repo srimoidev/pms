@@ -18,6 +18,7 @@ import Dashboard from "../views/Dashboard.vue";
 
 //student pages
 import Student_Appointment from "../views/Student/Appointment/Appointment.vue";
+import Student_AppointmentDetail from "../views/Student/Appointment/AppointmentDetail.vue";
 import Student_Overview from "../views/Student/Overview/Overview.vue";
 import Student_Description from "../views/Student/ProjecDescription/Description.vue";
 import Student_ProjectManual from "../views/Student/ProjectManual/ProjectManual.vue";
@@ -26,9 +27,11 @@ import Student_Documents from "../views/Student/Documents/Documents.vue";
 import Student_ProgressionRecord from "../views/Student/ProgressionRecord/ProgressionRecord.vue";
 import Student_FormCE from "../views/Student/Documents/FormCE.vue";
 import Student_FormPreview from "../views/Student/Documents/FormPreview.vue";
-import Student_AllProject from "../views/Student/AllProject/AllProject.vue"
+import Student_AllProject from "../views/Student/AllProject/AllProject.vue";
 
 //teacher pages
+import Teacher_Appointment from "../views/Teacher/Appointment/Appointment.vue";
+import Teacher_AppointmentDetail from "../views/Teacher/Appointment/AppointmentDetail.vue";
 import Teacher_Overview from "../views/Teacher/Overview/Overview.vue";
 import Teacher_AllProject from "../views/Teacher/AllProject/AllProject.vue";
 import Teacher_ManageProject from "../views/Teacher/ManageProject/ManageProject.vue";
@@ -117,6 +120,12 @@ const routes = [
         name: "Appointment",
         component: Student_Appointment,
         meta: { title: "Appointment | PMS" }
+      },
+      {
+        path: "appointment/:id",
+        name: "MeetingDetail",
+        component: Student_AppointmentDetail,
+        meta: { title: "MeetingDetail | PMS" }
       },
       {
         path: "github",
@@ -241,6 +250,18 @@ const routes = [
         name: "Form Preview",
         component: Teacher_FormPreview,
         meta: { title: "Form Preview | PMS" }
+      },
+      {
+        path: "appointment",
+        name: "Appointment",
+        component: Teacher_Appointment,
+        meta: { title: "Appointment | PMS" }
+      },
+      {
+        path: "appointment/:id",
+        name: "MeetingDetail",
+        component: Teacher_AppointmentDetail,
+        meta: { title: "MeetingDetail | PMS" }
       }
     ]
   },

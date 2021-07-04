@@ -75,10 +75,8 @@ export default {
   },
   methods: {
     submit(val) {
-      if(val == 1)
-        this.$emit("submit",1, this.data.Project_ID);
-      else
-        this.$emit("submit",2, this.data.Project_ID);
+      if (val == 1) this.$emit("submit", 1, this.data.Project_ID);
+      else this.$emit("submit", 2, this.data.Project_ID);
     },
     close() {
       this.$emit("close");

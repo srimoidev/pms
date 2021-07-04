@@ -103,7 +103,7 @@ export default {
         })
         .then(result => {
           if (result.isConfirmed) {
-            this.Project.Leave(this.user.User_ProjectID,this.user.User_ID);
+            this.Project.Leave(this.user.User_ProjectID, this.user.User_ID);
             this.$router.push("/student/all_project");
           }
         });
@@ -118,5 +118,4 @@ export default {
   }
 };
 </script>
-<style scoped>
-</style>
+<style scoped></style>

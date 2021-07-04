@@ -192,10 +192,6 @@ db.meeting.belongsTo(db.project_info, {
   as: "Meeting_Project",
   foreignKey: "Meeting_ProjectID"
 });
-db.meeting.belongsTo(db.meeting_type, {
-  as: "Meeting_Type",
-  foreignKey: "Meeting_TypeID"
-});
 db.meeting.belongsTo(db.user_profile, {
   as: "Meeting_Teacher",
   foreignKey: "Meeting_TeacherID"

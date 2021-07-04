@@ -9,35 +9,49 @@
       </v-btn>
     </v-card-title>
     <v-container>
-      <form>
-        <v-text-field v-model="meetingName" :error-messages="errors" label="เรื่องนัดหมาย" outlined dense></v-text-field>
-        <v-textarea v-model="meetingDetail" outlined rows="3" no-resize label="รายละเอียด"></v-textarea>
-        <v-autocomplete
-          :error-messages="errors"
-          v-model="advisors"
-          :items="teachers"
-          chips
-          color="blue-grey lighten-2"
-          label="อาจารย์ที่ปรึกษา"
-          item-text="User_Firstname"
-          item-value="User_ID"
-          multiple
-          hide-no-data
-          clearable
-          outlined
-          dense
-        >
-          <template v-slot:item="teacher">
-            <v-list-item-avatar color="blue" class="d-flex justify-center">
-              <v-icon>mdi-account</v-icon>
-            </v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title :key="teacher.item.User_ID">{{ `${teacher.item.User_Firstname} ${teacher.item.User_Lastname}` }}</v-list-item-title>
-            </v-list-item-content>
-          </template>
-        </v-autocomplete>
-        <v-text-field v-model="start" type="datetime-local" label="เวลานัดหมาย"></v-text-field>
-      </form>
+      <ValidationObserver ref="observer">
+        <form>
+          <ValidationProvider rules="required" v-slot="{ errors }" name="เรื่องนัดหมาย">
+            <v-text-field v-model="meetingName" :error-messages="errors" label="เรื่องนัดหมาย" outlined dense></v-text-field>
+          </ValidationProvider>
+          <ValidationProvider rules="required" v-slot="{ errors }" name="รายละเอียด">
+            <v-textarea v-model="meetingDetail" outlined rows="3" :error-messages="errors" no-resize label="รายละเอียด"></v-textarea>
+          </ValidationProvider>
+          <ValidationProvider rules="required_select" v-slot="{ errors }" name="อาจารย์ หรือ กลุ่มโครงงาน">
+            <v-select
+              v-if="meetingType == 1"
+              :items="teachers"
+              v-model="meetingTeacherID"
+              label="อาจารย์"
+              :error-messages="errors"
+              item-value="User_ID"
+              :item-text="selectText"
+              bottom
+              outlined
+              dense
+              required
+            >
+            </v-select>
+            <v-select
+              v-else
+              :items="projects"
+              v-model="meetingProjectID"
+              label="กลุ่มโครงงาน"
+              :error-messages="errors"
+              item-value="Project_ID"
+              item-text="Project_NameTH"
+              bottom
+              outlined
+              dense
+              required
+            >
+            </v-select>
+          </ValidationProvider>
+          <ValidationProvider rules="required_select" v-slot="{ errors }" name="เวลานัดหมาย">
+            <v-text-field v-model="meetingDateTime" type="datetime-local" :error-messages="errors" label="เวลานัดหมาย" outlined dense></v-text-field>
+          </ValidationProvider>
+        </form>
+      </ValidationObserver>
       <div class="d-flex">
         <v-spacer></v-spacer>
         <v-btn class="ma-2" color="success" @click="submit">Create</v-btn>
@@ -47,35 +61,54 @@
 </template>
 
 <script>
+import { required } from "vee-validate/dist/rules";
+import { extend, ValidationObserver, ValidationProvider, setInteractionMode } from "vee-validate";
+
+setInteractionMode("eager");
+
+extend("required", {
+  ...required,
+  message: "โปรดกรอก {_field_}"
+});
+
+extend("required_select", {
+  ...required,
+  message: "โปรดเลือก {_field_}"
+});
+
 export default {
-  components: {},
+  components: {
+    ValidationObserver,
+    ValidationProvider
+  },
   props: {
     teachers: {
       type: Array,
       default: () => []
+    },
+    projects: {
+      type: Array,
+      default: () => []
+    },
+    meetingType: {
+      type: String,
+      default: "1"
     }
   },
   data() {
     return {
-      meetingName: "test",
-      meetingDetail: "test",
-      meetingTeacher: [],
-      meetingDateTime: ""
+      meetingName: null,
+      meetingDetail: null,
+      meetingTeacherID: null,
+      meetingProjectID: null,
+      meetingDateTime: null
     };
   },
-  computed: {
-    memberRules() {
-      return !this.teacher ? "select_required|maxSelected:" + this.number : "";
-    }
-  },
-  beforeMount() {
-    if (this.teacher) {
-      this.advisors.push(this.createUser.User_ID);
-    } else {
-      this.members.push(this.createUser.User_ID);
-    }
-  },
+  computed: {},
   methods: {
+    selectText(item) {
+      return item.User_Firstname + " " + item.User_Lastname;
+    },
     async submit() {
       if (await this.$refs.observer.validate()) {
         this.submitForm();
@@ -83,32 +116,20 @@ export default {
       }
     },
     submitForm() {
-      this.$emit(
-        "newProject",
-        {
-          Project_NameTH: this.th_name,
-          Project_NameEN: this.en_name,
-          Project_Detail: this.detail,
-          Project_TypeID: this.type,
-          Project_MaxMember: this.number,
-          Project_SectionID: 1
-        },
-        this.advisors,
-        this.members
-      );
-    },
-    remove(item) {
-      const index = this.advisors.indexOf(item.name);
-      if (index >= 0) this.advisors.splice(index, 1);
-    },
-    disableItem(item) {
-      if (item.disabled === true) {
-        return true;
-      }
-      return false;
+      this.$emit("submit", {
+        Meeting_Name: this.meetingName,
+        Meeting_Detail: this.meetingDetail,
+        Meeting_TeacherID: this.meetingTeacherID,
+        Meeting_ProjectID: this.meetingProjectID,
+        Meeting_DateTime: this.meetingDateTime
+      });
     },
     close() {
-      this.th_name = "";
+      this.meetingName = null;
+      this.meetingDetail = null;
+      this.meetingTeacherID = null;
+      this.meetingProjectID = null;
+      this.meetingDateTime = null;
       this.$emit("close");
     }
   }
