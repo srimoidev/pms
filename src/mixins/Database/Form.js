@@ -58,6 +58,16 @@ export async function Type() {
       console.log(ex);
     });
 }
+//All Type
+export async function AllType() {
+  return HTTP.get("form/type/all")
+    .then(res => {
+      return res.data;
+    })
+    .catch(ex => {
+      console.log(ex);
+    });
+}
 //Form Status
 export async function Status() {
   return HTTP.get("form/status").then(res => {
@@ -108,6 +118,11 @@ export async function Upload(pUserID, pProjectID, pFormTypeID, pFile) {
 }
 export async function ApproveOrReject(pUserID, pProjectID, pFormID, pStatusID) {
   return HTTP.put(`/form/sent/${pFormID}`, { ProjectID: pProjectID, FormStatusID: pStatusID, UpdatedBy: pUserID }).catch(() => {
+    //
+  });
+}
+export async function Setting(pUserID, pFormTypeID, pFormType, pDeadline) {
+  return HTTP.put(`/form/type/${pFormTypeID}`, { formType: pFormType, deadline: pDeadline, updatedUser: pUserID }).catch(() => {
     //
   });
 }

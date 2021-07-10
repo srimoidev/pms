@@ -2,7 +2,7 @@ import { userService } from "@/mixins/UserAuthen";
 import router from "../../router";
 
 const user = JSON.parse(localStorage.getItem("user"));
-const initialState = user ? { status: true } : { status: false };
+const initialState = user ? { status: true, msg: null } : { status: false, msg: null };
 
 export const authentication = {
   namespaced: true,
@@ -12,14 +12,11 @@ export const authentication = {
       userService.login(username, password).then(
         role => {
           commit("loginSuccess", role);
-
           router.push(`/${role}`);
-          // dispatch("user/routing");
+        },
+        error => {
+          commit("loginFailure", error);
         }
-        // error => {
-        //   commit("loginFailure", error);
-        //   dispatch("alert/error", error, { root: true });
-        // }
       );
     },
     logout({ commit }) {
@@ -28,23 +25,21 @@ export const authentication = {
     }
   },
   mutations: {
-    // loginRequest(state, user) {
-    //   state.status = { loggingIn: true };
-    //   state.user = user;
-    // },
     loginSuccess(state, role) {
       state.status = true;
       state.role = role;
+      state.msg = null;
     },
-    // loginFailure(state) {
-    //   state.status = {};
-    //   state.user = null;
-    // },
+    loginFailure(state, error) {
+      state.status = false;
+      state.msg = error;
+    },
     logout(state) {
       state.status = false;
     }
   },
   getters: {
-    isLoggedIn: state => state.status
+    isLoggedIn: state => state.status,
+    msg: state => state.msg
   }
 };

@@ -44,8 +44,6 @@ db.form_sent = require("./form_sent")(sequelize, Sequelize);
 db.form_status = require("./form_status")(sequelize, Sequelize);
 db.form_type = require("./form_type")(sequelize, Sequelize);
 db.meeting = require("./meeting")(sequelize, Sequelize);
-db.meeting_note = require("./meeting_note")(sequelize, Sequelize);
-db.meeting_type = require("./meeting_type")(sequelize, Sequelize);
 db.notification = require("./notification")(sequelize, Sequelize);
 db.notification_status = require("./notification_status")(sequelize, Sequelize);
 db.project_advisor = require("./project_advisor")(sequelize, Sequelize);
@@ -202,12 +200,17 @@ db.form_prerequisite.belongsTo(db.form_type, {
   as: "RequireForm",
   foreignKey: "FormReqTypeID"
 });
+db.form_sent.belongsTo(db.deadline, {
+  as: "Deadline",
+  targetKey: "FormTypeID",
+  foreignKey: "FormTypeID"
+});
 db.deadline.belongsTo(db.form_type, {
-  as: "Deadline_FormType",
+  as: "FormType",
   foreignKey: "FormTypeID"
 });
 db.deadline.belongsTo(db.section, {
-  as: "Deadline_Section",
+  as: "Section",
   foreignKey: "SectionID"
 });
 db.form_sent.belongsTo(db.project_info, {
@@ -229,10 +232,19 @@ db.meeting.belongsTo(db.user_profile, {
   as: "Meeting_Teacher",
   foreignKey: "Meeting_TeacherID"
 });
-db.meeting_note.belongsTo(db.meeting, {
-  as: "MeetingNote_Meeting",
-  foreignKey: "MeetingNote_MeetingID"
-});
+//#endregion
+
+//#region Form Type
+// db.form_type.belongsTo(db.deadline, {
+//   as: "Deadlines",
+//   targetKey: "FormTypeID",
+//   foreignKey: "FormTypeID"
+// });
+// db.deadline.belongsTo(db.section, {
+//   as: "Sections",
+//   targetKey: "SectionID",
+//   foreignKey: "SectionID"
+// });
 //#endregion
 
 module.exports = db;

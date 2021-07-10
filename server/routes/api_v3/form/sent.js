@@ -63,6 +63,19 @@ router.get("/", async (req, res) => {
           //   }
           // ]
         },
+
+        {
+          model: db.deadline,
+          as: "Deadline"
+          // include: [
+          //   {
+          //     model: db.section,
+          //     as: "Sections"
+          //     // attributes: []
+          //   }
+          // ]
+          // attributes: []
+        },
         {
           model: db.user_profile,
           as: "UpdatedUser",
@@ -204,7 +217,7 @@ router.post("/", async (req, res) => {
 // update
 router.put("/:id", async (req, res) => {
   console.log(req.body);
-  var isAdvisor = await db.project_advisor.findOne({ where: { ProjectID: req.body.ProjectID, UserID: req.body.UserID }, raw: true });
+  var isAdvisor = await db.project_advisor.findOne({ where: { ProjectID: req.body.ProjectID, UserID: req.body.UpdatedBy }, raw: true });
   var status;
   if (isAdvisor?.length > 0) {
     status = req.body.FormStatusID ? 2 : 3; //ถ้าอนุมัติโดยที่ปรึกษาเปลี่ยนสถานะเป็น 2(Wait Instructor) ถ้าไม่อนุมัติเป็น 3(Advisor Rejected)

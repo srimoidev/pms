@@ -19,15 +19,17 @@ passport.use(
       const sqlStr = `SELECT * FROM user_profile ` + `WHERE Username = "${username}" AND Password = "${password}"`;
       database.query(sqlStr, (err, rows) => {
         var data, msg;
-        if (rows.length > 0) {
+        if (rows?.length > 0) {
           data = {
             UserID: rows[0].UserID,
             UserTypeID: rows[0].UserTypeID
           };
           msg = "Logged In Successfully!";
         } else {
+          data = null;
           msg = "Incorrect Username or Password!";
         }
+        console.log(data, msg);
         return cb(null, data, msg);
       });
     }

@@ -7,23 +7,25 @@ router.get("/", async (req, res) => {
     var whereStr = [];
     if (req.query.sectionid) {
       whereStr.push({
-        Deadline_SectionID: req.query.sectionid
+        SectionID: req.query.sectionid
       });
     }
     if (req.query.formtypeid) {
       whereStr.push({
-        Deadline_FormTypeID: req.query.formtypeid
+        FormTypeID: req.query.formtypeid
       });
     }
     const data = await db.deadline.findAll({
       include: [
         {
           model: db.form_type,
-          as: "Deadline_FormType"
+          as: "FormType",
+          attributes: { exclude: ["CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] }
         },
         {
           model: db.section,
-          as: "Deadline_Section"
+          as: "Section",
+          attributes: { exclude: ["CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] }
         }
       ],
       where: whereStr
@@ -51,7 +53,7 @@ router.get("/:id", async (req, res) => {
       ],
       where: [
         {
-          Deadline_ID: req.params.id
+          DeadlineID: req.params.id
         }
       ]
     });
@@ -82,7 +84,7 @@ router.put("/:id", async (req, res) => {
   await db.deadline
     .update(req.body, {
       where: {
-        Deadline_ID: req.params.id
+        DeadlineID: req.params.id
       }
     })
     .then(num => {
@@ -109,7 +111,7 @@ router.delete("/:id", async (req, res) => {
     .destroy({
       where: [
         {
-          Deadline_ID: req.params.id
+          DeadlineID: req.params.id
         }
       ]
     })

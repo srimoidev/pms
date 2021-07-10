@@ -144,7 +144,7 @@ export default {
           const preq = await this.Form.Prerequisite();
           const latest = await this.Form.LatestEachForm(this.user.ProjectID);
           let deadline = await this.Form.Deadline();
-
+          console.log(latest);
           if (latest) {
             initData.map(element => {
               element.LatestForm = latest.find(item => item.FormTypeID == element.FormTypeID) || null;
@@ -152,7 +152,7 @@ export default {
               element.Deadline = deadline.find(item => item.FormTypeID == element.FormTypeID) || undefined;
               element.isReachDeadline = (new Date(element?.Deadline?.OnDate) - new Date()) / (1000 * 3600 * 24);
               element.Prerequisite.map(item => {
-                item.Status = latest.find(t => t.FormTypeID == item.PrerequisiteID)?.FormStatusID;
+                item.Status = latest.find(t => t.FormTypeID == item.PrerequisiteID)?.Form_Status?.FormStatusID;
               });
             });
           }

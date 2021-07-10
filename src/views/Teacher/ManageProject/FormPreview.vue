@@ -150,8 +150,11 @@ export default {
       typeID: "user/TypeID",
       isLoggedIn: "authentication/isLoggedIn"
     }),
+    project_id() {
+      return this.$route.query.pid;
+    },
     form_id() {
-      return this.$route.query.d;
+      return this.$route.query.fid;
     },
     form_export_name() {
       return `Form_${this.form?.Form_Type.FormTypeName}`;
@@ -224,7 +227,7 @@ export default {
           confirmButtonText: "ยืนยัน!"
         })
         .then(async result => {
-          await this.Form.ApproveOrReject(this.user.UserID, this.user.ProjectID, this.form_id, status).then(() => {
+          await this.Form.ApproveOrReject(this.user.UserID, this.form_id, this.form_id, status).then(() => {
             if (result.isConfirmed) {
               this.$swal.fire({
                 toast: true,

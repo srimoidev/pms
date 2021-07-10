@@ -35,7 +35,7 @@
             ></v-text-field>
           </ValidationProvider>
         </ValidationObserver>
-        <v-alert v-if="loginFail" dense type="error">
+        <v-alert v-if="!isLoggedIn && authMsg" dense type="error">
           <span>Incorrect <strong>Username</strong> or <strong>Password</strong></span>
         </v-alert>
         <v-btn dark width="100%" class="white--text cyan accent-4 elevation-1" @click="submit">Login</v-btn>
@@ -55,6 +55,7 @@
 
 <script>
 import { required } from "vee-validate/dist/rules";
+import { mapGetters } from "vuex";
 // import Auth from "@/mixins/Auth";
 // import UserAuthen from "@/mixins/UserAuthen"
 import { extend, ValidationObserver, ValidationProvider, setInteractionMode } from "vee-validate";
@@ -77,6 +78,14 @@ export default {
       returnUrl: ""
     };
   },
+  computed: {
+    ...mapGetters({
+      user: "user/UserData",
+      typeID: "user/TypeID",
+      isLoggedIn: "authentication/isLoggedIn",
+      authMsg: "authentication/msg"
+    })
+  },
   methods: {
     async submit() {
       if (await this.$refs.observer.validate()) {
@@ -88,11 +97,6 @@ export default {
           this.loginFail = true;
         }
       }
-    }
-  },
-  computed: {
-    loggingIn() {
-      return this.$store.state.authentication.status.loggingIn;
     }
   }
 };

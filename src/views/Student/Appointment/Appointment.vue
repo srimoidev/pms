@@ -181,6 +181,7 @@ export default {
       this.allProject = await this.Project.GetAll();
       this.meetingType = this.user.UserTypeID;
       this.loading = false;
+      console.log(this.allMeeting);
     },
     async submit(pData) {
       if (this.meetingType == 1) {

@@ -3,6 +3,18 @@ const db = require("../../../models");
 
 router.get("/", async (req, res) => {
   try {
+    const data = await db.form_type.findAll({
+      where: { isActive: true }
+    });
+    return res.json(data);
+  } catch (error) {
+    return res.status(500).json({
+      msg: error
+    });
+  }
+});
+router.get("/all", async (req, res) => {
+  try {
     const data = await db.form_type.findAll();
     return res.json(data);
   } catch (error) {
@@ -11,7 +23,6 @@ router.get("/", async (req, res) => {
     });
   }
 });
-
 router.get("/:id", async (req, res) => {
   try {
     const data = await db.form_type.findAll({
@@ -45,11 +56,18 @@ router.post("/", async (req, res) => {
 
 // update
 router.put("/:id", async (req, res) => {
+  req.body.formType.UpdatedBy = req.body.updatedUser;
   await db.form_type
-    .update(req.body, {
+    .update(req.body.formType, {
       where: {
-        FormType_ID: req.params.id
+        FormTypeID: req.params.id
       }
+    })
+    .then(async () => {
+      for (const item of req.body.deadline) {
+        await db.deadline.update({ OnDate: item.OnDate, UpdatedBy: req.body.updatedUser }, { where: { DeadlineID: item.DeadlineID } });
+      }
+      return true;
     })
     .then(num => {
       if (num == 1) {
@@ -62,7 +80,7 @@ router.put("/:id", async (req, res) => {
         });
       }
     })
-    .catch(err => {
+    .catch(() => {
       res.status(500).send({
         message: "Error updating!"
       });

@@ -15,6 +15,18 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.STRING,
         field: "FormTypeDetail"
       },
+      Project: {
+        type: Sequelize.BOOLEAN,
+        field: "Project"
+      },
+      PreProject: {
+        type: Sequelize.BOOLEAN,
+        field: "PreProject"
+      },
+      isActive: {
+        type: Sequelize.BOOLEAN,
+        field: "isActive"
+      },
       CreatedBy: {
         type: Sequelize.INTEGER,
         field: "CreatedBy"

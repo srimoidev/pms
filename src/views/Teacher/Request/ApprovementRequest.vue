@@ -123,7 +123,7 @@ export default {
     },
     showDetail(val) {
       console.log(val);
-      this.$router.push(`/teacher/form_preview?d=${val.FormID}`);
+      this.$router.push(`/teacher/form_preview?pid=${val.ProjectID}&fid=${val.FormID}`);
     },
     approveSelectedList() {
       if (this.selectedList.length > 0) {
