@@ -5,6 +5,7 @@ module.exports = (sequelize, Sequelize) => {
       FormTypeID: {
         type: Sequelize.INTEGER,
         field: "FormTypeID",
+        autoIncrement: true,
         primaryKey: true
       },
       FormTypeName: {

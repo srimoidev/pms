@@ -10,20 +10,25 @@ import "./plugins/codemirror";
 import CKEditor from "@ckeditor/ckeditor5-vue";
 import Database from "./mixins/Database/";
 import VueSweetalert2 from "vue-sweetalert2";
-
+import moment from "moment-timezone";
+import Utils from "./utils";
 require("sweetalert2/dist/sweetalert2.min.css");
 require("../node_modules/nprogress/nprogress.css");
 
 Vue.use(CKEditor);
 Vue.use(Database);
 Vue.use(VueSweetalert2);
+Vue.use(Utils);
 
 Vue.config.productionTip = false;
 
+Vue.prototype.moment = moment;
 // Vue.use(VeeValidate);
 
 new Vue({
   Database,
+  Utils,
+  // moment,
   router,
   store,
   vuetify,

@@ -145,6 +145,7 @@ export default {
       windowHeight: 0,
       isJoinable: true,
       data: {},
+      allSection: [],
       allProjectHeaders: [
         {
           text: "ชื่อโครงงาน",
@@ -193,6 +194,7 @@ export default {
         this.allStatus = await this.Project.AllStatus();
         this.allTeacher = await this.User.UserTeacher();
         this.allStudent = await this.User.UserStudent();
+        this.allSection = await this.Section.All();
         this.projectType = type.slice();
         this.allType = type.slice();
         this.projectType.push({

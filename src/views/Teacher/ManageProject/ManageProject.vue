@@ -32,8 +32,8 @@
         </v-toolbar>
       </template>
       <template v-slot:[`item.ProjectNameTH`]="{ item }">
-        <router-link :to="'/teacher/documents?pid=' + item.Project_ID" class="text-none">{{
-          item.ProjectNameTH + "(" + item.Project_NameEN + ")"
+        <router-link :to="'/teacher/documents?pid=' + item.ProjectID" class="text-none">{{
+          item.ProjectNameTH + "(" + item.ProjectNameEN + ")"
         }}</router-link>
       </template>
       <template v-slot:[`item.MaxMember`]="{ item }">
@@ -48,7 +48,7 @@
         {{ item.Project_Section.Section_Name }}
       </template>
       <template v-slot:[`item.Project_Status`]="{ item }">
-        <project-status :status="item.Project_Status.ProjectStatus_ID"></project-status>
+        <project-status :status="item.Project_Status.ProjectStatusID"></project-status>
       </template>
       <template v-slot:[`item.actions`]="{ item }">
         <v-tooltip bottom>

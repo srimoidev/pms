@@ -7,8 +7,12 @@ module.exports = (sequelize, Sequelize) => {
         field: "SectionID",
         primaryKey: true
       },
+      Sequence: {
+        type: Sequelize.INTEGER,
+        field: "Sequence"
+      },
       Year: {
-        type: Sequelize.DATE,
+        type: Sequelize.STRING,
         field: "Year"
       },
       Term: {

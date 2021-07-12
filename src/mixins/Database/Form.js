@@ -121,6 +121,12 @@ export async function ApproveOrReject(pUserID, pProjectID, pFormID, pStatusID) {
     //
   });
 }
+export async function AddForm(pUserID, pFormType, pDeadline) {
+  console.log({ userid: pUserID, formtype: pFormType, deadline: pDeadline });
+  return HTTP.post(`/form/type`, { userid: pUserID, formtype: pFormType, deadline: pDeadline }).catch(() => {
+    //
+  });
+}
 export async function Setting(pUserID, pFormTypeID, pFormType, pDeadline) {
   return HTTP.put(`/form/type/${pFormTypeID}`, { formType: pFormType, deadline: pDeadline, updatedUser: pUserID }).catch(() => {
     //

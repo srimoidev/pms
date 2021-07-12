@@ -42,16 +42,30 @@ router.get("/:id", async (req, res) => {
 
 // create
 router.post("/", async (req, res) => {
-  await db.form_type
-    .create(req.body)
-    .then(data => {
-      res.send(data);
-    })
-    .catch(err => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while creating!"
+  // console.log(req.body);
+  req.body.formtype.CreatedBy = req.body.userid;
+  req.body.formtype.UpdatedBy = req.body.userid;
+  console.log(req.body.formtype);
+  try {
+    const formType = await db.form_type.create(req.body.formtype);
+    console.log(formType.FormTypeID);
+    for (const item of req.body.deadline) {
+      await db.deadline.create({
+        SectionID: item.SectionID,
+        FormTypeID: formType.FormTypeID,
+        OnDate: item.OnDate,
+        CreatedBy: req.body.userid,
+        UpdatedBy: req.body.userid
       });
+    }
+
+    res.send(formType);
+  } catch (err) {
+    // await transaction.rollback();
+    res.status(500).send({
+      message: err.message || "Some error occurred while creating!"
     });
+  }
 });
 
 // update
@@ -108,7 +122,7 @@ router.delete("/:id", async (req, res) => {
         });
       }
     })
-    .catch(err => {
+    .catch(() => {
       res.status(500).send({
         message: "Error deleting!"
       });

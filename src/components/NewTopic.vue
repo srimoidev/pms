@@ -193,10 +193,10 @@ export default {
       type: Array,
       default: () => []
     },
-    // section: {
-    //   type: Array,
-    //   default: () => []
-    // },
+    sections: {
+      type: Array,
+      default: () => []
+    },
     createUser: {
       type: Object,
       default: () => {}
@@ -219,8 +219,8 @@ export default {
       number: 1,
       type: null,
       advisors: [],
-      members: [],
-      sections: [{ Section_ID: 1, sec: 1, teacher: "จาร 1 - จาร 2", time_period: "13.00 - 15.00", day: "พุธ" }]
+      members: []
+      // sections: [{ Section_ID: 1, sec: 1, teacher: "จาร 1 - จาร 2", time_period: "13.00 - 15.00", day: "พุธ" }]
     };
   },
   computed: {
