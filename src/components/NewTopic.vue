@@ -3,7 +3,6 @@
     <v-card-title>
       <v-icon large class="blue--text text--lighten-2 ma-2 mr-5">mdi-file-document-multiple-outline</v-icon>
       <span>เสนอหัวข้อใหม่</span>
-
       <v-spacer></v-spacer>
       <v-btn icon @click="close">
         <v-icon>mdi-close</v-icon>
@@ -12,125 +11,148 @@
     <v-container>
       <ValidationObserver ref="observer">
         <form class="new-topic">
-          <ValidationProvider v-slot="{ errors }" name="ชื่อภาษาไทย" rules="required">
-            <v-text-field v-model="th_name" :error-messages="errors" label="ชื่อภาษาไทย" outlined dense></v-text-field>
-          </ValidationProvider>
-          <ValidationProvider v-slot="{ errors }" name="ชื่อภาษาอังกฤษ" rules="required">
-            <v-text-field v-model="en_name" :error-messages="errors" label="ชื่อภาษาอังกฤษ" outlined dense></v-text-field>
-          </ValidationProvider>
-          <ValidationProvider v-slot="{ errors }" name="สมาชิก" :rules="memberRules">
-            <v-autocomplete
-              :error-messages="errors"
-              v-model="members"
-              :items="students"
-              chips
-              color="blue-grey lighten-2"
-              label="สมาชิก"
-              item-text="Fullname"
-              item-value="UserID"
-              multiple
-              hide-no-data
-              outlined
-              dense
-            >
-              <template v-slot:selection="students">
-                <v-chip v-bind="students.attrs" :input-value="students.selected" @click="students.select" @click:close="remove(students.item)" small>
-                  <v-avatar left class="d-flex justify-center" color="blue">
-                    <!-- <v-img :src="teacher.item.avatar"></v-img> -->
-                    <v-icon>mdi-account</v-icon>
-                  </v-avatar>
-                  {{ students.item.Fullname }}
-                </v-chip>
-              </template>
-              <template v-slot:item="students">
-                <v-list-item-avatar color="blue" class="d-flex justify-center">
-                  <v-icon>mdi-account</v-icon>
-                  <!-- <img :src="teacher.item.avatar" /> -->
-                </v-list-item-avatar>
-                <v-list-item-content>
-                  <v-list-item-title :key="students.item.UserID">{{ students.item.Fullname }}</v-list-item-title>
-                </v-list-item-content>
-              </template>
-            </v-autocomplete>
-          </ValidationProvider>
-          <v-textarea v-model="detail" outlined rows="3" no-resize label="รายละเอียด" :error-messages="errors"></v-textarea>
-          <div class="d-flex">
-            <ValidationProvider v-slot="{ errors }" name="จำนวน" rules="required">
-              <v-text-field v-model.number="number" :error-messages="errors" label="จำนวน" type="number" min="1" outlined dense class="mr-5">
-              </v-text-field>
-            </ValidationProvider>
-            <ValidationProvider v-slot="{ errors }" name="ประเภท" rules="select_required">
-              <v-select
-                v-model="type"
-                :items="alltype"
-                label="ประเภท"
-                item-text="ProjectTypeNameTH"
-                item-value="ProjectTypeID"
-                :error-messages="errors"
-                outlined
-                dense
-                class="mr-5"
-              >
-              </v-select>
-            </ValidationProvider>
-            <ValidationProvider v-slot="{ errors }" name="Section" rules="select_required">
-              <v-select
-                v-model="selectedSection"
-                :items="sections"
-                label="Section"
-                item-text="sec"
-                item-value="Section_ID"
-                :error-messages="errors"
-                outlined
-                dense
-              >
-                <template v-slot:item="sections">
-                  <div>
-                    {{ `Section : ${sections.item.sec} อาจารย์ : ${sections.item.teacher}` }}
-                  </div>
-                  <div>
-                    {{ `${sections.item.day} ${sections.item.time_period} ` }}
-                  </div>
-                </template>
-              </v-select>
-            </ValidationProvider>
-          </div>
+          <v-row no-gutters>
+            <v-col cols="6" class="pr-2">
+              <ValidationProvider v-slot="{ errors }" name="ชื่อภาษาไทย" rules="required">
+                <v-text-field v-model="th_name" :error-messages="errors" label="ชื่อภาษาไทย" outlined dense></v-text-field>
+              </ValidationProvider>
+            </v-col>
+            <v-col cols="6" class="pl-2">
+              <ValidationProvider v-slot="{ errors }" name="ชื่อภาษาอังกฤษ" rules="required">
+                <v-text-field v-model="en_name" :error-messages="errors" label="ชื่อภาษาอังกฤษ" outlined dense></v-text-field>
+              </ValidationProvider>
+            </v-col>
+          </v-row>
+          <v-textarea v-model="detail" outlined rows="4" no-resize label="รายละเอียด"></v-textarea>
+          <v-row no-gutters>
+            <v-col cols="4">
+              <ValidationProvider v-slot="{ errors }" name="จำนวนสมาชิก" rules="required">
+                <v-text-field v-model.number="number" :error-messages="errors" label="จำนวนสมาชิก" type="number" min="1" outlined dense class="mr-5">
+                </v-text-field>
+              </ValidationProvider>
+            </v-col>
+            <v-col cols="8">
+              <ValidationProvider v-slot="{ errors }" name="สมาชิก" :rules="memberRules">
+                <v-autocomplete
+                  :error-messages="errors"
+                  v-model="members"
+                  :items="students"
+                  chips
+                  color="blue-grey lighten-2"
+                  label="สมาชิก"
+                  item-text="Fullname"
+                  item-value="UserID"
+                  multiple
+                  hide-no-data
+                  outlined
+                  dense
+                >
+                  <template v-slot:selection="students">
+                    <v-chip
+                      v-bind="students.attrs"
+                      :input-value="students.selected"
+                      @click="students.select"
+                      @click:close="remove(students.item)"
+                      small
+                    >
+                      <v-avatar left class="d-flex justify-center" color="blue">
+                        <!-- <v-img :src="teacher.item.avatar"></v-img> -->
+                        <v-icon>mdi-account</v-icon>
+                      </v-avatar>
+                      {{ students.item.Fullname }}
+                    </v-chip>
+                  </template>
+                  <template v-slot:item="students">
+                    <v-list-item-avatar color="blue" class="d-flex justify-center">
+                      <v-icon>mdi-account</v-icon>
+                      <!-- <img :src="teacher.item.avatar" /> -->
+                    </v-list-item-avatar>
+                    <v-list-item-content>
+                      <v-list-item-title :key="students.item.UserID">{{ students.item.Fullname }}</v-list-item-title>
+                    </v-list-item-content>
+                  </template>
+                </v-autocomplete>
+              </ValidationProvider>
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col cols="4">
+              <ValidationProvider v-slot="{ errors }" name="ประเภท" rules="select_required">
+                <v-select
+                  v-model="type"
+                  :items="alltype"
+                  label="ประเภท"
+                  item-text="ProjectTypeNameTH"
+                  item-value="ProjectTypeID"
+                  :error-messages="errors"
+                  outlined
+                  dense
+                  class="mr-5"
+                >
+                </v-select>
+              </ValidationProvider>
+            </v-col>
+            <v-col cols="8">
+              <ValidationProvider v-slot="{ errors }" name="อาจารย์ที่ปรึกษา" rules="select_required|maxSelected:2">
+                <v-autocomplete
+                  :error-messages="errors"
+                  v-model="advisors"
+                  :items="teachers"
+                  chips
+                  color="blue-grey lighten-2"
+                  label="อาจารย์ที่ปรึกษา"
+                  item-text="Fullname"
+                  item-value="UserID"
+                  multiple
+                  hide-no-data
+                  clearable
+                  outlined
+                  dense
+                >
+                  <template v-slot:selection="teacher">
+                    <v-chip v-bind="teacher.attrs" :input-value="teacher.selected" @click="teacher.select" @click:close="remove(teacher.item)" small>
+                      <v-avatar left class="d-flex justify-center" color="blue">
+                        <!-- <v-img :src="teacher.item.avatar"></v-img> -->
+                        <v-icon>mdi-account</v-icon>
+                      </v-avatar>
+                      {{ teacher.item.Fullname }}
+                    </v-chip>
+                  </template>
+                  <template v-slot:item="teacher">
+                    <v-list-item-avatar color="blue" class="d-flex justify-center">
+                      <v-icon>mdi-account</v-icon>
+                      <!-- <img :src="teacher.item.avatar" /> -->
+                    </v-list-item-avatar>
+                    <v-list-item-content>
+                      <v-list-item-title :key="teacher.item.UserID">{{ teacher.item.Fullname }}</v-list-item-title>
+                    </v-list-item-content>
+                  </template>
+                </v-autocomplete>
+              </ValidationProvider>
+            </v-col>
+          </v-row>
 
-          <ValidationProvider v-slot="{ errors }" name="อาจารย์ที่ปรึกษา" rules="select_required|maxSelected:2">
-            <v-autocomplete
-              :error-messages="errors"
-              v-model="advisors"
-              :items="teachers"
-              chips
-              color="blue-grey lighten-2"
-              label="อาจารย์ที่ปรึกษา"
-              item-text="Fullname"
-              item-value="UserID"
-              multiple
-              hide-no-data
-              clearable
-              outlined
-              dense
-            >
-              <template v-slot:selection="teacher">
-                <v-chip v-bind="teacher.attrs" :input-value="teacher.selected" @click="teacher.select" @click:close="remove(teacher.item)" small>
-                  <v-avatar left class="d-flex justify-center" color="blue">
-                    <!-- <v-img :src="teacher.item.avatar"></v-img> -->
-                    <v-icon>mdi-account</v-icon>
-                  </v-avatar>
-                  {{ teacher.item.Fullname }}
-                </v-chip>
+          <ValidationProvider v-slot="{ errors }" name="Section" rules="select_required">
+            <v-select v-model="selectedSection" :items="sections" label="Section" item-value="SectionID" :error-messages="errors" outlined dense>
+              <template v-slot:selection="sections">
+                <div>
+                  {{
+                    `Sec : ${sections.item.Sequence}/${sections.item.Year} อาจารย์ : ${sections.item.Section_Instructor.Fullname} คาบเรียน : ${
+                      dayText[sections.item.DayOfWeek - 1].text
+                    } ${sections.item.StartTime.slice(0, 5)} - ${sections.item.EndTime.slice(0, 5)}`
+                  }}
+                </div>
               </template>
-              <template v-slot:item="teacher">
-                <v-list-item-avatar color="blue" class="d-flex justify-center">
-                  <v-icon>mdi-account</v-icon>
-                  <!-- <img :src="teacher.item.avatar" /> -->
-                </v-list-item-avatar>
-                <v-list-item-content>
-                  <v-list-item-title :key="teacher.item.UserID">{{ teacher.item.Fullname }}</v-list-item-title>
-                </v-list-item-content>
+              <template v-slot:item="sections">
+                <div>
+                  {{
+                    `Sec : ${sections.item.Sequence}/${sections.item.Year} อาจารย์ : ${sections.item.Section_Instructor.Fullname} คาบเรียน : ${
+                      dayText[sections.item.DayOfWeek - 1].text
+                    } ${sections.item.StartTime.slice(0, 5)} - ${sections.item.EndTime.slice(0, 5)}`
+                  }}
+                </div>
               </template>
-            </v-autocomplete>
+            </v-select>
           </ValidationProvider>
         </form>
       </ValidationObserver>
@@ -219,8 +241,16 @@ export default {
       number: 1,
       type: null,
       advisors: [],
-      members: []
-      // sections: [{ Section_ID: 1, sec: 1, teacher: "จาร 1 - จาร 2", time_period: "13.00 - 15.00", day: "พุธ" }]
+      members: [],
+      dayText: [
+        { id: 1, text: "วันอาทิตย์" },
+        { id: 2, text: "วันจันทร์" },
+        { id: 3, text: "วันอังคาร" },
+        { id: 4, text: "วันพุธ" },
+        { id: 5, text: "วันพฤหัสบดี" },
+        { id: 6, text: "วันศุกร์" },
+        { id: 7, text: "วันเสาร์" }
+      ]
     };
   },
   computed: {
@@ -252,7 +282,7 @@ export default {
           ProjectDetail: this.detail,
           ProjectTypeID: this.type,
           MaxMember: this.number,
-          SectionID: 1
+          SectionID: this.selectedSection
         },
         this.advisors,
         this.members

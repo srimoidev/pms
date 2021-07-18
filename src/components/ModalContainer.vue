@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="active" persistent class="modal-container" width="600">
+  <v-dialog v-model="active" persistent class="modal-container" :width="width">
     <div>
       <slot></slot>
     </div>
@@ -9,7 +9,14 @@
 <script>
 export default {
   props: {
-    active: Boolean,
+    active: {
+      type: Boolean,
+      default: false
+    },
+    width: {
+      type: Number,
+      default: 600
+    },
     cancellable: [Number, Boolean]
   },
 

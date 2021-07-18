@@ -134,13 +134,13 @@ export default {
   methods: {
     async loadData() {
       if (this.user.ProjectID) {
-        await this.Project.GetSelf(this.user.ProjectID).then(async res => {
+        await this.Project.Project(this.user.ProjectID).then(async res => {
           console.log(res);
           if ([1, 2, 3, 8].includes(res.Project_Status.ProjectStatusID)) {
             this.isUserAllow = false;
             return;
           }
-          const initData = await this.Form.Type();
+          const initData = await this.Form.Types();
           const preq = await this.Form.Prerequisite();
           const latest = await this.Form.LatestEachForm(this.user.ProjectID);
           let deadline = await this.Form.Deadline();
@@ -152,7 +152,7 @@ export default {
               element.Deadline = deadline.find(item => item.FormTypeID == element.FormTypeID) || undefined;
               element.isReachDeadline = (new Date(element?.Deadline?.OnDate) - new Date()) / (1000 * 3600 * 24);
               element.Prerequisite.map(item => {
-                item.Status = latest.find(t => t.FormTypeID == item.PrerequisiteID)?.Form_Status?.FormStatusID;
+                item.Status = latest.find(t => t.FormTypeID == item.RequireForm.FormTypeID)?.Form_Status?.FormStatusID;
               });
             });
           }

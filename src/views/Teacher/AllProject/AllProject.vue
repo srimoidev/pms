@@ -140,9 +140,9 @@ export default {
         },
         // { text: "อาจารย์ที่ปรึกษา", value: "GROUP_ADVISOR" },
         { text: "ประเภท", value: "Project_Type", sortable: false },
-        { text: "สมาชิก", value: "Project_MaxMember", sortable: false },
+        { text: "สมาชิก", value: "MaxMember", sortable: false },
         // { text: "รายละเอียด", value: "Project_Detail", sortable: false },
-        { text: "ปีการศึกษา", value: "Section" },
+        // { text: "ปีการศึกษา", value: "Section" },
         { text: "สถานะ", value: "Project_Status" },
         { text: "Action", value: "actions" }
       ]

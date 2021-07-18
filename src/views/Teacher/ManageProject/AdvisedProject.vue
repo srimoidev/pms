@@ -144,7 +144,7 @@ export default {
 
   methods: {
     async loadData() {
-      const initData = await this.Form.Type();
+      const initData = await this.Form.Types();
       const preq = await this.Form.Prerequisite();
       const latest = await this.Form.LatestEachForm(this.user.User_ProjectID);
       let deadline = await this.Form.Deadline();

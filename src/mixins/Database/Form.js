@@ -14,8 +14,8 @@ export async function Prerequisite() {
 }
 
 //Form ทั้งหมดแต่ละ CE
-export async function AllFormEachType(pProjectID, pFormID) {
-  return HTTP.get(`form/sent?projectid=${pProjectID}&formtypeid=${pFormID}`)
+export async function AllFormEachType(pProjectID, pFormID, pSectionID) {
+  return HTTP.get(`form/sent?projectid=${pProjectID}&formtypeid=${pFormID}&sectionid=${pSectionID}`)
     .then(res => {
       return res.data;
     })
@@ -49,8 +49,17 @@ export async function Comment(pFormID) {
     });
 }
 //Form type
-export async function Type() {
+export async function Types() {
   return HTTP.get("form/type")
+    .then(res => {
+      return res.data;
+    })
+    .catch(ex => {
+      console.log(ex);
+    });
+}
+export async function Type(pFormTypeID) {
+  return HTTP.get(`form/type/${pFormTypeID}`)
     .then(res => {
       return res.data;
     })

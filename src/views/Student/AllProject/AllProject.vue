@@ -58,7 +58,7 @@
         {{ item.Project_Members.length + " / " + item.MaxMember }}
       </template>
       <template v-slot:[`item.Project_Section`]="{ item }">
-        {{ item.Project_Section.Detail }}
+        {{ item.Project_Section.Sequence }}
       </template>
       <template v-slot:[`item.Project_Status`]="{ item }">
         <project-status :status="item.Project_Status.ProjectStatusID"></project-status>
@@ -93,7 +93,7 @@
       </template>
     </v-data-table>
     <template>
-      <modal-container :active="proposal_modal" :cancellable="1" @close="hideModal">
+      <modal-container :active="proposal_modal" :cancellable="1" @close="hideModal" :width="1000">
         <new-topic
           @close="hideModal"
           @newProject="newProject"
@@ -101,6 +101,7 @@
           :alltype="allType"
           :students="allStudent"
           :createUser="user"
+          :sections="allSection"
         ></new-topic>
       </modal-container>
     </template>
@@ -205,9 +206,7 @@ export default {
           ProjectStatusID: 0,
           ProjectStatusName: "ทั้งหมด"
         });
-        console.log(this.allStatus, this.allType);
         this.allProject = await this.Project.GetAll();
-        console.log(this.allProject);
         this.loading = false;
       });
     },
@@ -259,7 +258,6 @@ export default {
       this.joinProjectModal = false;
     },
     showProposalModal() {
-      // this.getAllTeacher();
       this.proposal_modal = true;
     },
     showJoinGroupModal(Group) {

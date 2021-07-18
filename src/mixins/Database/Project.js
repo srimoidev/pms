@@ -19,8 +19,8 @@ export async function GetAll(pName = null, pTypeID = null, pSectionID = null) {
 }
 
 //โปรเจ็คกลุ่มตัวเอง
-export async function GetSelf(pUserID) {
-  return await HTTP.get(`/project/${pUserID}`)
+export async function Project(pProjectID) {
+  return await HTTP.get(`/project/${pProjectID}`)
     .then(res => {
       return res.data;
     })
@@ -50,35 +50,6 @@ export async function GetAdvisor(pID) {
       console.error("Can't fetch group.");
     });
 }
-
-//CE
-// export async function GetCE(type) {
-//   return await HTTP.get(type)
-//     .then(res => {
-//       return res.data;
-//     })
-//     .catch(() => {
-//       console.error("Can't fetch CE");
-//     });
-// }
-
-// //form ล่าสุดของแต่ละ form ของแต่ละโปรเจ็ค
-// export async function LatestEachForm(pID) {
-//   return await HTTP.get(`/form/group/${pID}/latest`)
-//     .then(res => {
-//       return res.data;
-//     })
-//     .catch(() => {
-//       console.error("Can't get latest 'form CE' from each type");
-//     });
-// }
-
-//form ที่ต้องทำก่อน
-// export async function FormPrerequisite() {
-//   return await HTTP.get("/form/prerequisite").then(res => {
-//     return res.data;
-//   });
-// }
 
 //ประเภทของโปรเจ็คทั้งหมด
 export async function AllType() {

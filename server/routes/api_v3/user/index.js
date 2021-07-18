@@ -14,7 +14,9 @@ router.get("/", async (req, res) => {
     }
     const data = await db.user_profile.findAll({
       attributes: {
-        include: [[db.Sequelize.fn("concat", db.Sequelize.col("Firstname"), " ", db.Sequelize.col("Lastname")), "Fullname"]],
+        include: [
+          [db.Sequelize.fn("concat", db.Sequelize.col("Prefix"), " ", db.Sequelize.col("Firstname"), " ", db.Sequelize.col("Lastname")), "Fullname"]
+        ],
         exclude: ["Username", "Password", "CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"]
       },
       where: whereStr
@@ -31,7 +33,9 @@ router.get("/:id", async (req, res) => {
   try {
     const data = await db.user_profile.findOne({
       attributes: {
-        include: [[db.Sequelize.fn("concat", db.Sequelize.col("Firstname"), " ", db.Sequelize.col("Lastname")), "Fullname"]],
+        include: [
+          [db.Sequelize.fn("concat", db.Sequelize.col("Prefix"), " ", db.Sequelize.col("Firstname"), " ", db.Sequelize.col("Lastname")), "Fullname"]
+        ],
         exclude: ["Username", "Password", "CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"]
       },
       where: [

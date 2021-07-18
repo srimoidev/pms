@@ -136,7 +136,6 @@ export default {
   },
   methods: {
     async loadData() {
-      console.log("asdasdasd");
       this.$store.dispatch("user/getLoggedInUserData").then(async () => {
         this.menu = this.initMenu(await this.App.Menus(this.typeID));
 

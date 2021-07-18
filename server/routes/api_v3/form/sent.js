@@ -23,9 +23,14 @@ router.get("/", async (req, res) => {
     }
     if (req.query.advisorid) {
       whereStr.push({
-        "$Form_Project.Project_Advisors.User_ID$": req.query.advisorid
+        "$Form_Project.Project_Advisors.UserID$": req.query.advisorid
       });
     }
+    // if (req.query.sectionid) {
+    //   whereStr.push({
+    //     "$Deadline.SectionID$": req.query.sectionid
+    //   });
+    // }
     const data = await db.form_sent.findAll({
       include: [
         {
@@ -40,41 +45,13 @@ router.get("/", async (req, res) => {
         },
         {
           model: db.project_info,
-          as: "Form_Project"
-          // attributes: []
-          // attributes: { exclude: ["Project_TypeID", "Project_MaxMember", "Project_SectionID", "Project_StatusID", "RejectedRemark"] }
-          // include: [
-          //   {
-          //     model: db.project_status,
-          //     as: "Project_Status"
-          //   },
-          //   {
-          //     model: db.project_type,
-          //     as: "Project_Type"
-          //   },
-          //   {
-          //     model: db.user_profile,
-          //     as: "Project_Advisors",
-          //     through: {
-          //       as: "Advisors",
-          //       attributes: []
-          //     },
-          //     attributes: []
-          //   }
-          // ]
+          as: "Form_Project",
+          attributes: { exclude: ["CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] }
         },
-
         {
           model: db.deadline,
-          as: "Deadline"
-          // include: [
-          //   {
-          //     model: db.section,
-          //     as: "Sections"
-          //     // attributes: []
-          //   }
-          // ]
-          // attributes: []
+          as: "Deadline",
+          attributes: { exclude: ["CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] }
         },
         {
           model: db.user_profile,
@@ -82,6 +59,7 @@ router.get("/", async (req, res) => {
           attributes: ["UserID", [db.Sequelize.fn("concat", db.Sequelize.col("Firstname"), " ", db.Sequelize.col("Lastname")), "Fullname"]]
         }
       ],
+      group: "ProjectID",
       // attributes: { exclude: [""] },
       where: whereStr
     });

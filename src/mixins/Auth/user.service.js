@@ -19,7 +19,6 @@ export const userService = {
   logout: () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-    console.log(location.pathname);
     if (location.pathname != "/") {
       router.push("/");
     }

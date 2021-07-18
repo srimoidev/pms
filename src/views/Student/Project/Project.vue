@@ -15,6 +15,9 @@
           >{{ txtInfoLabel }}</v-chip
         >
         <v-spacer></v-spacer>
+        <v-btn class="mr-2" :color="isEdit ? 'amber' : 'primary'" @click="isEdit = !isEdit"
+          ><v-icon class="mr-2">mdi-square-edit-outline</v-icon> แก้ไข</v-btn
+        >
         <v-btn class="error white--text" @click="leaveProject">
           <v-icon class="mr-2">mdi-account-cancel-outline</v-icon>
           ออกจากกลุ่ม
@@ -42,35 +45,35 @@
                   </template>
                 </div>
                 <div v-else-if="item.name == 'Project_Section'">
-                  {{ data[item.name].Detail }}
+                  {{
+                    `Sec : ${data.Project_Section.Sequence}/${data.Project_Section.Year} อาจารย์ : ${
+                      data.Project_Section.Section_Instructor.Fullname
+                    } คาบเรียน : ${dayText[data.Project_Section.DayOfWeek - 1].text} ${data.Project_Section.StartTime.slice(
+                      0,
+                      5
+                    )} - ${data.Project_Section.EndTime.slice(0, 5)}`
+                  }}
                 </div>
                 <div v-else-if="item.name == 'Project_Status'">
-                  <span>{{ data.Project_Status.ProjectStatusName }}</span>
+                  <!-- <span>{{ data.Project_Status.ProjectStatusName }}</span> -->
+                  <project-status :status="data.Project_Status.ProjectStatusID"></project-status>
                 </div>
                 <div v-else-if="item.name == 'ProjectDetail'">
-                  <v-textarea
-                    v-model="data[item.name]"
-                    outlined
-                    rows="5"
-                    counter
-                    no-resize
-                    :readonly="data.Project_Status.ProjectStatusID != 8"
-                  ></v-textarea>
+                  <v-textarea v-model="data[item.name]" outlined rows="5" counter no-resize :readonly="!isEdit"></v-textarea>
                 </div>
 
                 <div v-else>
                   <ValidationProvider v-slot="{ errors }" :name="item.text" rules="required">
-                    <v-text-field
-                      v-model="data[item.name]"
-                      dense
-                      outlined
-                      :readonly="data.Project_Status.ProjectStatusID != 8"
-                      :error-messages="errors"
-                    ></v-text-field>
+                    <v-text-field v-model="data[item.name]" dense outlined :readonly="!isEdit" :error-messages="errors"></v-text-field>
                   </ValidationProvider>
                 </div>
               </v-col>
             </v-row>
+            <div v-if="isEdit" class="mr-4 mb-4" style="position:absolute;right:0;bottom:0">
+              <v-spacer></v-spacer>
+              <v-btn class="mr-2" color="success">บันทึก</v-btn>
+              <v-btn class="" color="" @click="isEdit = !isEdit">ยกเลิก</v-btn>
+            </div>
           </v-card>
         </ValidationObserver>
       </v-container>
@@ -176,6 +179,8 @@ import { mapGetters } from "vuex";
 import { required, max } from "vee-validate/dist/rules";
 import { extend, ValidationObserver, ValidationProvider, setInteractionMode } from "vee-validate";
 
+import ProjectStatus from "@/components/ProjectStatus";
+
 setInteractionMode("eager");
 extend("required", {
   ...required,
@@ -193,7 +198,8 @@ extend("max", {
 export default {
   components: {
     ValidationObserver,
-    ValidationProvider
+    ValidationProvider,
+    ProjectStatus
   },
   data() {
     return {
@@ -207,14 +213,24 @@ export default {
       allTeacher: [],
       selectedAdvisors: [],
       newAdvisors: [],
+      isEdit: false,
       title: [
         { name: "ProjectNameTH", text: "ชื่อภาษาไทย" },
         { name: "ProjectNameEN", text: "ชื่อภาษาอังกฤษ" },
         { name: "ProjectDetail", text: "รายละเอียด" },
         // { name: "Project_Members", text: "สมาชิก" },
         // { name: "Project_Advisors", text: "อาจารย์ที่ปรึกษา" },
-        { name: "Project_Section", text: "คาบเรียน" },
+        { name: "Project_Section", text: "Section" },
         { name: "Project_Status", text: "สถานะ" }
+      ],
+      dayText: [
+        { id: 1, text: "วันอาทิตย์" },
+        { id: 2, text: "วันจันทร์" },
+        { id: 3, text: "วันอังคาร" },
+        { id: 4, text: "วันพุธ" },
+        { id: 5, text: "วันพฤหัสบดี" },
+        { id: 6, text: "วันศุกร์" },
+        { id: 7, text: "วันเสาร์" }
       ],
       txtHeaderNameTH: null
     };
@@ -255,7 +271,7 @@ export default {
   methods: {
     async loadData() {
       this.$store.dispatch("user/getLoggedInUserData").then(async () => {
-        this.data = await this.Project.GetSelf(this.user.ProjectID);
+        this.data = await this.Project.Project(this.user.ProjectID);
         this.txtHeaderNameTH = `Manage Project - ${this.data.ProjectNameTH}`;
         this.data.Project_Advisors.map(item => {
           this.selectedAdvisors.push(item.UserID);

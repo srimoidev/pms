@@ -42,10 +42,10 @@ router.get("/all", async (req, res) => {
 });
 router.get("/:id", async (req, res) => {
   try {
-    const data = await db.form_type.findAll({
+    const data = await db.form_type.findOne({
       where: [
         {
-          FormType_ID: req.params.id
+          FormTypeID: req.params.id
         }
       ]
     });

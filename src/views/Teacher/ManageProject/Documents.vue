@@ -131,7 +131,7 @@ export default {
   methods: {
     async loadData() {
       if (this.pid) {
-        const initData = await this.Form.Type();
+        const initData = await this.Form.Types();
         const preq = await this.Form.Prerequisite();
         const latest = await this.Form.LatestEachForm(this.pid);
         let deadline = await this.Form.Deadline();

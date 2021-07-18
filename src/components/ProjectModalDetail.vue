@@ -28,7 +28,15 @@
               </template>
             </div>
             <div v-else-if="item.name == 'Project_Section'">
-              {{ data[item.name].Detail }}
+              <div>{{ `Sec : ${data[item.name].Sequence}/${data[item.name].Year}` }}</div>
+              <div>{{ `อาจารย์ : ${data[item.name].Section_Instructor.Fullname}` }}</div>
+              <div>
+                {{
+                  `คาบเรียน : ${dayText[data[item.name].DayOfWeek - 1].text} ${data[item.name].StartTime.slice(0, 5)} - ${data[
+                    item.name
+                  ].EndTime.slice(0, 5)}`
+                }}
+              </div>
             </div>
             <div v-else-if="item.name == 'Project_Status'">
               <!-- <project-status :status="data.Project_Status.ProjectStatusID"></project-status> -->
@@ -125,9 +133,18 @@ export default {
         { name: "ProjectDetail", text: "รายละเอียด" },
         { name: "Project_Members", text: "สมาชิก" },
         { name: "Project_Advisors", text: "อาจารย์ที่ปรึกษา" },
-        { name: "Project_Section", text: "คาบเรียน" },
+        { name: "Project_Section", text: "Section" },
         // { name: "Project_Status", text: "สถานะ" },
         { name: "RejectedRemark", text: "เหตุผลที่ปฏิเสธ" }
+      ],
+      dayText: [
+        { id: 1, text: "วันอาทิตย์" },
+        { id: 2, text: "วันจันทร์" },
+        { id: 3, text: "วันอังคาร" },
+        { id: 4, text: "วันพุธ" },
+        { id: 5, text: "วันพฤหัสบดี" },
+        { id: 6, text: "วันศุกร์" },
+        { id: 7, text: "วันเสาร์" }
       ],
       isBypass: false,
       comfirmOrReject: null,

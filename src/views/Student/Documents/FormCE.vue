@@ -3,7 +3,7 @@
     <v-data-table :headers="headers" :items="data" :loading="loading" loading-text="Loading... Please wait" :height="windowHeight"
       ><template v-slot:top>
         <v-toolbar flat>
-          <v-toolbar-title>{{ "CE0" + formTID }}</v-toolbar-title>
+          <v-toolbar-title>{{ form.FormTypeName }}</v-toolbar-title>
           <v-divider class="mx-4" inset vertical></v-divider>
           <v-spacer></v-spacer>
           <v-btn @click="upNewDoc = !upNewDoc">Upload new document</v-btn>
@@ -83,7 +83,9 @@ export default {
       message: "",
       upNewDoc: false,
       loading: true,
+      form: {},
       data: [],
+      project: {},
       comment: [],
       headers: [
         { text: "#", value: "index" },
@@ -104,7 +106,7 @@ export default {
       typeID: "user/TypeID",
       isLoggedIn: "authentication/isLoggedIn"
     }),
-    formTID() {
+    FormTypeID() {
       return this.$route.query.type;
     }
   },
@@ -118,9 +120,10 @@ export default {
   },
   methods: {
     async loadData() {
-      // this.user = JSON.parse(localStorage.getItem("user"));
-      this.data = await this.Form.AllFormEachType(this.user.ProjectID, this.formTID);
-      console.log(this.user, this.formTID, this.data);
+      this.form = await this.Form.Type(this.FormTypeID);
+      this.project = await this.Project.Project(this.user.ProjectID);
+      this.data = await this.Form.AllFormEachType(this.user.ProjectID, this.FormTypeID, this.project.Project_Section.SectionID);
+      console.log(this.project, this.data);
       // if (temp) {
       //   temp.map(async item => {
       //     // item.Comments = await DB.Project.form_comment(item.Form_ID);
@@ -155,7 +158,7 @@ export default {
 
       this.message = "";
 
-      this.Form.Upload(this.user.UserID, this.user.ProjectID, this.formTID, this.currentFile, event => {
+      this.Form.Upload(this.user.UserID, this.user.ProjectID, this.FormTypeID, this.currentFile, event => {
         this.progress = Math.round((100 * event.loaded) / event.total);
       })
         .catch(() => {

@@ -139,6 +139,9 @@
                 <template v-slot:[`item.Subject`]="{ item }">
                   <span>{{ subjectText[item.Subject - 1].text }}</span>
                 </template>
+                <template v-slot:[`item.Term`]="{ item }">
+                  <span>{{ `${item.Term}/${item.Year}` }}</span>
+                </template>
                 <template v-slot:[`item.DayOfWeek`]="{ item }">
                   <day-label :day="item.DayOfWeek"></day-label>
                 </template>
@@ -286,7 +289,7 @@
           </v-expansion-panel>
           <!-- Panel เอกสาร -->
           <v-expansion-panel v-model="panels">
-            <v-expansion-panel-header class="title">เอกสารรายวิชา</v-expansion-panel-header>
+            <v-expansion-panel-header>เอกสารรายวิชา</v-expansion-panel-header>
             <v-divider class="mb-2"></v-divider>
             <v-expansion-panel-content>
               <div class="d-flex my-2">
@@ -384,8 +387,8 @@
                 </template>
                 <template v-slot:[`item.Deadlines`]="{ item }">
                   <div class="my-2">
-                    <div v-for="(i, index) in item.Deadlines" :key="i.DeadlineID" class="mb-2">
-                      <span>{{ "Sec. " + (index + 1) + " : " }}</span>
+                    <div v-for="i in item.Deadlines" :key="i.DeadlineID" class="mb-2">
+                      <span>{{ "[" + subjectText[i.Section.Subject - 1].text + "] Sec. " + i.Section.Sequence + " : " }}</span>
                       <span :class="{ 'green--text': i.OnDate }">{{ i.OnDate ? new Date(i.OnDate).toLocaleString("th-TH") : "ไม่กำหนด" }}</span>
                     </div>
                   </div>
@@ -558,6 +561,7 @@ export default {
     ],
     section_headers: [
       { text: "วิชา", value: "Subject" },
+      { text: "ภาคเรียน", value: "Term" },
       { text: "Section", value: "Sequence" },
       { text: "รายละเอียด", value: "Detail", sortable: false },
       { text: "วัน", value: "DayOfWeek" },
@@ -684,6 +688,15 @@ export default {
       edited_prerequisite.sort();
       if (await this.$refs.formEdit_observer.validate()) {
         this.Form.Update(this.user.UserID, item.FormTypeID, edited_form, edited_deadlines, edited_prerequisite).then(() => {
+          this.$swal.fire({
+            timer: 3000,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            position: "top-end",
+            toast: true,
+            icon: "success",
+            title: "Success"
+          });
           this.loadData();
           this.$refs["collapse" + item.FormTypeID].$el.click();
         });
@@ -699,6 +712,15 @@ export default {
       };
       if (await this.$refs.formAdd_observer.validate()) {
         this.Form.Add(this.user.UserID, newFormType, this.newDeadlines, this.newRequireForm.sort()).then(() => {
+          this.$swal.fire({
+            timer: 3000,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            position: "top-end",
+            toast: true,
+            icon: "success",
+            title: "Success"
+          });
           this.loadData();
           this.formAddCancel();
         });
@@ -723,6 +745,15 @@ export default {
         .then(result => {
           if (result.isConfirmed) {
             this.Form.Delete(item.FormTypeID).then(() => {
+              this.$swal.fire({
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: false,
+                position: "top-end",
+                toast: true,
+                icon: "success",
+                title: "Success"
+              });
               this.loadData();
             });
           }
@@ -754,6 +785,15 @@ export default {
       console.log(newSection);
       if (await this.$refs.sectionAdd_observer.validate()) {
         this.Section.Add(this.user.UserID, newSection).then(() => {
+          this.$swal.fire({
+            timer: 3000,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            position: "top-end",
+            toast: true,
+            icon: "success",
+            title: "Success"
+          });
           this.loadData();
           this.sectionAddCancel();
         });
@@ -773,6 +813,15 @@ export default {
       console.log(section_obj);
       if (await this.$refs.sectionEdit_observer.validate()) {
         this.Section.Update(this.user.UserID, item.SectionID, section_obj).then(() => {
+          this.$swal.fire({
+            timer: 3000,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            position: "top-end",
+            toast: true,
+            icon: "success",
+            title: "Success"
+          });
           this.loadData();
           this.sectionUpdateCancel(item);
         });
@@ -807,6 +856,15 @@ export default {
         .then(result => {
           if (result.isConfirmed) {
             this.Section.Delete(item.SectionID).then(() => {
+              this.$swal.fire({
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: false,
+                position: "top-end",
+                toast: true,
+                icon: "success",
+                title: "Success"
+              });
               this.loadData();
             });
           }

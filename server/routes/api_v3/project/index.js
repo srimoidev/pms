@@ -113,7 +113,29 @@ router.get("/", async (req, res) => {
         {
           model: db.section,
           as: "Project_Section",
-          attributes: { exclude: ["CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] }
+          attributes: { exclude: ["CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] },
+          include: [
+            {
+              model: db.user_profile,
+              as: "Section_Instructor",
+              attributes: [
+                "UserID",
+                "Firstname",
+                "Lastname",
+                "Email",
+                "TelephoneNo",
+                [
+                  db.Sequelize.fn(
+                    "concat",
+                    db.Sequelize.col("Project_Section.Section_Instructor.Firstname"),
+                    " ",
+                    db.Sequelize.col("Project_Section.Section_Instructor.Lastname")
+                  ),
+                  "Fullname"
+                ]
+              ]
+            }
+          ]
         },
         {
           model: db.project_type,
@@ -179,7 +201,29 @@ router.get("/:id", async (req, res) => {
         {
           model: db.section,
           as: "Project_Section",
-          attributes: { exclude: ["CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] }
+          attributes: { exclude: ["CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] },
+          include: [
+            {
+              model: db.user_profile,
+              as: "Section_Instructor",
+              attributes: [
+                "UserID",
+                "Firstname",
+                "Lastname",
+                "Email",
+                "TelephoneNo",
+                [
+                  db.Sequelize.fn(
+                    "concat",
+                    db.Sequelize.col("Project_Section.Section_Instructor.Firstname"),
+                    " ",
+                    db.Sequelize.col("Project_Section.Section_Instructor.Lastname")
+                  ),
+                  "Fullname"
+                ]
+              ]
+            }
+          ]
         },
         {
           model: db.project_type,
