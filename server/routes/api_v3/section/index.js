@@ -3,7 +3,23 @@ const db = require("../../../models");
 
 router.get("/", async (req, res) => {
   try {
-    const data = await db.section.findAll();
+    const data = await db.section.findAll({
+      include: [
+        {
+          model: db.user_profile,
+          as: "Section_Instructor",
+          attributes: [
+            "UserID",
+            "Firstname",
+            "Lastname",
+            "Email",
+            "TelephoneNo",
+            [db.Sequelize.fn("concat", db.Sequelize.col("Firstname"), " ", db.Sequelize.col("Lastname")), "Fullname"]
+          ]
+        }
+      ],
+      order: [["Subject", "ASC"]]
+    });
     return res.json(data);
   } catch (error) {
     return res.status(500).json({
@@ -31,8 +47,29 @@ router.get("/:id", async (req, res) => {
 
 // create
 router.post("/", async (req, res) => {
+  console.log(req.body.section);
   await db.section
-    .create(req.body)
+    .findAndCountAll({ where: [{ Subject: req.body.section.Subject }] })
+    .then(async res => {
+      req.body.section.Sequence = res.count + 1;
+      req.body.section.CreatedBy = req.body.userid;
+      req.body.section.UpdatedBy = req.body.userid;
+      return await db.section.create(req.body.section);
+    })
+    .then(async data => {
+      await db.form_type.findAll().then(async form => {
+        for (const item of form) {
+          await db.deadline.create({
+            SectionID: data.SectionID,
+            FormTypeID: item.FormTypeID,
+            CreatedBy: req.body.userid,
+            UpdatedBy: req.body.userid
+          });
+        }
+      });
+
+      return data;
+    })
     .then(data => {
       res.send(data);
     })
@@ -45,10 +82,11 @@ router.post("/", async (req, res) => {
 
 // update
 router.put("/:id", async (req, res) => {
+  req.body.section.UpdatedBy = req.body.userid;
   await db.section
-    .update(req.body, {
+    .update(req.body.section, {
       where: {
-        Section_ID: req.params.id
+        SectionID: req.params.id
       }
     })
     .then(num => {
@@ -62,7 +100,7 @@ router.put("/:id", async (req, res) => {
         });
       }
     })
-    .catch(err => {
+    .catch(() => {
       res.status(500).send({
         message: "Error updating!"
       });
@@ -75,9 +113,15 @@ router.delete("/:id", async (req, res) => {
     .destroy({
       where: [
         {
-          Section_ID: req.params.id
+          SectionID: req.params.id
         }
       ]
+    })
+    .then(async () => {
+      await db.deadline.destroy({
+        where: [{ SectionID: req.params.id }]
+      });
+      return true;
     })
     .then(num => {
       if (num == 1) {
@@ -90,7 +134,7 @@ router.delete("/:id", async (req, res) => {
         });
       }
     })
-    .catch(err => {
+    .catch(() => {
       res.status(500).send({
         message: "Error deleting!"
       });

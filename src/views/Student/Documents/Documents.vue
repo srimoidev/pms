@@ -46,7 +46,7 @@
           </span>
         </template>
         <template v-slot:[`item.Deadline`]="{ item }">
-          <div v-if="item.Deadline != undefined">
+          <div v-if="item.Deadline.OnDate != null">
             <div style="font-size: 16px">
               {{ new Date(item.Deadline.OnDate).toLocaleString("th-TH") }}
             </div>

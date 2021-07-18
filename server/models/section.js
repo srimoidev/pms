@@ -5,7 +5,12 @@ module.exports = (sequelize, Sequelize) => {
       SectionID: {
         type: Sequelize.INTEGER,
         field: "SectionID",
-        primaryKey: true
+        primaryKey: true,
+        autoIncrement: true
+      },
+      Subject: {
+        type: Sequelize.INTEGER,
+        field: "Subject"
       },
       Sequence: {
         type: Sequelize.INTEGER,
@@ -32,11 +37,11 @@ module.exports = (sequelize, Sequelize) => {
         field: "DayOfWeek"
       },
       StartTime: {
-        type: Sequelize.DATE,
+        type: Sequelize.TIME,
         field: "StartTime"
       },
       EndTime: {
-        type: Sequelize.DATE,
+        type: Sequelize.TIME,
         field: "EndTime"
       },
       CreatedBy: {

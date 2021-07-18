@@ -99,6 +99,10 @@ db.project_info.belongsTo(db.section, {
   as: "Project_Section",
   foreignKey: "SectionID"
 });
+db.section.belongsTo(db.user_profile, {
+  as: "Section_Instructor",
+  foreignKey: "Instructor"
+});
 
 //ProjectStatus
 db.project_info.belongsTo(db.project_status, {
@@ -200,6 +204,18 @@ db.form_prerequisite.belongsTo(db.form_type, {
   as: "RequireForm",
   foreignKey: "FormReqTypeID"
 });
+db.form_type.belongsToMany(db.form_type, {
+  through: db.form_prerequisite,
+  as: "RequireForms",
+  foreignKey: "FormTypeID"
+});
+
+db.form_type.belongsToMany(db.form_type, {
+  as: "Forms",
+  through: db.form_prerequisite,
+  foreignKey: "FormReqTypeID"
+});
+
 db.form_sent.belongsTo(db.deadline, {
   as: "Deadline",
   targetKey: "FormTypeID",

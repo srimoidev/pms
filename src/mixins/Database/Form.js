@@ -121,14 +121,20 @@ export async function ApproveOrReject(pUserID, pProjectID, pFormID, pStatusID) {
     //
   });
 }
-export async function AddForm(pUserID, pFormType, pDeadline) {
-  console.log({ userid: pUserID, formtype: pFormType, deadline: pDeadline });
-  return HTTP.post(`/form/type`, { userid: pUserID, formtype: pFormType, deadline: pDeadline }).catch(() => {
+export async function Add(pUserID, pFormType, pDeadline, pPrerequisite) {
+  return HTTP.post(`/form/type`, { userid: pUserID, formtype: pFormType, deadline: pDeadline, prerequisite: pPrerequisite }).catch(() => {
     //
   });
 }
-export async function Setting(pUserID, pFormTypeID, pFormType, pDeadline) {
-  return HTTP.put(`/form/type/${pFormTypeID}`, { formType: pFormType, deadline: pDeadline, updatedUser: pUserID }).catch(() => {
+export async function Update(pUserID, pFormTypeID, pFormType, pDeadline, pPrerequisite) {
+  return HTTP.put(`/form/type/${pFormTypeID}`, { formType: pFormType, deadline: pDeadline, updatedUser: pUserID, prerequisite: pPrerequisite }).catch(
+    () => {
+      //
+    }
+  );
+}
+export async function Delete(pFormTypeID) {
+  return HTTP.delete(`/form/type/${pFormTypeID}`).then(() => {
     //
   });
 }
