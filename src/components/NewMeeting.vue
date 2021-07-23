@@ -12,16 +12,16 @@
       <ValidationObserver ref="observer">
         <form>
           <ValidationProvider rules="required" v-slot="{ errors }" name="เรื่องนัดหมาย">
-            <v-text-field v-model="meetingName" :error-messages="errors" label="เรื่องนัดหมาย" outlined dense></v-text-field>
+            <v-text-field v-model="Title" :error-messages="errors" label="เรื่องนัดหมาย" outlined dense></v-text-field>
           </ValidationProvider>
           <ValidationProvider rules="required" v-slot="{ errors }" name="รายละเอียด">
-            <v-textarea v-model="meetingDetail" outlined rows="3" :error-messages="errors" no-resize label="รายละเอียด"></v-textarea>
+            <v-textarea v-model="Detail" outlined rows="3" :error-messages="errors" no-resize label="รายละเอียด"></v-textarea>
           </ValidationProvider>
           <ValidationProvider rules="required_select" v-slot="{ errors }" name="อาจารย์ หรือ กลุ่มโครงงาน">
             <v-select
               v-if="meetingType == 1"
               :items="teachers"
-              v-model="meetingTeacherID"
+              v-model="TeacherID"
               label="อาจารย์"
               :error-messages="errors"
               item-value="UserID"
@@ -35,7 +35,7 @@
             <v-select
               v-else
               :items="projects"
-              v-model="meetingProjectID"
+              v-model="ProjectID"
               label="กลุ่มโครงงาน"
               :error-messages="errors"
               item-value="ProjectID"
@@ -48,11 +48,11 @@
             </v-select>
           </ValidationProvider>
           <ValidationProvider rules="required_select" v-slot="{ errors }" name="เวลานัดหมาย">
-            <v-text-field v-model="meetingDateTime" type="datetime-local" :error-messages="errors" label="เวลานัดหมาย" outlined dense></v-text-field>
+            <v-text-field v-model="OnDate" type="datetime-local" :error-messages="errors" label="เวลานัดหมาย" outlined dense></v-text-field>
           </ValidationProvider>
         </form>
       </ValidationObserver>
-      meetingProjectID: {{ meetingProjectID }}
+      ProjectID: {{ ProjectID }}
       <div class="d-flex">
         <v-spacer></v-spacer>
         <v-btn class="ma-2" color="success" @click="submit">Create</v-btn>
@@ -98,11 +98,11 @@ export default {
   },
   data() {
     return {
-      meetingName: null,
-      meetingDetail: null,
-      meetingTeacherID: null,
-      meetingProjectID: null,
-      meetingDateTime: null
+      Title: null,
+      Detail: null,
+      TeacherID: null,
+      ProjectID: null,
+      OnDate: null
     };
   },
   computed: {},
@@ -118,19 +118,19 @@ export default {
     },
     submitForm() {
       this.$emit("submit", {
-        Meeting_Name: this.meetingName,
-        Meeting_Detail: this.meetingDetail,
-        Meeting_TeacherID: this.meetingTeacherID,
-        Meeting_ProjectID: this.meetingProjectID,
-        Meeting_DateTime: this.meetingDateTime
+        Title: this.Title,
+        Detail: this.Detail,
+        TeacherID: this.TeacherID,
+        ProjectID: this.ProjectID,
+        OnDate: this.OnDate
       });
     },
     close() {
-      this.meetingName = null;
-      this.meetingDetail = null;
-      this.meetingTeacherID = null;
-      this.meetingProjectID = null;
-      this.meetingDateTime = null;
+      this.Title = null;
+      this.Detail = null;
+      this.TeacherID = null;
+      this.ProjectID = null;
+      this.OnDate = null;
       this.$emit("close");
     }
   }

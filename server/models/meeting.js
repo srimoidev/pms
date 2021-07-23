@@ -2,62 +2,62 @@ module.exports = (sequelize, Sequelize) => {
   const meeting = sequelize.define(
     "meeting",
     {
-      Meeting_ID: {
+      MeetingID: {
         type: Sequelize.INTEGER,
-        field: "Meeting_ID",
+        field: "MeetingID",
         primaryKey: true
       },
-      Meeting_Name: {
+      Title: {
         type: Sequelize.STRING,
-        field: "Meeting_Name"
+        field: "Title"
       },
-      Meeting_Detail: {
+      Detail: {
         type: Sequelize.TEXT,
-        field: "Meeting_Detail"
+        field: "Detail"
       },
-      Meeting_ProjectID: {
+      ProjectID: {
         type: Sequelize.INTEGER,
-        field: "Meeting_ProjectID"
+        field: "ProjectID"
       },
-      Meeting_TeacherID: {
+      TeacherID: {
         type: Sequelize.INTEGER,
-        field: "Meeting_TeacherID"
+        field: "TeacherID"
       },
-      Meeting_DateTime: {
+      OnDate: {
         type: Sequelize.DATE,
-        field: "Meeting_DateTime"
+        field: "OnDate"
       },
-      Meeting_RequestStatusID: {
+      RequestStatus: {
         type: Sequelize.STRING,
-        field: "Meeting_RequestStatusID"
+        field: "RequestStatus"
       },
-      Meeting_TypeID: {
+      MeetingType: {
         type: Sequelize.STRING,
-        field: "Meeting_TypeID"
+        field: "MeetingType"
       },
-      Meeting_Note: {
+      Note: {
         type: Sequelize.TEXT,
-        field: "Meeting_Note"
+        field: "Note"
       },
-      Meeting_IsActive: {
+      IsActive: {
         type: Sequelize.BOOLEAN,
-        field: "Meeting_IsActive"
+        field: "IsActive"
       },
-      Meeting_CreatedBy: {
+      CreatedBy: {
         type: Sequelize.INTEGER,
-        field: "Meeting_CreatedBy"
+        field: "CreatedBy"
       },
-      Meeting_CreatedTime: {
+      CreatedTime: {
         type: Sequelize.DATE,
-        field: "Meeting_CreatedTime"
+        field: "CreatedTime"
       },
-      Meeting_UpdatedBy: {
+      UpdatedBy: {
         type: Sequelize.INTEGER,
-        field: "Meeting_UpdatedBy"
+        field: "UpdatedBy"
       },
-      Meeting_UpdatedTime: {
+      UpdatedTime: {
         type: Sequelize.DATE,
-        field: "Meeting_UpdatedTime"
+        field: "UpdatedTime"
       }
     },
     {

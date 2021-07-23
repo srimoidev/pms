@@ -17,8 +17,8 @@ import Trello from "../views/Trello/TrelloBoard.vue";
 import Dashboard from "../views/Dashboard.vue";
 
 //student pages
-import Student_Appointment from "../views/Student/Appointment/Appointment.vue";
-import Student_AppointmentDetail from "../views/Student/Appointment/AppointmentDetail.vue";
+import Student_Meeting from "../views/Student/Meeting/Meeting.vue";
+import Student_MeetingDetail from "../views/Student/Meeting/MeetingDetail.vue";
 import Student_Overview from "../views/Student/Overview/Overview.vue";
 import Student_Description from "../views/Student/ProjecDescription/Description.vue";
 import Student_ProjectManual from "../views/Student/ProjectManual/ProjectManual.vue";
@@ -30,8 +30,8 @@ import Student_FormPreview from "../views/Student/Documents/FormPreview.vue";
 import Student_AllProject from "../views/Student/AllProject/AllProject.vue";
 
 //teacher pages
-import Teacher_Appointment from "../views/Teacher/Appointment/Appointment.vue";
-import Teacher_AppointmentDetail from "../views/Teacher/Appointment/AppointmentDetail.vue";
+import Teacher_Meeting from "../views/Teacher/Meeting/Meeting.vue";
+import Teacher_MeetingDetail from "../views/Teacher/Meeting/MeetingDetail.vue";
 import Teacher_Overview from "../views/Teacher/Overview/Overview.vue";
 import Teacher_AllProject from "../views/Teacher/AllProject/AllProject.vue";
 import Teacher_ManageProject from "../views/Teacher/ManageProject/ManageProject.vue";
@@ -119,15 +119,15 @@ const routes = [
         meta: { title: "Google Calendar | PMS" }
       },
       {
-        path: "appointment",
-        name: "Appointment",
-        component: Student_Appointment,
-        meta: { title: "Appointment | PMS" }
+        path: "Meeting",
+        name: "Meeting",
+        component: Student_Meeting,
+        meta: { title: "Meeting | PMS" }
       },
       {
-        path: "appointment/:id",
+        path: "Meeting/:id",
         name: "MeetingDetail",
-        component: Student_AppointmentDetail,
+        component: Student_MeetingDetail,
         meta: { title: "MeetingDetail | PMS" }
       },
       {
@@ -255,15 +255,15 @@ const routes = [
         meta: { title: "Form Preview | PMS" }
       },
       {
-        path: "appointment",
-        name: "Appointment",
-        component: Teacher_Appointment,
-        meta: { title: "Appointment | PMS" }
+        path: "Meeting",
+        name: "Meeting",
+        component: Teacher_Meeting,
+        meta: { title: "Meeting | PMS" }
       },
       {
-        path: "appointment/:id",
+        path: "Meeting/:id",
         name: "MeetingDetail",
-        component: Teacher_AppointmentDetail,
+        component: Teacher_MeetingDetail,
         meta: { title: "MeetingDetail | PMS" }
       },
       {

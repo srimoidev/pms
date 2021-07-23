@@ -6,12 +6,12 @@ router.get("/", async (req, res) => {
     var whereStr = [];
     if (req.query.projectid) {
       whereStr.push({
-        Meeting_ProjectID: req.query.projectid
+        ProjectID: req.query.projectid
       });
     }
     if (req.query.teacherid) {
       whereStr.push({
-        Meeting_TeacherID: req.query.teacherid
+        TeacherID: req.query.teacherid
       });
     }
     const data = await db.meeting.findAll({
@@ -56,7 +56,7 @@ router.get("/:id", async (req, res) => {
       ],
       where: [
         {
-          Meeting_ID: req.params.id
+          MeetingID: req.params.id
         }
       ]
     });
@@ -89,7 +89,7 @@ router.put("/:id", async (req, res) => {
   await db.meeting
     .update(req.body, {
       where: {
-        Meeting_ID: req.params.id
+        MeetingID: req.params.id
       }
     })
     .then(num => {
@@ -116,7 +116,7 @@ router.delete("/:id", async (req, res) => {
     .destroy({
       where: [
         {
-          Meeting_ID: req.params.id
+          MeetingID: req.params.id
         }
       ]
     })

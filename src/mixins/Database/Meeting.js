@@ -4,7 +4,6 @@ import HTTP from "./config";
 export async function GetAll() {
   return await HTTP.get("/meeting")
     .then(res => {
-      console.log(res.data);
       return res.data;
     })
     .catch(() => {
@@ -28,6 +27,7 @@ export async function findOne(pID) {
 
 //#region inbound
 export async function New(pData) {
+  console.log(pData);
   await HTTP.post("/meeting/", pData).catch(() => {
     console.error("Can't add new meeting.");
   });
@@ -35,7 +35,7 @@ export async function New(pData) {
 
 export async function Approve(pID) {
   console.log(pID);
-  await HTTP.put("/meeting/" + pID, { Meeting_RequestStatusID: "2" })
+  await HTTP.put("/meeting/" + pID, { RequestStatus: "2" })
     .then(test => {
       console.log(test);
     })
@@ -45,7 +45,7 @@ export async function Approve(pID) {
 }
 export async function Decline(pID) {
   console.log(pID);
-  await HTTP.put("/meeting/" + pID, { Meeting_RequestStatusID: "3" })
+  await HTTP.put("/meeting/" + pID, { RequestStatus: "3" })
     .then(test => {
       console.log(test);
     })
@@ -56,7 +56,7 @@ export async function Decline(pID) {
 
 export async function Delete(pID) {
   console.log(pID);
-  await HTTP.put("/meeting/" + pID, { Meeting_IsActive: 0 })
+  await HTTP.put("/meeting/" + pID, { IsActive: 0 })
     .then(test => {
       console.log(test);
     })
@@ -67,7 +67,7 @@ export async function Delete(pID) {
 
 export async function UpdateNote(pID, pNote) {
   console.log(pID);
-  await HTTP.put("/meeting/" + pID, { Meeting_Note: pNote })
+  await HTTP.put("/meeting/" + pID, { Note: pNote })
     .then(test => {
       console.log(test);
     })

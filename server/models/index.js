@@ -242,25 +242,12 @@ db.form_sent.belongsTo(db.user_profile, {
 //#region Meeting
 db.meeting.belongsTo(db.project_info, {
   as: "Meeting_Project",
-  foreignKey: "Meeting_ProjectID"
+  foreignKey: "ProjectID"
 });
 db.meeting.belongsTo(db.user_profile, {
   as: "Meeting_Teacher",
-  foreignKey: "Meeting_TeacherID"
+  foreignKey: "TeacherID"
 });
-//#endregion
-
-//#region Form Type
-// db.form_type.belongsTo(db.deadline, {
-//   as: "Deadlines",
-//   targetKey: "FormTypeID",
-//   foreignKey: "FormTypeID"
-// });
-// db.deadline.belongsTo(db.section, {
-//   as: "Sections",
-//   targetKey: "SectionID",
-//   foreignKey: "SectionID"
-// });
 //#endregion
 
 module.exports = db;
