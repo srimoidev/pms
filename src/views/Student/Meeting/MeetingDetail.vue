@@ -1,127 +1,94 @@
 <template>
-  <v-container>
-    <v-row>
-      <v-col cols="12" class="py-0">
-        <v-alert border="left" colored-border color="deep-purple" class="my-0 py-0" icon="mdi-school" prominent>
-          <v-row align="center">
-            <v-col class="grow">
-              <div class="text-h6">
-                {{ meetingData.Title }}
-              </div>
-              <div class="overline">
-                {{ new Date(meetingData.OnDate).toLocaleString("th-TH") }}
-              </div>
-            </v-col>
-            <v-col class="shrink">
-              <v-icon
-                v-if="meetingData.MeetingType !== this.user.UserTypeID"
-                large
-                class="mr-2"
-                color="green"
-                @click="approveItem(meetingData.MeetingID)"
-              >
-                mdi-tooltip-check
-              </v-icon>
-            </v-col>
-            <v-col class="shrink">
-              <v-icon
-                v-if="meetingData.MeetingType !== this.user.UserTypeID"
-                large
-                class="mr-2"
-                color="red"
-                @click="decilneItem(meetingData.MeetingID)"
-              >
-                mdi-tooltip-remove
-              </v-icon>
-            </v-col>
-            <v-col class="shrink">
-              <v-icon v-if="meetingData.MeetingType == this.user.UserTypeID" large class="mr-2" @click="deleteItem(meetingData.MeetingID)">
-                mdi-delete
-              </v-icon>
-            </v-col>
-          </v-row>
-        </v-alert>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col cols="4" class="py-0">
-        <v-row>
-          <v-col cols="12" class="pb-1">
-            <v-card class="mx-auto">
-              <v-toolbar dense dark color="brown darken-4">
-                <v-toolbar-title><h5>โครงงาน</h5></v-toolbar-title>
-                <v-spacer></v-spacer>
-                <v-btn icon @click="showProject = !showProject">
-                  <v-icon>{{ showProject ? "mdi-chevron-up" : "mdi-chevron-down" }}</v-icon>
-                </v-btn>
-              </v-toolbar>
-              <v-expand-transition>
-                <div v-show="showProject">
-                  <v-divider></v-divider>
-                  <v-card-text>
-                    {{ meetingData.Meeting_Project.ProjectNameTH }}
-                  </v-card-text>
+  <v-card class="ma-2 elevation-0 overflow-y-auto transparent" tile :height="windowHeight">
+    <v-container>
+      <v-row>
+        <v-col cols="12" class="py-0">
+          <v-alert border="left" colored-border color="primary" class="my-0 py-0 elevation-2" icon="mdi-calendar-clock" prominent>
+            <v-row align="center">
+              <v-col class="grow">
+                <div class="text-h6">
+                  {{ meetingData.Title }}
                 </div>
-              </v-expand-transition>
-            </v-card>
-          </v-col>
-          <v-col cols="12" class="pb-1">
-            <v-card class="mx-auto">
-              <v-toolbar dense dark color="deep-orange">
-                <v-toolbar-title><h5>อาจารย์</h5></v-toolbar-title>
-                <v-spacer></v-spacer>
-                <v-btn icon @click="showTeacher = !showTeacher">
-                  <v-icon>{{ showTeacher ? "mdi-chevron-up" : "mdi-chevron-down" }}</v-icon>
-                </v-btn>
-              </v-toolbar>
-              <v-expand-transition>
-                <div v-show="showTeacher">
-                  <v-divider></v-divider>
-                  <v-card-text> {{ meetingData.Meeting_Teacher.Firstname }} {{ meetingData.Meeting_Teacher.Lastname }} </v-card-text>
+                <div class="overline">
+                  {{ new Date(meetingData.OnDate).toLocaleString("th-TH") }}
                 </div>
-              </v-expand-transition>
-            </v-card>
-          </v-col>
-          <v-col cols="12" class="pb-1">
-            <v-card class="mx-auto">
-              <v-toolbar dense dark color="deep-purple">
-                <v-toolbar-title><h5>สมาชิกกลุ่ม</h5></v-toolbar-title>
-                <v-spacer></v-spacer>
-                <v-btn icon @click="showMember = !showMember">
-                  <v-icon>{{ showMember ? "mdi-chevron-up" : "mdi-chevron-down" }}</v-icon>
-                </v-btn>
-              </v-toolbar>
-              <v-expand-transition>
-                <div v-show="showMember">
-                  <v-divider></v-divider>
-                  <v-card-text>
-                    <p v-for="(item, index) in meetingData.Meeting_Project.Project_Members" :key="index">{{ item.Firstname }} {{ item.Lastname }}</p>
-                  </v-card-text>
-                </div>
-              </v-expand-transition>
-            </v-card>
-          </v-col>
-        </v-row>
-      </v-col>
-      <v-col cols="8">
-        <v-card colored-border class="ma-0">
-          <v-toolbar dense dark color="deep-purple">
-            <v-toolbar-title>
-              <h5>บันทึกการนัดหมาย</h5>
-            </v-toolbar-title>
-          </v-toolbar>
-          <v-textarea v-model="meetingNote" label="Note" class="mx-4 mt-4"></v-textarea>
-          <v-card-actions class="mx-2">
-            <v-spacer></v-spacer>
-            <v-btn text @click="$router.push('/student/meeting')">Cancel</v-btn>
-            <v-btn color="deep-purple" dark @click="updateNote(meetingData.MeetingID, meetingNote)">
-              <v-icon small>mdi mdi-content-save</v-icon> บันทึก</v-btn
-            >
-          </v-card-actions>
-        </v-card>
-      </v-col>
-    </v-row>
-  </v-container>
+              </v-col>
+              <v-col class="shrink">
+                <v-icon
+                  v-if="meetingData.MeetingType != this.user.UserTypeID && meetingData.RequestStatus == 1"
+                  class="mr-2"
+                  color="green"
+                  @click="approveItem(meetingData.MeetingID)"
+                >
+                  mdi-tooltip-check
+                </v-icon>
+              </v-col>
+              <v-col class="shrink">
+                <v-icon
+                  v-if="meetingData.MeetingType != this.user.UserTypeID && meetingData.RequestStatus == 1"
+                  class="mr-2"
+                  color="red"
+                  @click="decilneItem(meetingData.MeetingID)"
+                >
+                  mdi-tooltip-remove
+                </v-icon>
+              </v-col>
+              <v-col v-if="meetingData.RequestStatus != 4 && meetingData.RequestStatus != 1" class="shrink">
+                <v-icon class="mr-2" @click="deleteItem(meetingData.MeetingID)">
+                  mdi-delete
+                </v-icon>
+              </v-col>
+            </v-row>
+          </v-alert>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="4" class="py-0">
+          <v-card class="mx-auto elevation-2 my-3">
+            <v-toolbar dense dark color="primary">
+              <v-toolbar-title><h5>รายละเอียด</h5></v-toolbar-title>
+            </v-toolbar>
+            <v-expand-transition>
+              <v-card-text>
+                <v-alert dense text class="ma-0" :type="allMeetingStatus[meetingData.RequestStatus - 1].type">{{
+                  allMeetingStatus[meetingData.RequestStatus - 1].name
+                }}</v-alert>
+                <v-divider class="my-3"></v-divider>
+                <h3>รายละเอียดการนัดหมาย</h3>
+                <span>{{ meetingData.Detail }}</span>
+                <v-divider class="my-3"></v-divider>
+                <h3>โครงงาน</h3>
+                <span>{{ meetingData.Meeting_Project.ProjectNameTH }}</span>
+                <v-divider class="my-3"></v-divider>
+                <h3>สมาชิก</h3>
+                <span v-for="(item, i) in meetingData.Meeting_Project.Project_Members" :key="i">{{ item.Fullname }}</span>
+                <v-divider class="my-3"></v-divider>
+                <h3>อาจารย์ที่ปรึกษา</h3>
+                <span v-for="(item, i) in meetingData.Meeting_Project.Project_Advisors" :key="i">{{ item.Fullname }}</span>
+              </v-card-text>
+            </v-expand-transition>
+          </v-card>
+        </v-col>
+        <v-col cols="8">
+          <v-card colored-border class="ma-0">
+            <v-toolbar dense dark color="primary">
+              <v-toolbar-title>
+                <h5>บันทึกการนัดหมาย</h5>
+              </v-toolbar-title>
+            </v-toolbar>
+            <v-textarea v-model="meetingData.Note" label="Note" class="mx-4 mt-4" auto-grow></v-textarea>
+            <v-card-actions class="mx-2">
+              <v-spacer></v-spacer>
+              <v-btn color="success" dark @click="updateNote(meetingData.MeetingID, meetingData.Note)">
+                <v-icon small class="mr-1">mdi mdi-content-save</v-icon>บันทึก
+              </v-btn>
+              <v-btn text to="/student/meeting">กลับ</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-container>
+  </v-card>
 </template>
 
 <script>
@@ -129,28 +96,31 @@ import { mapGetters } from "vuex";
 export default {
   data() {
     return {
-      showProject: false,
-      showTeacher: false,
-      showMember: false,
-      meetingId: this.$route.params.id,
-      meetingData: null,
-      meetingNote: ""
+      meetingData: {},
+      allMeetingStatus: [
+        { id: 1, name: "กำลังนำเนินการ", type: "info" },
+        { id: 2, name: "อนุมัติแล้ว", type: "success" },
+        { id: 3, name: "ถูกปฏิเสธ", type: "warning" },
+        { id: 4, name: "ยกเลิกการนัดหมาย", type: "error" }
+      ]
     };
   },
   beforeMount() {
-    this.LoadData();
+    this.loadData();
   },
   computed: {
     ...mapGetters({
       user: "user/UserData",
       typeID: "user/TypeID",
       isLoggedIn: "authentication/isLoggedIn"
-    })
+    }),
+    meetingId() {
+      return this.$route.params.id;
+    }
   },
   methods: {
-    async LoadData() {
+    async loadData() {
       this.meetingData = await this.Meeting.findOne(this.meetingId);
-      this.meetingNote = this.meetingData.Note;
     },
     deleteItem(pID) {
       this.$swal
@@ -167,6 +137,15 @@ export default {
         .then(result => {
           if (result.isConfirmed) {
             this.Meeting.Delete(pID).then(() => {
+              this.$swal.fire({
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: false,
+                position: "top-end",
+                toast: true,
+                icon: "success",
+                title: "Success"
+              });
               this.loadData();
             });
           }
@@ -187,6 +166,15 @@ export default {
         .then(result => {
           if (result.isConfirmed) {
             this.Meeting.Approve(pID).then(() => {
+              this.$swal.fire({
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: false,
+                position: "top-end",
+                toast: true,
+                icon: "success",
+                title: "Success"
+              });
               this.loadData();
             });
           }
@@ -207,6 +195,15 @@ export default {
         .then(result => {
           if (result.isConfirmed) {
             this.Meeting.Decline(pID).then(() => {
+              this.$swal.fire({
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: false,
+                position: "top-end",
+                toast: true,
+                icon: "success",
+                title: "Success"
+              });
               this.loadData();
             });
           }
@@ -227,11 +224,26 @@ export default {
         .then(result => {
           if (result.isConfirmed) {
             this.Meeting.UpdateNote(pID, pNote).then(() => {
-              this.$swal.fire("สำเร็จ!", "อัปเดทข้อมูลเรียบร้อยแล้ว", "success");
+              this.$swal.fire({
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: false,
+                position: "top-end",
+                toast: true,
+                icon: "success",
+                title: "Success"
+              });
               this.loadData();
             });
           }
         });
+    },
+    onResize() {
+      //page header 64px
+      //table header 64px
+      //ma-2 8+8 px
+      //table footer 59px
+      this.windowHeight = window.innerHeight - 64 - 16;
     }
   }
 };

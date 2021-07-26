@@ -73,14 +73,21 @@
 /**
 *   Meeting Status
 */
+// wait
 .m-status-1 {
-  background-color: #b388ff !important;
+  background-color: #2196F3 !important;
 }
+// approved
 .m-status-2 {
   background-color: green !important;
 }
+// declined
 .m-status-3 {
   background-color: red !important;
+}
+// cancel
+.m-status-4 {
+  background-color:#FF5252 !important;
 }
 
 /**

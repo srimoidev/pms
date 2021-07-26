@@ -119,13 +119,13 @@ const routes = [
         meta: { title: "Google Calendar | PMS" }
       },
       {
-        path: "Meeting",
+        path: "meeting",
         name: "Meeting",
         component: Student_Meeting,
         meta: { title: "Meeting | PMS" }
       },
       {
-        path: "Meeting/:id",
+        path: "meeting/:id",
         name: "MeetingDetail",
         component: Student_MeetingDetail,
         meta: { title: "MeetingDetail | PMS" }
@@ -255,13 +255,13 @@ const routes = [
         meta: { title: "Form Preview | PMS" }
       },
       {
-        path: "Meeting",
+        path: "meeting",
         name: "Meeting",
         component: Teacher_Meeting,
         meta: { title: "Meeting | PMS" }
       },
       {
-        path: "Meeting/:id",
+        path: "meeting/:id",
         name: "MeetingDetail",
         component: Teacher_MeetingDetail,
         meta: { title: "MeetingDetail | PMS" }

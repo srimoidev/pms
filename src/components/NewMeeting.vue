@@ -1,7 +1,7 @@
 <template>
   <v-card>
     <v-card-title>
-      <v-icon large class="blue--text text--lighten-2 ma-2 mr-5">mdi-file-document-multiple-outline</v-icon>
+      <v-icon large class="blue--text text--lighten-2 ma-2 mr-5">mdi-calendar-clock</v-icon>
       <span>สร้างนัดหมายใหม่</span>
       <v-spacer></v-spacer>
       <v-btn icon @click="close">
@@ -10,49 +10,44 @@
     </v-card-title>
     <v-container>
       <ValidationObserver ref="observer">
-        <form>
+        <form class="ma-3">
           <ValidationProvider rules="required" v-slot="{ errors }" name="เรื่องนัดหมาย">
-            <v-text-field v-model="Title" :error-messages="errors" label="เรื่องนัดหมาย" outlined dense></v-text-field>
+            <v-text-field class="mb-2" v-model="Title" :error-messages="errors" label="เรื่องนัดหมาย" dense></v-text-field>
           </ValidationProvider>
           <ValidationProvider rules="required" v-slot="{ errors }" name="รายละเอียด">
-            <v-textarea v-model="Detail" outlined rows="3" :error-messages="errors" no-resize label="รายละเอียด"></v-textarea>
+            <v-textarea class="mb-2" v-model="Detail" rows="3" :error-messages="errors" no-resize label="รายละเอียด"></v-textarea>
           </ValidationProvider>
           <ValidationProvider rules="required_select" v-slot="{ errors }" name="อาจารย์ หรือ กลุ่มโครงงาน">
             <v-select
               v-if="meetingType == 1"
+              class="mb-4"
               :items="teachers"
               v-model="TeacherID"
               label="อาจารย์"
               :error-messages="errors"
               item-value="UserID"
               :item-text="selectText"
-              bottom
-              outlined
               dense
-              required
             >
             </v-select>
             <v-select
               v-else
+              class="mb-4"
               :items="projects"
               v-model="ProjectID"
               label="กลุ่มโครงงาน"
               :error-messages="errors"
               item-value="ProjectID"
               item-text="ProjectNameTH"
-              bottom
-              outlined
               dense
-              required
             >
             </v-select>
           </ValidationProvider>
           <ValidationProvider rules="required_select" v-slot="{ errors }" name="เวลานัดหมาย">
-            <v-text-field v-model="OnDate" type="datetime-local" :error-messages="errors" label="เวลานัดหมาย" outlined dense></v-text-field>
+            <v-text-field class="mb-2" v-model="OnDate" type="datetime-local" :error-messages="errors" label="เวลานัดหมาย" dense></v-text-field>
           </ValidationProvider>
         </form>
       </ValidationObserver>
-      ProjectID: {{ ProjectID }}
       <div class="d-flex">
         <v-spacer></v-spacer>
         <v-btn class="ma-2" color="success" @click="submit">Create</v-btn>

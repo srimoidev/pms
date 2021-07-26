@@ -46,10 +46,17 @@
         </v-toolbar>
       </template>
       <template v-slot:[`item.Title`]="{ item }">
-        <router-link :to="`meeting/${item.MeetingID}`">{{ item.Title }}</router-link>
+        <v-tooltip right>
+          <template v-slot:activator="{ on, attrs }">
+            <span v-bind="attrs" v-on="on">
+              <router-link class="text-none" :to="`meeting/${item.MeetingID}`">{{ item.Title }}</router-link>
+            </span>
+          </template>
+          <div>{{ item.Detail }}</div>
+        </v-tooltip>
       </template>
       <template v-slot:[`item.RequestStatus`]="{ item }">
-        <v-chip class="white--text" :class="`m-status-${item.RequestStatus}`" small label>
+        <v-chip class="white--text d-block" :class="`m-status-${item.RequestStatus}`" small label>
           {{ allMeetingStatus[item.RequestStatus].name }}
         </v-chip>
       </template>
@@ -62,13 +69,13 @@
         {{ formatDatetime(item.OnDate) }}
       </template>
       <template v-slot:[`item.actions`]="{ item }">
-        <v-icon v-if="item.MeetingType !== meetingType" class="mr-2" color="green" @click="approveItem(item.MeetingID)">
+        <v-icon v-if="item.MeetingType != meetingType && item.RequestStatus == 1" class="mr-2" color="green" @click="approveItem(item.MeetingID)">
           mdi-tooltip-check
         </v-icon>
-        <v-icon v-if="item.MeetingType !== meetingType" class="mr-2" color="red" @click="decilneItem(item.MeetingID)">
+        <v-icon v-if="item.MeetingType != meetingType && item.RequestStatus == 1" class="mr-2" color="red" @click="decilneItem(item.MeetingID)">
           mdi-tooltip-remove
         </v-icon>
-        <v-icon v-if="item.MeetingType == meetingType" class="mr-2" @click="deleteItem(item.MeetingID)"> mdi-delete </v-icon>
+        <v-icon v-if="item.RequestStatus != 4 && item.RequestStatus != 1" class="mr-2" @click="deleteItem(item.MeetingID)"> mdi-delete </v-icon>
       </template>
     </v-data-table>
     <ModalContainer
@@ -79,14 +86,7 @@
       :cancellable="1"
       @close="hideModal"
     >
-      <NewMeeting
-        v-if="modalType == 'add'"
-        :teachers="allTeacher"
-        :projects="allProject"
-        :meetingType="meetingType"
-        @close="hideModal"
-        @submit="submit"
-      />
+      <NewMeeting :teachers="allTeacher" :projects="allProject" :meetingType="meetingType" @close="hideModal" @submit="submit" />
     </ModalContainer>
   </v-card>
 </template>
@@ -112,7 +112,8 @@ export default {
         { id: 0, name: "ทั้งหมด" },
         { id: 1, name: "กำลังนำเนินการ" },
         { id: 2, name: "อนุมัติแล้ว" },
-        { id: 3, name: "ถูกปฏิเสธ" }
+        { id: 3, name: "ถูกปฏิเสธ" },
+        { id: 4, name: "ยกเลิกการนัดหมาย" }
       ],
       allMeetingType: [
         { id: 0, name: "ทั้งหมด" },
@@ -130,8 +131,6 @@ export default {
         TeacherName: null,
         OnDate: null
       },
-      modalType: null,
-      meetingType: "",
       Headers: [
         {
           text: "หัวข้อนัดหมาย",
@@ -167,13 +166,9 @@ export default {
     }
   },
   beforeMount() {
-    this.loadData(); //จับตอน เปลี่ยน route
+    this.loadData();
   },
-  watch: {
-    // user() {
-    //   this.loadData(); //จับตอน reload
-    // }
-  },
+  watch: {},
   methods: {
     async loadData() {
       this.allMeeting = await this.Meeting.GetAll();
@@ -183,41 +178,22 @@ export default {
       this.loading = false;
     },
     async submit(pData) {
-      if (this.meetingType == 1) {
-        //นักศึกษานัดอาจารย์
-        await this.Meeting.New({
-          Title: pData.Title,
-          ProjectID: this.user.ProjectID,
-          Detail: pData.Detail,
-          TeacherID: pData.TeacherID,
-          MeetingType: this.meetingType,
-          OnDate: pData.OnDate,
-          IsActive: 1,
-          CreatedBy: this.user.UserID,
-          RequestStatus: "1"
-        }).then(() => {
-          this.loadData();
-        });
-      } else {
-        // อาจารย์นัดนักศึกษา
-        await this.Meeting.New({
-          Title: pData.Title,
-          ProjectID: pData.ProjectID,
-          Detail: pData.Detail,
-          TeacherID: this.user.UserID,
-          MeetingType: this.meetingType,
-          OnDate: pData.OnDate,
-          CreatedBy: this.user.UserID,
-          IsActive: 1,
-          RequestStatus: "1"
-        }).then(() => {
-          this.loadData();
-        });
-      }
+      await this.Meeting.New({
+        Title: pData.Title,
+        ProjectID: pData.ProjectID,
+        Detail: pData.Detail,
+        TeacherID: this.user.UserID,
+        MeetingType: this.meetingType,
+        OnDate: pData.OnDate,
+        CreatedBy: this.user.UserID,
+        IsActive: 1,
+        RequestStatus: "1"
+      }).then(() => {
+        this.loadData();
+      });
     },
     addModal() {
       this.modalVisable = true;
-      this.modalType = "add";
     },
     viewItem(pID) {
       this.meetingData = this.Meeting.findOne(pID);
@@ -286,7 +262,6 @@ export default {
     },
     hideModal() {
       this.modalVisable = false;
-      this.modalType = null;
     },
     onResize() {
       //page header 64px
