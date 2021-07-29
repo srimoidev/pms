@@ -9,7 +9,8 @@ module.exports = (sequelize, Sequelize) => {
       },
       Username: {
         type: Sequelize.STRING,
-        field: "UserName"
+        field: "UserName",
+        unique: true
       },
       Password: {
         type: Sequelize.STRING,
@@ -46,6 +47,14 @@ module.exports = (sequelize, Sequelize) => {
       UserTypeID: {
         type: Sequelize.INTEGER,
         field: "UserTypeID"
+      },
+      IsActive: {
+        type: Sequelize.BOOLEAN,
+        field: "IsActive"
+      },
+      ImgProfile: {
+        type: Sequelize.STRING,
+        field: "ImgProfile"
       },
       CreatedBy: {
         type: Sequelize.INTEGER,

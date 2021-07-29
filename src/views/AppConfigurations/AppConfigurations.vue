@@ -663,7 +663,6 @@ export default {
         this.newDeadlines.push({ SectionID: item.SectionID, OnDate: null });
       });
       this.edited_section = JSON.parse(JSON.stringify(this.sections));
-      console.log(this.edited_section);
       this.sec_loading = false;
     },
     resetDateTime(pItem, pDeadline) {

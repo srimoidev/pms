@@ -1,5 +1,4 @@
 import HTTP from "./config";
-
 //#region outbound
 
 //Form ที่ต้องทำก่อน
@@ -35,6 +34,8 @@ export async function FormPDF(pFormID) {
     const file = new Blob([res.data], {
       type: "application/pdf"
     });
+    console.log(file);
+    console.log(res.data);
     return URL.createObjectURL(file);
   });
 }
@@ -117,7 +118,7 @@ export async function Upload(pUserID, pProjectID, pFormTypeID, pFile) {
   formData.append("ProjectID", pProjectID);
   formData.append("FormTypeID", pFormTypeID);
   formData.append("file", pFile);
-  return HTTP.post("/form/sent", formData, {
+  return HTTP.post("/form/sent/", formData, {
     headers: {
       "Content-Type": "multipart/form-data"
     }

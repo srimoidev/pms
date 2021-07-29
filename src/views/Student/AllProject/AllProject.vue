@@ -229,7 +229,6 @@ export default {
     },
     joinProject(pProjectID) {
       this.Project.Join(pProjectID, this.user.UserID).then(() => {
-        // location.reload();
         this.$router.push("/student/project");
       });
     },

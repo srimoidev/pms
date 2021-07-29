@@ -43,8 +43,10 @@ import Teacher_AdviserRequest from "../views/Teacher/Request/AdviserRequest.vue"
 import Teacher_Documents from "../views/Teacher/ManageProject/Documents";
 import Teacher_FormCE from "../views/Teacher/ManageProject/FormCE";
 import Teacher_NewProjects from "../views/Teacher/Request/NewProjects";
+
 //App Environment Configuration
 import App_Configs from "../views/AppConfigurations/AppConfigurations.vue";
+import App_ManageUsers from "../views/AppConfigurations/ManageUsers.vue";
 
 Vue.use(VueRouter);
 
@@ -119,7 +121,7 @@ const routes = [
         meta: { title: "Google Calendar | PMS" }
       },
       {
-        path: "Meeting",
+        path: "meeting",
         name: "Meeting",
         component: Student_Meeting,
         meta: { title: "Meeting | PMS" }
@@ -255,13 +257,13 @@ const routes = [
         meta: { title: "Form Preview | PMS" }
       },
       {
-        path: "Meeting",
+        path: "meeting",
         name: "Meeting",
         component: Teacher_Meeting,
         meta: { title: "Meeting | PMS" }
       },
       {
-        path: "Meeting/:id",
+        path: "meeting/:id",
         name: "MeetingDetail",
         component: Teacher_MeetingDetail,
         meta: { title: "MeetingDetail | PMS" }
@@ -283,6 +285,12 @@ const routes = [
         name: "New Projects",
         component: Teacher_NewProjects,
         meta: { title: "New Projects | PMS" }
+      },
+      {
+        path: "manage_users",
+        name: "Manage Users",
+        component: App_ManageUsers,
+        meta: { title: "Manage Users | PMS" }
       }
     ]
   },

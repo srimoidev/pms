@@ -59,7 +59,7 @@ router.get("/", async (req, res) => {
           attributes: ["UserID", [db.Sequelize.fn("concat", db.Sequelize.col("Firstname"), " ", db.Sequelize.col("Lastname")), "Fullname"]]
         }
       ],
-      group: "ProjectID",
+      group: "FormID",
       // attributes: { exclude: [""] },
       where: whereStr
     });
@@ -173,6 +173,7 @@ router.get("/:id", async (req, res) => {
 
 // create
 router.post("/", async (req, res) => {
+  console.log(req);
   await db.form_sent
     .create({
       ProjectID: req.body.ProjectID,
@@ -268,7 +269,7 @@ router.get("/pdf/:id", async (req, res) => {
         }
       ]
     });
-    var file = fs.createReadStream(`./uploads/${data.FileName}`);
+    var file = fs.createReadStream(`./uploads/forms/${data.FileName}`);
     return file.pipe(res);
   } catch (error) {
     return res.status(500).json({
