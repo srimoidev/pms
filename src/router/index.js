@@ -127,7 +127,7 @@ const routes = [
         meta: { title: "Meeting | PMS" }
       },
       {
-        path: "Meeting/:id",
+        path: "meeting/:id",
         name: "MeetingDetail",
         component: Student_MeetingDetail,
         meta: { title: "MeetingDetail | PMS" }

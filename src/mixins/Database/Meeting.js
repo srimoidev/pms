@@ -55,8 +55,8 @@ export async function Decline(pID) {
 }
 
 export async function Delete(pID) {
-  console.log(pID);
-  await HTTP.put("/meeting/" + pID, { IsActive: 0 })
+  console.log("API: " + pID);
+  await HTTP.put("/meeting/" + pID, { RequestStatus: "4" })
     .then(test => {
       console.log(test);
     })

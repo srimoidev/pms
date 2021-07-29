@@ -45,7 +45,49 @@ router.get("/:id", async (req, res) => {
           include: [
             {
               model: db.user_profile,
-              as: "Project_Members"
+              as: "Project_Members",
+              attributes: [
+                "UserID",
+                "Firstname",
+                "Lastname",
+                "StudentID",
+                "Email",
+                "TelephoneNo",
+                "AcademicYear",
+                [
+                  db.Sequelize.fn(
+                    "concat",
+                    db.Sequelize.col("Meeting_Project.Project_Members.Firstname"),
+                    " ",
+                    db.Sequelize.col("Meeting_Project.Project_Members.Lastname")
+                  ),
+                  "Fullname"
+                ]
+              ]
+            },
+            {
+              model: db.user_profile,
+              as: "Project_Advisors",
+              through: {
+                as: "Advisors",
+                attributes: ["AdvisorID"]
+              },
+              attributes: [
+                "UserID",
+                "Firstname",
+                "Lastname",
+                "Email",
+                "TelephoneNo",
+                [
+                  db.Sequelize.fn(
+                    "concat",
+                    db.Sequelize.col("Meeting_Project.Project_Advisors.Firstname"),
+                    " ",
+                    db.Sequelize.col("Meeting_Project.Project_Advisors.Lastname")
+                  ),
+                  "Fullname"
+                ]
+              ]
             }
           ]
         },
@@ -85,7 +127,7 @@ router.post("/", async (req, res) => {
 
 // update
 router.put("/:id", async (req, res) => {
-  console.log(res.body);
+  console.log(req.body);
   await db.meeting
     .update(req.body, {
       where: {

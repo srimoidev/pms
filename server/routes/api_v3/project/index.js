@@ -174,7 +174,16 @@ router.get("/:id", async (req, res) => {
           through: {
             attributes: []
           },
-          attributes: { exclude: ["Username", "Password", "CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] }
+          attributes: [
+            "UserID",
+            "Firstname",
+            "Lastname",
+            "StudentID",
+            "Email",
+            "TelephoneNo",
+            "AcademicYear",
+            [db.Sequelize.fn("concat", db.Sequelize.col("Project_Members.Firstname"), " ", db.Sequelize.col("Project_Members.Lastname")), "Fullname"]
+          ]
         },
         {
           model: db.user_profile,
@@ -183,7 +192,17 @@ router.get("/:id", async (req, res) => {
             as: "Advisors",
             attributes: ["AdvisorID"]
           },
-          attributes: { exclude: ["Username", "Password", "StudentID", "AcademicYear", "CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] }
+          attributes: [
+            "UserID",
+            "Firstname",
+            "Lastname",
+            "Email",
+            "TelephoneNo",
+            [
+              db.Sequelize.fn("concat", db.Sequelize.col("Project_Advisors.Firstname"), " ", db.Sequelize.col("Project_Advisors.Lastname")),
+              "Fullname"
+            ]
+          ]
         },
         {
           model: db.user_profile,
