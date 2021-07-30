@@ -1,16 +1,18 @@
 <template>
   <div>
-    <v-menu v-model="menu" close-on-content-click :nudge-width="200" offset-y>
+    <v-menu v-model="menu" :nudge-width="200" offset-y>
       <template v-slot:activator="{ on }">
         <v-btn icon v-on="on">
           <v-avatar :size="size">
-            <v-icon :size="size">{{ "mdi-account-circle" }}</v-icon>
+            <v-img v-if="data.ImgProfile" :src="data.ImgProfile"></v-img>
+            <v-icon v-else :size="size">{{ "mdi-account-circle" }}</v-icon>
           </v-avatar>
         </v-btn>
       </template>
       <v-card class="profile-avatar">
-        <v-avatar class="mx-auto my-4" size="96">
-          <v-icon size="96">{{ "mdi-account-circle" }}</v-icon>
+        <v-avatar class="mx-auto my-4" size="96" style="border-radius:50%">
+          <v-img v-if="data.ImgProfile" :src="data.ImgProfile" sizes="96"></v-img>
+          <v-icon v-else size="96">{{ "mdi-account-circle" }}</v-icon>
         </v-avatar>
         <v-card-title class="mx-auto">{{ data.Fullname }}</v-card-title>
         <v-card-subheader class="mx-auto">{{ data.Email }}</v-card-subheader>
@@ -34,7 +36,7 @@ export default {
     },
     size: {
       type: Number,
-      default: 32
+      default: 42
     }
   },
   data() {

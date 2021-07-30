@@ -1,13 +1,31 @@
 <template>
   <div>
     <v-toolbar flat absolute width="100%">
-      <v-toolbar-title>{{ form_export_name }}</v-toolbar-title>
+      <v-toolbar-title>
+        {{ form_export_name }}
+        <v-breadcrumbs :items="breadcrumbs" large class="mr-4 pa-0">
+          <template v-slot:item="{ item }">
+            <v-breadcrumbs-item :to="item.url" :disabled="item.disabled">
+              <span style="font-size:12px">{{ item.text }}</span>
+            </v-breadcrumbs-item>
+          </template>
+          <template v-slot:divider>
+            <span style="font-size:12px">/</span>
+          </template>
+        </v-breadcrumbs>
+      </v-toolbar-title>
       <v-divider class="mx-4" inset vertical></v-divider>
       <v-spacer></v-spacer>
       <v-btn icon tile @click="$refs.pdfComponent.print()">
         <v-icon>mdi-printer</v-icon>
       </v-btn>
-      <v-btn class="cyan lighten-1 white--text" small :href="this.fileUrl" :download="form_export_name">Download</v-btn>
+      <v-btn
+        class="cyan lighten-1 white--text"
+        small
+        :href="this.fileUrl"
+        :download="`${form_export_name}_${new Date().toLocaleDateString('en-US').replaceAll('/', '-')}`"
+        >Download</v-btn
+      >
     </v-toolbar>
     <div class="d-flex" style="height:inherit;padding-top:65px">
       <div v-if="form" style="width:100%" class="overflow-y-auto">
@@ -148,6 +166,25 @@ export default {
     },
     form_export_name() {
       return `Form_${this.form?.Form_Type.FormTypeName}`;
+    },
+    breadcrumbs() {
+      return [
+        {
+          text: "จัดการโปรเจ็ค",
+          disabled: false,
+          url: "/student/documents"
+        },
+        {
+          text: this.form?.Form_Type.FormTypeName,
+          disabled: false,
+          url: `/student/form_ce?type=${this.form?.Form_Type.FormTypeID}`
+        },
+        {
+          text: this.form_export_name,
+          disabled: true,
+          url: "/student/form_preview"
+        }
+      ];
     }
   },
   beforeMount() {

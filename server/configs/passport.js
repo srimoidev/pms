@@ -16,7 +16,7 @@ passport.use(
     },
     (username, password, cb) => {
       //this one is typically a DB call.
-      const sqlStr = `SELECT * FROM user_profile ` + `WHERE Username = "${username}" AND Password = "${password}"`;
+      const sqlStr = `SELECT UserID,UserTypeID,IsActive FROM user_profile ` + `WHERE Username = "${username}" AND Password = "${password}"`;
       database.query(sqlStr, (err, rows) => {
         var data, msg;
         if (rows?.length > 0) {
@@ -24,12 +24,17 @@ passport.use(
             UserID: rows[0].UserID,
             UserTypeID: rows[0].UserTypeID
           };
-          msg = "Logged In Successfully!";
+          console.log(rows[0]);
+          if (rows[0].IsActive == 0) {
+            msg = "ผู้ใช้นี้ถูกระงับกรุณาติดต่อผู้ดูแลระบบ!";
+            data = null;
+          } else {
+            msg = "เข้าสู่ระบบสำเร็จ!";
+          }
         } else {
           data = null;
-          msg = "Incorrect Username or Password!";
+          msg = "<strong>ชื่อผู้ใช้</strong> หรือ <strong>รหัสผ่าน</strong> ไม่ถูกต้อง!";
         }
-        console.log(data, msg);
         return cb(null, data, msg);
       });
     }

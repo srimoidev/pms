@@ -54,7 +54,14 @@ export async function Validate(pUsername) {
     return !res.data?.isExist;
   });
 }
-
+export async function ProfileImage(pUserID) {
+  return await HTTP.get(`/user/profile_image/${pUserID}`, { responseType: "blob" }).then(res => {
+    const file = new Blob([res.data], {
+      type: "image/jpeg"
+    });
+    return URL.createObjectURL(file);
+  });
+}
 //#endregion outbound
 
 //#region inbound
@@ -85,8 +92,9 @@ export async function New(pUserID, pUsername, pPassword, pPrefix, pFirstname, pL
 }
 export async function ImportUser(pUserID, pImportedUser) {
   return HTTP.post("/user/import", { importedUser: pImportedUser, user: pUserID }).then(res => {
-    if (res.data.message?.errors) {
-      return res.data.message.original.sqlMessage;
+    console.log(res.data);
+    if (res.data?.msg) {
+      return res.data;
     }
   });
 }

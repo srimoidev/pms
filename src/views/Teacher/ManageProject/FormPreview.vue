@@ -218,7 +218,7 @@ export default {
     approveOrRejectForm(status) {
       this.$swal
         .fire({
-          title: "ยืนยันที่จะอนุมัติหรือไม่?",
+          title: status == 1 ? "ยืนยันที่จะอนุมัติหรือไม่?" : "ยืนยันที่จะไม่อนุมัติหรือไม่",
           icon: "warning",
           showCancelButton: true,
           confirmButtonColor: "#3085d6",

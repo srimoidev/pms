@@ -36,20 +36,22 @@
           </ValidationProvider>
         </ValidationObserver>
         <v-alert v-if="!isLoggedIn && authMsg" dense type="error">
-          <span>Incorrect <strong>Username</strong> or <strong>Password</strong></span>
+          <span v-html="authMsg"></span>
+          <!-- {{authMsg}} -->
+          <!-- <span>Incorrect <strong>Username</strong> or <strong>Password</strong></span> -->
         </v-alert>
         <v-btn dark width="100%" class="white--text cyan accent-4 elevation-1" @click="submit">Login</v-btn>
         <div class="d-flex">
-          <v-checkbox dark label="Remember me?" hide-details color="white" on-icon="mdi-check-box-outline"></v-checkbox>
+          <!-- <v-checkbox dark label="Remember me?" hide-details color="white" on-icon="mdi-check-box-outline"></v-checkbox> -->
           <v-spacer></v-spacer>
           <span class="blue-grey--text text--lighten-5 mt-4 pt-1">Forget Password</span>
         </div>
       </v-container>
     </v-card>
-    <div class="text-center mt-4">
+    <!-- <div class="text-center mt-4">
       <span class="mr-4 blue-grey--text text--lighten-5">Don't have a account?</span>
       <v-btn x-small>Register</v-btn>
-    </div>
+    </div> -->
   </div>
 </template>
 

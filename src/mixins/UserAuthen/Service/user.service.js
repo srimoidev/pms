@@ -1,6 +1,6 @@
 import router from "../../../router";
 import HTTP from "./config";
-import { Profile } from "@/mixins/Database/User.js";
+import { Profile, ProfileImage } from "@/mixins/Database/User.js";
 import { SelfProject } from "@/mixins/Database/Project.js";
 function login(username, password) {
   return HTTP.post("/login", JSON.stringify({ username, password })).then(res => {
@@ -27,10 +27,14 @@ function logout() {
   }
 }
 
-async function loggedInUserDate() {
-  const jwt = JSON.parse(localStorage.getItem("user")).token;
+async function loggedInUserData() {
+  const jwt = JSON.parse(localStorage.getItem("user"))?.token;
   const loggedInUserID = JSON.parse(atob(jwt.split(".")[1]))?.UserID;
-  const userProfile = await Profile(loggedInUserID);
+  var userProfile = {};
+  userProfile = await Profile(loggedInUserID);
+  if (userProfile.ImgProfile) {
+    userProfile.ImgProfile = await ProfileImage(loggedInUserID);
+  }
   userProfile.ProjectID = await SelfProject(loggedInUserID);
   return userProfile;
 }
@@ -38,5 +42,5 @@ async function loggedInUserDate() {
 export const userService = {
   login,
   logout,
-  loggedInUserDate
+  loggedInUserData
 };

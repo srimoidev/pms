@@ -3,7 +3,19 @@
     <v-data-table :headers="headers" :items="data" :loading="loading" loading-text="Loading... Please wait" :height="windowHeight"
       ><template v-slot:top>
         <v-toolbar flat>
-          <v-toolbar-title>{{ form.FormTypeName }}</v-toolbar-title>
+          <v-toolbar-title>
+            {{ form.FormTypeName }}
+            <v-breadcrumbs :items="breadcrumbs" large class="mr-4 pa-0">
+              <template v-slot:item="{ item }">
+                <v-breadcrumbs-item :to="item.url" :disabled="item.disabled">
+                  <span style="font-size:12px">{{ item.text }}</span>
+                </v-breadcrumbs-item>
+              </template>
+              <template v-slot:divider>
+                <span style="font-size:12px">/</span>
+              </template>
+            </v-breadcrumbs>
+          </v-toolbar-title>
           <v-divider class="mx-4" inset vertical></v-divider>
           <v-spacer></v-spacer>
           <v-btn @click="upNewDoc = !upNewDoc">Upload new document</v-btn>
@@ -108,6 +120,20 @@ export default {
     }),
     FormTypeID() {
       return this.$route.query.type;
+    },
+    breadcrumbs() {
+      return [
+        {
+          text: "จัดการโปรเจ็ค",
+          disabled: false,
+          url: "/student/documents"
+        },
+        {
+          text: this.form.FormTypeName,
+          disabled: true,
+          url: "/student/form_ce"
+        }
+      ];
     }
   },
   watch: {

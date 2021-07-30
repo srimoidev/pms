@@ -138,7 +138,6 @@ export default {
     async loadData() {
       this.$store.dispatch("user/getLoggedInUserData").then(async () => {
         this.menu = this.initMenu(await this.App.Menus(this.typeID));
-
         //เป็นอาจารย์
         // if (this.typeID == 2) {
         //   this.waitAdvisorsConfirmProject = await this.Project.WaitAdviserConfirmProject(this.user.UserID);
@@ -202,6 +201,7 @@ export default {
       this.$store.commit("lang", val);
     },
     logout() {
+      window.URL.revokeObjectURL(this.user.ImgProfile);
       this.$store.dispatch("authentication/logout");
       this.$store.dispatch("user/clearUserDate");
     }

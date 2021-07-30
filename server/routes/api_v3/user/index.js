@@ -89,7 +89,7 @@ router.post("/", async (req, res) => {
     Email: req.body.Email,
     TelephoneNo: req.body.TelephoneNo,
     UserTypeID: req.body.UserTypeID,
-    ImgProfile: req.files[0].filename,
+    ImgProfile: req.files[0]?.filename,
     IsActive: true,
     CreatedBy: req.body.CreatedBy,
     UpdatedBy: req.body.UpdatedBy
@@ -113,17 +113,37 @@ router.post("/import", async (req, res) => {
   const transaction = await db.sequelize.transaction();
   try {
     const UserType = await db.user_type.findAll();
-    req.body.importedUser.map(item => {
-      item.IsActive = true; //default IsActive : true
-      item.CreatedBy = req.body.user;
-      item.UpdatedBy = req.body.user;
-      item.UserTypeID = UserType.find(o => o.UserTypeNameEN == item.UserType)?.UserTypeID;
-      delete item.UserType;
+    let importUserID = [];
+    req.body.importedUser.forEach(element => {
+      console.log(element);
+      importUserID.push(element.Username);
     });
-    await db.user_profile.bulkCreate(req.body.importedUser, { transaction: transaction });
-    await transaction.commit().then(() => {
-      return res.status(200).send();
+    const checkDuplicated = await db.user_profile.findAll({
+      where: { Username: importUserID },
+      attributes: ["Username"]
     });
+    if (checkDuplicated?.length == 0) {
+      req.body.importedUser.map(item => {
+        item.IsActive = true; //default IsActive : true
+        item.CreatedBy = req.body.user;
+        item.UpdatedBy = req.body.user;
+        item.UserTypeID = UserType.find(o => o.UserTypeNameEN == item.UserType)?.UserTypeID;
+        delete item.UserType;
+      });
+      await db.user_profile.bulkCreate(req.body.importedUser, { transaction: transaction });
+      await transaction.commit().then(() => {
+        return res.status(200).send();
+      });
+    } else {
+      var txtUserDuplicate = "";
+      checkDuplicated.forEach(item => {
+        txtUserDuplicate += ", " + item.Username;
+      });
+      txtUserDuplicate.substring(2);
+      await transaction.commit().then(() => {
+        return res.send({ msg: "มี Username ซ้ำ โปรดตรวจสอบและ Import อีกครั้ง", duplicate: txtUserDuplicate.substring(2) });
+      });
+    }
   } catch (err) {
     await transaction.rollback();
     res.send({
@@ -217,6 +237,28 @@ router.get("/template/excel", async (req, res) => {
   try {
     var file = fs.createReadStream("./uploads/templates/ImportUser.xlsx");
     return file.pipe(res);
+  } catch (error) {
+    return res.status(500).json({
+      msg: error
+    });
+  }
+});
+
+router.get("/profile_image/:id", async (req, res) => {
+  try {
+    const data = await db.user_profile.findOne({
+      where: [
+        {
+          UserID: req.params.id
+        }
+      ]
+    });
+    const path = `./uploads/profile_images/${data.ImgProfile}`;
+    if (fs.existsSync(path)) {
+      //file exists
+      var file = fs.createReadStream(path);
+      return file.pipe(res);
+    }
   } catch (error) {
     return res.status(500).json({
       msg: error

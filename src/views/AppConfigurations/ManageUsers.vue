@@ -49,12 +49,14 @@
                   <v-card-title class="blue white--text">
                     <span>Import User</span>
                     <v-spacer></v-spacer>
-                    <v-btn icon @click="modalImportExcel = !modalImportExcel">
+                    <v-btn icon @click="closeModalImportExcel">
                       <v-icon>mdi-close</v-icon>
                     </v-btn>
                   </v-card-title>
                   <div class="pa-5">
                     <v-file-input
+                      v-model="filename"
+                      clearable
                       accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                       type="file"
                       show-size
@@ -127,6 +129,17 @@
                   </v-avatar>
                   <input ref="imgInput" class="d-none" type="file" accept="image/jpeg" @change="uploadProfileImg" />
                 </v-card>
+                <v-select
+                  v-model="newUserType"
+                  :items="userTypeForNewUser"
+                  item-text="UserTypeName"
+                  item-value="UserTypeID"
+                  class="mx-14"
+                  hide-details
+                  outlined
+                  dense
+                >
+                </v-select>
               </v-col>
               <v-col cols="8">
                 <ValidationObserver ref="observer">
@@ -187,7 +200,7 @@
                           <v-select
                             v-model="txtPrefix"
                             class="mr-2"
-                            :items="['เด็กชาย', 'เด็กหญิง', 'นาย', 'นางสาว', 'นาง']"
+                            :items="['นาย', 'นางสาว', 'นาง']"
                             label="คำนำหน้า"
                             outlined
                             dense
@@ -283,10 +296,11 @@ export default {
       typeFilter: 1,
       searchText: "",
       userType: [],
+      newUserType: 1,
       windowHeight: 0,
       loading: true,
       modalImportExcel: false,
-      file: null,
+      filename: null,
       modalNewUser: false,
       editImgProfile: false,
       importedData: [],
@@ -315,6 +329,9 @@ export default {
       return this.allUser?.filter(item => {
         return !this.typeFilter || item.UserTypeID == this.typeFilter;
       });
+    },
+    userTypeForNewUser() {
+      return this.userType.filter(o => o.UserTypeID != 4);
     }
   },
   beforeMount() {
@@ -344,18 +361,80 @@ export default {
       window.URL.revokeObjectURL(fileUrl);
     },
     importUser() {
-      this.User.ImportUser(this.user.UserID, this.importedData).then(res => {
-        if (res) {
+      let validation = true;
+      this.importedData.every(item => {
+        const email_validate = new RegExp("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$");
+        const tel_validate = new RegExp("^[0-9]*$");
+        console.log(item.TelephoneNo, !tel_validate.test(item.TelephoneNo));
+        console.log(
+          !item.Username,
+          !item.Password,
+          !item.Prefix,
+          !item.Firstname,
+          !item.Lastname,
+          !!(item.Email && !email_validate.test(item.Email)),
+          !!(item.TelephoneNo && !tel_validate.test(item.TelephoneNo))
+        );
+        console.log(
+          !item.Username ||
+            !item.Password ||
+            !item.Prefix ||
+            !item.Firstname ||
+            !item.Lastname ||
+            !!(item.Email && !email_validate.test(item.Email)) ||
+            !!(item.TelephoneNo && !tel_validate.test(item.TelephoneNo))
+        );
+        if (
+          !item.Username ||
+          !item.Password ||
+          !item.Prefix ||
+          !item.Firstname ||
+          !item.Lastname ||
+          !!(item.Email && !email_validate.test(item.Email)) ||
+          !!(item.TelephoneNo && !tel_validate.test(item.TelephoneNo))
+        ) {
           this.$swal.fire({
-            text: res,
+            // title: `<span style="font-size:18px">${res.msg}</span>`,
+            text: "ข้อมูลที่ Import ไม่ถูกต้องโปรดตรวจสอบและ Import ใหม่",
             icon: "error",
             confirmButtonColor: "#3085d6",
             confirmButtonText: "ยืนยัน!"
           });
+          validation = false;
+          return false;
         }
-        this.loadData();
-        this.modalImportExcel = false;
       });
+      if (validation) {
+        this.User.ImportUser(this.user.UserID, this.importedData).then(res => {
+          if (res) {
+            this.$swal.fire({
+              title: `<span style="font-size:18px">${res.msg}</span>`,
+              text: res.duplicate,
+              icon: "error",
+              confirmButtonColor: "#3085d6",
+              confirmButtonText: "ยืนยัน!"
+            });
+            this.importedData = null;
+            this.filename = null;
+          } else {
+            this.$swal.fire({
+              timer: 3000,
+              timerProgressBar: true,
+              showConfirmButton: false,
+              position: "top-end",
+              toast: true,
+              icon: "success",
+              title: "Success"
+            });
+          }
+          this.loadData();
+          this.modalImportExcel = false;
+        });
+      }
+    },
+    closeModalImportExcel() {
+      this.filename = null;
+      this.modalImportExcel = false;
     },
     deleteUser(user) {
       this.$swal
@@ -429,17 +508,6 @@ export default {
     },
     async saveNewUser() {
       if (await this.$refs.observer.validate()) {
-        // const user = {
-        //   Username: this.txtUsername,
-        //   Password: this.txtPassword,
-        //   Prefix: this.txtPrefix,
-        //   Firstname: this.txtFirstname,
-        //   Lastname: this.txtLastname,
-        //   StudentID: this.txtStudentID,
-        //   Email: this.txtEmail,
-        //   TelephoneNo: this.txtTelephoneNo,
-        //   UserTypeID: this.typeFilter
-        // };
         this.User.New(
           this.user.UserID,
           this.txtUsername,
@@ -450,7 +518,7 @@ export default {
           this.txtStudentID,
           this.txtEmail,
           this.txtTelephoneNo,
-          this.typeFilter,
+          this.newUserType,
           this.selectedImg
         ).then(() => {
           this.$swal.fire({
@@ -468,9 +536,11 @@ export default {
       }
     },
     validate() {
-      this.User.Validate(this.txtUsername).then(res => {
-        this.isValid = res;
-      });
+      if (this.txtUsername) {
+        this.User.Validate(this.txtUsername).then(res => {
+          this.isValid = res;
+        });
+      }
     },
     onResize() {
       //page header 64px

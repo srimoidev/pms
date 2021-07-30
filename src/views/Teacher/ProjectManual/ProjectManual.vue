@@ -9,7 +9,7 @@
     >
       <template v-slot:top>
         <v-toolbar flat color="white">
-          <v-toolbar-title>คู่มือปริญญานิพนธ์</v-toolbar-title>
+          <v-toolbar-title>คู่มือการทำโครงงาน</v-toolbar-title>
           <v-divider class="mx-4" inset vertical></v-divider>
           <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details></v-text-field>
           <v-spacer></v-spacer>

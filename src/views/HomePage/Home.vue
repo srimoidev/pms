@@ -83,7 +83,7 @@ export default {
       tabs: [
         { title: "หน้าหลัก", route: "/", isHideOnLoggedin: false },
         { title: "ค้นหาโครงงาน", route: "/search", isHideOnLoggedin: false },
-        { title: "เกี่ยวกับ", route: "/about", isHideOnLoggedin: false },
+        // { title: "เกี่ยวกับ", route: "/about", isHideOnLoggedin: false },
         { title: "เข้าสู่ระบบ", route: "/login", icon: "mdi-lock", isHideOnLoggedin: true }
       ],
       recent_project: [

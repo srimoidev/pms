@@ -11,7 +11,7 @@ export const user = {
   actions: {
     async getLoggedInUserData({ commit }) {
       commit("getAllRequest");
-      await userService.loggedInUserDate().then(user => {
+      await userService.loggedInUserData().then(user => {
         commit("getAllSuccess", user);
       });
     },
