@@ -81,7 +81,9 @@ router.post("/", async (req, res) => {
     for (const item of req.body.prerequisite) {
       await db.form_prerequisite.create({ FormTypeID: formType.FormTypeID, FormReqTypeID: item }, { transaction: transaction });
     }
-    await transaction.commit();
+    await transaction.commit().then(() => {
+      return res.status(200).send();
+    });
   } catch (error) {
     await transaction.rollback();
     res.send({ message: error.message });
@@ -107,7 +109,9 @@ router.put("/:id", async (req, res) => {
           await db.form_prerequisite.create({ FormTypeID: req.params.id, FormReqTypeID: item }, { transaction: transaction });
         }
       });
-      await transaction.commit();
+      await transaction.commit().then(() => {
+        return res.status(200).send();
+      });
     });
   } catch (error) {
     await transaction.rollback();
@@ -127,7 +131,9 @@ router.delete("/:id", async (req, res) => {
       .then(async () => {
         await db.deadline.destroy({ where: [{ FormTypeID: req.params.id }] }, { transaction: transaction });
       });
-    await transaction.commit();
+    await transaction.commit().then(() => {
+      return res.status(200).send();
+    });
   } catch (error) {
     await transaction.rollback();
     res.send({ message: error.message });

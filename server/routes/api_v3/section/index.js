@@ -75,7 +75,9 @@ router.post("/", async (req, res) => {
 
         return data;
       });
-    await transaction.commit();
+    await transaction.commit().then(() => {
+      return res.status(200).send();
+    });
   } catch (error) {
     await transaction.rollback();
     res.send({ message: error.message });
@@ -96,7 +98,9 @@ router.put("/:id", async (req, res) => {
       },
       { transaction: transaction }
     );
-    await transaction.commit();
+    await transaction.commit().then(() => {
+      return res.status(200).send();
+    });
   } catch (error) {
     await transaction.rollback();
     res.send({ message: error.message });
@@ -127,7 +131,9 @@ router.delete("/:id", async (req, res) => {
         );
         return true;
       });
-    await transaction.commit();
+    await transaction.commit().then(() => {
+      return res.status(200).send();
+    });
   } catch (error) {
     await transaction.rollback();
     res.send({ message: error.message });

@@ -37,7 +37,7 @@ router.get("/", async (req, res) => {
 
 router.get("/:id", async (req, res) => {
   try {
-    const data = await db.meeting.findAll({
+    const data = await db.meeting.findOne({
       include: [
         {
           model: db.project_info,
@@ -102,7 +102,7 @@ router.get("/:id", async (req, res) => {
         }
       ]
     });
-    return res.json(data[0]);
+    return res.json(data);
   } catch (error) {
     return res.status(500).json({
       msg: error
@@ -116,7 +116,9 @@ router.post("/", async (req, res) => {
   const transaction = await db.sequelize.transaction();
   try {
     await db.meeting.create(req.body, { transaction: transaction });
-    await transaction.commit();
+    await transaction.commit().then(() => {
+      return res.status(200).send();
+    });
   } catch (error) {
     await transaction.rollback();
     res.send({ message: error.message });
@@ -129,7 +131,9 @@ router.put("/:id", async (req, res) => {
   const transaction = await db.sequelize.transaction();
   try {
     await db.meeting.update(req.body, { where: { MeetingID: req.params.id } }, { transaction: transaction });
-    await transaction.commit();
+    await transaction.commit().then(() => {
+      return res.status(200).send();
+    });
   } catch (error) {
     await transaction.rollback();
     res.send({ message: error.message });
@@ -141,7 +145,9 @@ router.delete("/:id", async (req, res) => {
   const transaction = await db.sequelize.transaction();
   try {
     await db.meeting.destroy({ where: [{ MeetingID: req.params.id }] }, { transaction: transaction });
-    await transaction.commit();
+    await transaction.commit().then(() => {
+      return res.status(200).send();
+    });
   } catch (error) {
     await transaction.rollback();
     res.send({ message: error.message });

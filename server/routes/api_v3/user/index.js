@@ -97,9 +97,8 @@ router.post("/", async (req, res) => {
   const transaction = await db.sequelize.transaction();
   try {
     await db.user_profile.create(user, { transaction: transaction });
-    await transaction.commit();
-    res.send({
-      message: "successfully!"
+    await transaction.commit().then(() => {
+      return res.status(200).send();
     });
   } catch (err) {
     await transaction.rollback();
@@ -122,9 +121,8 @@ router.post("/import", async (req, res) => {
       delete item.UserType;
     });
     await db.user_profile.bulkCreate(req.body.importedUser, { transaction: transaction });
-    await transaction.commit();
-    res.send({
-      message: "Updated successfully!"
+    await transaction.commit().then(() => {
+      return res.status(200).send();
     });
   } catch (err) {
     await transaction.rollback();
@@ -147,7 +145,9 @@ router.put("/:id", async (req, res) => {
       },
       { transaction: transaction }
     );
-    await transaction.commit();
+    await transaction.commit().then(() => {
+      return res.status(200).send();
+    });
   } catch (error) {
     await transaction.rollback();
     res.send({ message: error.message });
@@ -185,7 +185,9 @@ router.delete("/:id", async (req, res) => {
           message: "Error deleting!"
         });
       });
-    await transaction.commit();
+    await transaction.commit().then(() => {
+      return res.status(200).send();
+    });
   } catch (error) {
     await transaction.rollback();
     res.send({ message: error.message });

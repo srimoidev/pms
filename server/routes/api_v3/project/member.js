@@ -58,7 +58,7 @@ router.get("/:id", async (req, res) => {
 router.post("/", async (req, res) => {
   const transaction = await db.sequelize.transaction();
   try {
-    await db.project_member.create(req.body, { transaction: transaction }).then(async data => {
+    await db.project_member.create(req.body, { transaction: transaction }).then(async () => {
       const members = await db.project_member.findAndCountAll({
         where: { ProjectID: req.body.ProjectID }
       });
@@ -78,7 +78,9 @@ router.post("/", async (req, res) => {
         );
       }
     });
-    await transaction.commit();
+    await transaction.commit().then(() => {
+      return res.status(200).send();
+    });
   } catch (error) {
     await transaction.rollback();
     res.send({ message: error.message });
@@ -98,7 +100,9 @@ router.put("/:id", async (req, res) => {
       },
       { transaction: transaction }
     );
-    await transaction.commit();
+    await transaction.commit().then(() => {
+      return res.status(200).send();
+    });
   } catch (error) {
     await transaction.rollback();
     res.send({ message: error.message });
@@ -114,7 +118,7 @@ router.delete("/", async (req, res) => {
         },
         { transaction: transaction }
       )
-      .then(num => {
+      .then(() => {
         db.project_info
           .findOne({
             where: {
@@ -131,7 +135,9 @@ router.delete("/", async (req, res) => {
             }
           });
       });
-    await transaction.commit();
+    await transaction.commit().then(() => {
+      return res.status(200).send();
+    });
   } catch (error) {
     await transaction.rollback();
     res.send({ message: error.message });
@@ -151,7 +157,9 @@ router.delete("/:id", async (req, res) => {
       },
       { transaction: transaction }
     );
-    await transaction.commit();
+    await transaction.commit().then(() => {
+      return res.status(200).send();
+    });
   } catch (error) {
     await transaction.rollback();
     res.send({ message: error.message });

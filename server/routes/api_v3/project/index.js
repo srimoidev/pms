@@ -275,7 +275,9 @@ router.post("/", async (req, res) => {
   const transaction = await db.sequelize.transaction();
   try {
     await db.project_info.create(req.body, { transaction: transaction });
-    await transaction.commit();
+    await transaction.commit().then(() => {
+      return res.status(200).send();
+    });
   } catch (error) {
     await transaction.rollback();
     res.send({ message: error.message });
@@ -332,7 +334,9 @@ router.post("/create", async (req, res) => {
         }
       );
     }
-    await transaction.commit();
+    await transaction.commit().then(() => {
+      return res.status(200).send();
+    });
     res.send(project);
   } catch (err) {
     await transaction.rollback();
@@ -347,7 +351,9 @@ router.put("/:id", async (req, res) => {
   const transaction = await db.sequelize.transaction();
   try {
     await db.project_info.update(req.body, { where: { ProjectID: req.params.id } }, { transaction: transaction });
-    await transaction.commit();
+    await transaction.commit().then(() => {
+      return res.status(200).send();
+    });
   } catch (error) {
     await transaction.rollback();
     res.send({ message: error.message });
@@ -369,7 +375,9 @@ router.put("/resend/:id", async (req, res) => {
         }
       });
     });
-    await transaction.commit();
+    await transaction.commit().then(() => {
+      return res.status(200).send();
+    });
   } catch (error) {
     await transaction.rollback();
     res.send({ message: error.message });
@@ -381,7 +389,9 @@ router.delete("/:id", async (req, res) => {
   const transaction = await db.sequelize.transaction();
   try {
     await db.project_info.destroy({ where: [{ ProjectID: req.params.id }] }, { transaction: transaction });
-    await transaction.commit();
+    await transaction.commit().then(() => {
+      return res.status(200).send();
+    });
   } catch (error) {
     await transaction.rollback();
     res.send({ message: error.message });

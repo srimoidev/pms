@@ -186,7 +186,9 @@ router.post("/", async (req, res) => {
       },
       { transaction: transaction }
     );
-    await transaction.commit();
+    await transaction.commit().then(() => {
+      return res.status(200).send();
+    });
   } catch (error) {
     await transaction.rollback();
     res.send({ message: error.message });
@@ -215,7 +217,9 @@ router.put("/:id", async (req, res) => {
       },
       { transaction: transaction }
     );
-    await transaction.commit();
+    await transaction.commit().then(() => {
+      return res.status(200).send();
+    });
   } catch (error) {
     await transaction.rollback();
     res.send({ message: error.message });
@@ -230,13 +234,15 @@ router.delete("/:id", async (req, res) => {
       {
         where: [
           {
-            Form_ID: req.params.id
+            FormID: req.params.id
           }
         ]
       },
       { transaction: transaction }
     );
-    await transaction.commit();
+    await transaction.commit().then(() => {
+      return res.status(200).send();
+    });
   } catch (error) {
     await transaction.rollback();
     res.send({ message: error.message });

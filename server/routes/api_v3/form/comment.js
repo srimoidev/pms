@@ -85,7 +85,9 @@ router.post("/", async (req, res) => {
   const transaction = await db.sequelize.transaction();
   try {
     await db.form_comment.create(req.body, { transaction: transaction });
-    await transaction.commit();
+    await transaction.commit().then(() => {
+      return res.status(200).send();
+    });
   } catch (error) {
     await transaction.rollback();
     res.send({ message: error.message });
@@ -97,7 +99,9 @@ router.put("/:id", async (req, res) => {
   const transaction = await db.sequelize.transaction();
   try {
     await db.form_comment.update(req.body, { where: { Comment_ID: req.params.id } }, { transaction: transaction });
-    await transaction.commit();
+    await transaction.commit().then(() => {
+      return res.status(200).send();
+    });
   } catch (error) {
     await transaction.rollback();
     res.send({ message: error.message });
@@ -114,7 +118,9 @@ router.delete("/:id", async (req, res) => {
       },
       { transaction: transaction }
     );
-    await transaction.commit();
+    await transaction.commit().then(() => {
+      return res.status(200).send();
+    });
   } catch (error) {
     await transaction.rollback();
     res.send({ message: error.message });
