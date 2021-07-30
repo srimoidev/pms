@@ -272,16 +272,14 @@ router.get("/:id", async (req, res) => {
 
 // create
 router.post("/", async (req, res) => {
-  await db.project_info
-    .create(req.body)
-    .then(data => {
-      res.send(data);
-    })
-    .catch(err => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while creating!"
-      });
-    });
+  const transaction = await db.sequelize.transaction();
+  try {
+    await db.project_info.create(req.body, { transaction: transaction });
+    await transaction.commit();
+  } catch (error) {
+    await transaction.rollback();
+    res.send({ message: error.message });
+  }
 });
 
 //สร้างกลุ่ม เพิ่่มอาจารย์ที่ปรึกษา เพิ่มสมาชิก
@@ -346,94 +344,47 @@ router.post("/create", async (req, res) => {
 
 // update
 router.put("/:id", async (req, res) => {
-  await db.project_info
-    .update(req.body, {
-      where: {
-        ProjectID: req.params.id
-      }
-    })
-    .then(num => {
-      if (num == 1) {
-        res.send({
-          message: "Updated successfully!"
-        });
-      } else {
-        res.send({
-          message: `Cann't update, Maybe not found or req.body is empty!`
-        });
-      }
-    })
-    .catch(() => {
-      res.status(500).send({
-        message: "Error updating!"
-      });
-    });
+  const transaction = await db.sequelize.transaction();
+  try {
+    await db.project_info.update(req.body, { where: { ProjectID: req.params.id } }, { transaction: transaction });
+    await transaction.commit();
+  } catch (error) {
+    await transaction.rollback();
+    res.send({ message: error.message });
+  }
 });
 //ขออนุมัติโปรเจ็คใหม่กรณีถูก Reject
 router.put("/resend/:id", async (req, res) => {
+  const transaction = await db.sequelize.transaction();
   req.body.project.ProjectStatusID = 2; //set 2 Wait Advisor
   req.body.project.UpdatedBy = req.body.userid;
-  await db.project_info
-    .update(req.body.project, {
-      where: {
-        ProjectID: req.params.id
-      }
-    })
-    .then(async () => {
-      await db.project_advisor
-        .destroy({
-          where: {
-            ProjectID: req.params.id
-          }
-        })
-        .then(async () => {
-          for (const item of req.body.advisors) {
-            await db.project_advisor.create({ ProjectID: req.params.id, UserID: item, CreatedBy: req.body.userid, UpdatedBy: req.body.userid });
-          }
-        });
-    })
-    .then(num => {
-      if (num == 1) {
-        res.send({
-          message: "Updated successfully!"
-        });
-      } else {
-        res.send({
-          message: `Cann't update, Maybe not found or req.body is empty!`
-        });
-      }
-    })
-    .catch(() => {
-      res.status(500).send({
-        message: "Error updating!"
+  try {
+    await db.project_info.update(req.body.project, { where: { ProjectID: req.params.id } }, { transaction: transaction }).then(async () => {
+      await db.project_advisor.destroy({ where: { ProjectID: req.params.id } }, { transaction: transaction }).then(async () => {
+        for (const item of req.body.advisors) {
+          await db.project_advisor.create(
+            { ProjectID: req.params.id, UserID: item, CreatedBy: req.body.userid, UpdatedBy: req.body.userid },
+            { transaction: transaction }
+          );
+        }
       });
     });
+    await transaction.commit();
+  } catch (error) {
+    await transaction.rollback();
+    res.send({ message: error.message });
+  }
 });
+
 // delete
 router.delete("/:id", async (req, res) => {
-  await db.project_info
-    .destroy({
-      where: [
-        {
-          ProjectID: req.params.id
-        }
-      ]
-    })
-    .then(num => {
-      if (num == 1) {
-        res.send({
-          message: "Deleted successfully!"
-        });
-      } else {
-        res.send({
-          message: `Can't delete, Maybe not found!`
-        });
-      }
-    })
-    .catch(() => {
-      res.status(500).send({
-        message: "Error deleting!"
-      });
-    });
+  const transaction = await db.sequelize.transaction();
+  try {
+    await db.project_info.destroy({ where: [{ ProjectID: req.params.id }] }, { transaction: transaction });
+    await transaction.commit();
+  } catch (error) {
+    await transaction.rollback();
+    res.send({ message: error.message });
+  }
 });
 module.exports = router;

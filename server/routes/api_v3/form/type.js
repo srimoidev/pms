@@ -63,113 +63,75 @@ router.post("/", async (req, res) => {
   req.body.formtype.CreatedBy = req.body.userid;
   req.body.formtype.UpdatedBy = req.body.userid;
   console.log(req.body.formtype);
+  const transaction = await db.sequelize.transaction();
   try {
-    const formType = await db.form_type.create(req.body.formtype);
+    const formType = await db.form_type.create(req.body.formtype, { transaction: transaction });
     for (const item of req.body.deadline) {
-      await db.deadline.create({
-        SectionID: item.SectionID,
-        FormTypeID: formType.FormTypeID,
-        OnDate: item.OnDate,
-        CreatedBy: req.body.userid,
-        UpdatedBy: req.body.userid
-      });
+      await db.deadline.create(
+        {
+          SectionID: item.SectionID,
+          FormTypeID: formType.FormTypeID,
+          OnDate: item.OnDate,
+          CreatedBy: req.body.userid,
+          UpdatedBy: req.body.userid
+        },
+        { transaction: transaction }
+      );
     }
     for (const item of req.body.prerequisite) {
-      await db.form_prerequisite.create({ FormTypeID: formType.FormTypeID, FormReqTypeID: item });
+      await db.form_prerequisite.create({ FormTypeID: formType.FormTypeID, FormReqTypeID: item }, { transaction: transaction });
     }
-
-    res.send(formType);
-  } catch (err) {
-    // await transaction.rollback();
-    res.status(500).send({
-      message: err.message || "Some error occurred while creating!"
-    });
+    await transaction.commit();
+  } catch (error) {
+    await transaction.rollback();
+    res.send({ message: error.message });
   }
 });
 
 // update
 router.put("/:id", async (req, res) => {
   req.body.formType.UpdatedBy = req.body.updatedUser;
-  await db.form_type
-    .update(req.body.formType, {
-      where: {
-        FormTypeID: req.params.id
-      }
-    })
-    .then(async () => {
+  const transaction = await db.sequelize.transaction();
+  try {
+    await db.form_type.update(req.body.formType, { where: { FormTypeID: req.params.id } }, { transaction: transaction }).then(async () => {
       for (const item of req.body.deadline) {
-        await db.deadline.update({ OnDate: item.OnDate, UpdatedBy: req.body.updatedUser }, { where: { DeadlineID: item.DeadlineID } });
+        await db.deadline.update(
+          { OnDate: item.OnDate, UpdatedBy: req.body.updatedUser },
+          { where: { DeadlineID: item.DeadlineID } },
+          { transaction: transaction }
+        );
       }
 
-      await db.form_prerequisite
-        .destroy({
-          where: {
-            FormTypeID: req.params.id
-          }
-        })
-        .then(async () => {
-          for (const item of req.body.prerequisite) {
-            await db.form_prerequisite.create({ FormTypeID: req.params.id, FormReqTypeID: item });
-          }
-        });
-
-      return true;
-    })
-    .then(num => {
-      if (num == 1) {
-        res.send({
-          message: "Updated successfully!"
-        });
-      } else {
-        res.send({
-          message: `Cann't update, Maybe not found or req.body is empty!`
-        });
-      }
-    })
-    .catch(() => {
-      res.status(500).send({
-        message: "Error updating!"
+      await db.form_prerequisite.destroy({ where: { FormTypeID: req.params.id } }, { transaction: transaction }).then(async () => {
+        for (const item of req.body.prerequisite) {
+          await db.form_prerequisite.create({ FormTypeID: req.params.id, FormReqTypeID: item }, { transaction: transaction });
+        }
       });
+      await transaction.commit();
     });
+  } catch (error) {
+    await transaction.rollback();
+    res.send({ message: error.message });
+  }
 });
 
 // delete
 router.delete("/:id", async (req, res) => {
-  await db.form_type
-    .destroy({
-      where: [
-        {
-          FormTypeID: req.params.id
-        }
-      ]
-    })
-    .then(async () => {
-      await db.form_prerequisite.destroy({
-        where: [{ FormTypeID: req.params.id }]
+  const transaction = await db.sequelize.transaction();
+  try {
+    await db.form_type
+      .destroy({ where: [{ FormTypeID: req.params.id }] }, { transaction: transaction })
+      .then(async () => {
+        await db.form_prerequisite.destroy({ where: [{ FormTypeID: req.params.id }] }, { transaction: transaction });
+      })
+      .then(async () => {
+        await db.deadline.destroy({ where: [{ FormTypeID: req.params.id }] }, { transaction: transaction });
       });
-    })
-    .then(async () => {
-      await db.deadline.destroy({
-        where: [{ FormTypeID: req.params.id }]
-      });
-      return true;
-    })
-    .then(num => {
-      if (num == 1) {
-        res.send({
-          message: "Deleted successfully!"
-        });
-      } else {
-        res.send({
-          message: `Can't delete, Maybe not found!`
-        });
-      }
-    })
-    .catch(() => {
-      res.status(500).send({
-        message: "Error deleting!"
-      });
-    });
+    await transaction.commit();
+  } catch (error) {
+    await transaction.rollback();
+    res.send({ message: error.message });
+  }
 });
 
 module.exports = router;

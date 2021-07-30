@@ -56,9 +56,9 @@ router.get("/:id", async (req, res) => {
 
 // create
 router.post("/", async (req, res) => {
-  await db.project_member
-    .create(req.body)
-    .then(async data => {
+  const transaction = await db.sequelize.transaction();
+  try {
+    await db.project_member.create(req.body, { transaction: transaction }).then(async data => {
       const members = await db.project_member.findAndCountAll({
         where: { ProjectID: req.body.ProjectID }
       });
@@ -71,100 +71,90 @@ router.post("/", async (req, res) => {
          * เป็น 2 (Wait Advisor เมื่อนักศึกษาเป็นคนสร้างกลุ่ม)
          * เป็น 3 (Inprogress) เมื่ออาจารย์เป็นคนสร้างกลุ่ม
          ***/
-        db.project_info.update({ ProjectStatusID: createBy.UserTypeID == 1 ? 2 : 3 }, { where: { ProjectID: req.body.ProjectID } });
+        db.project_info.update(
+          { ProjectStatusID: createBy.UserTypeID == 1 ? 2 : 3 },
+          { where: { ProjectID: req.body.ProjectID } },
+          { transaction: transaction }
+        );
       }
-      res.send(data);
-    })
-    .catch(err => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while creating!"
-      });
     });
+    await transaction.commit();
+  } catch (error) {
+    await transaction.rollback();
+    res.send({ message: error.message });
+  }
 });
 
 // update
 router.put("/:id", async (req, res) => {
-  await db.project_member
-    .update(req.body, {
-      where: {
-        MemberID: req.params.id
-      }
-    })
-    .then(async num => {
-      if (num == 1) {
-        res.send({
-          message: "Updated successfully!"
-        });
-      } else {
-        res.send({
-          message: `Cann't update, Maybe not found or req.body is empty!`
-        });
-      }
-    })
-    .catch(() => {
-      res.status(500).send({
-        message: "Error updating!"
-      });
-    });
+  const transaction = await db.sequelize.transaction();
+  try {
+    await db.project_member.update(
+      req.body,
+      {
+        where: {
+          MemberID: req.params.id
+        }
+      },
+      { transaction: transaction }
+    );
+    await transaction.commit();
+  } catch (error) {
+    await transaction.rollback();
+    res.send({ message: error.message });
+  }
 });
 router.delete("/", async (req, res) => {
-  await db.project_member
-    .destroy({
-      where: { ProjectID: req.query.projectid, UserID: req.query.userid }
-    })
-    .then(num => {
-      db.project_info
-        .findOne({
-          where: {
-            ProjectID: req.query.projectid
-          }
-        })
-        .then(res => {
-          if (res.ProjectStatusID == 2) {
-            db.project_info.update({ ProjectStatusID: 1, CreatedBy: req.query.userid }, { where: { ProjectID: req.query.projectid } }); //เปลี่ยนกลับเป็น Draft ถ้า Project Status เป็น 2
-          }
-        });
-      if (num == 1) {
-        res.send({
-          message: "Deleted successfully!"
-        });
-      } else {
-        res.send({
-          message: `Can't delete, Maybe not found!`
-        });
-      }
-    })
-    .catch(() => {
-      res.status(500).send({
-        message: "Error deleting!"
+  const transaction = await db.sequelize.transaction();
+  try {
+    await db.project_member
+      .destroy(
+        {
+          where: { ProjectID: req.query.projectid, UserID: req.query.userid }
+        },
+        { transaction: transaction }
+      )
+      .then(num => {
+        db.project_info
+          .findOne({
+            where: {
+              ProjectID: req.query.projectid
+            }
+          })
+          .then(res => {
+            if (res.ProjectStatusID == 2) {
+              db.project_info.update(
+                { ProjectStatusID: 1, CreatedBy: req.query.userid },
+                { where: { ProjectID: req.query.projectid } },
+                { transaction: transaction }
+              ); //เปลี่ยนกลับเป็น Draft ถ้า Project Status เป็น 2
+            }
+          });
       });
-    });
+    await transaction.commit();
+  } catch (error) {
+    await transaction.rollback();
+    res.send({ message: error.message });
+  }
 });
 // delete
 router.delete("/:id", async (req, res) => {
-  await db.project_member
-    .destroy({
-      where: [
-        {
-          Member_ID: req.params.id
-        }
-      ]
-    })
-    .then(num => {
-      if (num == 1) {
-        res.send({
-          message: "Deleted successfully!"
-        });
-      } else {
-        res.send({
-          message: `Can't delete, Maybe not found!`
-        });
-      }
-    })
-    .catch(() => {
-      res.status(500).send({
-        message: "Error deleting!"
-      });
-    });
+  const transaction = await db.sequelize.transaction();
+  try {
+    await db.project_member.destroy(
+      {
+        where: [
+          {
+            Member_ID: req.params.id
+          }
+        ]
+      },
+      { transaction: transaction }
+    );
+    await transaction.commit();
+  } catch (error) {
+    await transaction.rollback();
+    res.send({ message: error.message });
+  }
 });
 module.exports = router;

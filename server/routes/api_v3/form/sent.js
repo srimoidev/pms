@@ -173,23 +173,24 @@ router.get("/:id", async (req, res) => {
 
 // create
 router.post("/", async (req, res) => {
-  await db.form_sent
-    .create({
-      ProjectID: req.body.ProjectID,
-      FormTypeID: req.body.FormTypeID,
-      CreatedBy: req.body.CreatedBy,
-      UpdatedBy: req.body.UpdatedBy,
-      FileName: req.files[0].filename,
-      FormStatusID: 1
-    })
-    .then(data => {
-      res.send(data);
-    })
-    .catch(err => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while creating!"
-      });
-    });
+  const transaction = await db.sequelize.transaction();
+  try {
+    await db.form_sent.create(
+      {
+        ProjectID: req.body.ProjectID,
+        FormTypeID: req.body.FormTypeID,
+        CreatedBy: req.body.CreatedBy,
+        UpdatedBy: req.body.UpdatedBy,
+        FileName: req.files[0].filename,
+        FormStatusID: 1
+      },
+      { transaction: transaction }
+    );
+    await transaction.commit();
+  } catch (error) {
+    await transaction.rollback();
+    res.send({ message: error.message });
+  }
 });
 
 // update
@@ -203,59 +204,43 @@ router.put("/:id", async (req, res) => {
     status = req.body.FormStatusID ? 5 : 4; //ถ้าอนุมัติโดยประจำวิชาเปลี่ยนสถานะเป็น 5(Approved) ถ้าไม่อนุมัติเป็น 4(Instructor Rejected)
   }
   console.log(status);
-  await db.form_sent
-    .update(
+  const transaction = await db.sequelize.transaction();
+  try {
+    await db.form_sent.update(
       { FormStatusID: status, UpdatedBy: req.body.UpdatedBy },
       {
         where: {
           FormID: req.params.id
         }
-      }
-    )
-    .then(num => {
-      if (num == 1) {
-        res.send({
-          message: "Updated successfully!"
-        });
-      } else {
-        res.send({
-          message: `Cann't update, Maybe not found or req.body is empty!`
-        });
-      }
-    })
-    .catch(() => {
-      res.status(500).send({
-        message: "Error updating!"
-      });
-    });
+      },
+      { transaction: transaction }
+    );
+    await transaction.commit();
+  } catch (error) {
+    await transaction.rollback();
+    res.send({ message: error.message });
+  }
 });
 
 // delete
 router.delete("/:id", async (req, res) => {
-  await db.form_sent
-    .destroy({
-      where: [
-        {
-          Form_ID: req.params.id
-        }
-      ]
-    })
-    .then(num => {
-      if (num == 1) {
-        res.send({
-          message: "Deleted successfully!"
-        });
-      } else {
-        res.send({
-          message: `Can't delete, Maybe not found!`
-        });
-      }
-    })
-    .catch(() => {
-      res.status(500).send({
-        message: "Error deleting!"
-      });
-    });
+  const transaction = await db.sequelize.transaction();
+  try {
+    await db.form_sent.destroy(
+      {
+        where: [
+          {
+            Form_ID: req.params.id
+          }
+        ]
+      },
+      { transaction: transaction }
+    );
+    await transaction.commit();
+  } catch (error) {
+    await transaction.rollback();
+    res.send({ message: error.message });
+  }
 });
 
 //form pdf

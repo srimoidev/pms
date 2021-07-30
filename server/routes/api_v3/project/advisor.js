@@ -103,105 +103,109 @@ router.get("/:id", async (req, res) => {
 
 // create
 router.post("/", async (req, res) => {
-  await db.project_advisor
-    .create(req.body)
-    .then(data => {
-      res.send(data);
-    })
-    .catch(err => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while creating!"
-      });
-    });
+  const transaction = await db.sequelize.transaction();
+  try {
+    await db.project_advisor.create(req.body, { transaction: transaction });
+    await transaction.commit();
+  } catch (error) {
+    await transaction.rollback();
+    res.send({ message: error.message });
+  }
 });
 
 // update
 router.put("/:id", async (req, res) => {
-  await db.project_advisor
-    .update(req.body.updateObj, {
-      where: {
-        AdvisorID: req.params.id
-      }
-    })
-    .then(async () => {
-      const temp = await db.project_advisor.findOne({
-        where: {
-          AdvisorID: req.params.id
-        }
-      });
-      //ถ้า Advisor_RequestStatus เป็น null แสดงว่าอาจารย์ยังไม่กดเลือก Confirm หรือ Reject
-      const isAllConfirm = await db.project_advisor.findAll({
-        where: {
-          ProjectID: temp.ProjectID,
-          [Op.and]: {
-            RequestStatus: {
-              [Op.eq]: null
+  const transaction = await db.sequelize.transaction();
+  try {
+    await db.project_advisor
+      .update(
+        req.body.updateObj,
+        {
+          where: {
+            AdvisorID: req.params.id
+          }
+        },
+        { transaction: transaction }
+      )
+      .then(async () => {
+        const temp = await db.project_advisor.findOne({
+          where: {
+            AdvisorID: req.params.id
+          }
+        });
+        //ถ้า Advisor_RequestStatus เป็น null แสดงว่าอาจารย์ยังไม่กดเลือก Confirm หรือ Reject
+        const isAllConfirm = await db.project_advisor.findAll({
+          where: {
+            ProjectID: temp.ProjectID,
+            [Op.and]: {
+              RequestStatus: {
+                [Op.eq]: null
+              }
             }
           }
-        }
-      });
-      const isSomeAdvisorReject = await db.project_advisor.findAll({
-        where: {
-          ProjectID: temp.ProjectID,
-          [Op.and]: {
-            RequestStatus: 0
+        });
+        const isSomeAdvisorReject = await db.project_advisor.findAll({
+          where: {
+            ProjectID: temp.ProjectID,
+            [Op.and]: {
+              RequestStatus: 0
+            }
           }
+        });
+        if (isSomeAdvisorReject.length != 0) {
+          return { code: "REJECT", pID: temp.ProjectID };
+        } else if (isAllConfirm.length == 0) {
+          return { code: "ALLCONFIRM", pID: temp.ProjectID };
+        } else {
+          return;
         }
-      });
-      if (isSomeAdvisorReject.length != 0) {
-        return { code: "REJECT", pID: temp.ProjectID };
-      } else if (isAllConfirm.length == 0) {
-        return { code: "ALLCONFIRM", pID: temp.ProjectID };
-      } else {
-        return;
-      }
-    })
-    .then(async result => {
-      switch (result.code) {
-        case "ALLCONFIRM":
-          console.log(req.query.isbypass == "true", result.pID);
-          if (req.query.isbypass == "true") {
-            await db.project_info.update(
-              { ProjectStatusID: 4, UpdatedBy: req.body.userid }, //ถ้า isbypass เป็น true set 4(In Progress)
-              {
-                where: {
-                  ProjectID: result.pID
-                }
-              }
-            );
-          } else {
-            await db.project_info.update(
-              { ProjectStatusID: 3, UpdatedBy: req.body.userid }, //set 3(Wait Instructor)
-              {
-                where: {
-                  ProjectID: result.pID
-                }
-              }
-            );
-          }
+      })
+      .then(async result => {
+        switch (result.code) {
+          case "ALLCONFIRM":
+            console.log(req.query.isbypass == "true", result.pID);
+            if (req.query.isbypass == "true") {
+              await db.project_info.update(
+                { ProjectStatusID: 4, UpdatedBy: req.body.userid }, //ถ้า isbypass เป็น true set 4(In Progress)
+                {
+                  where: {
+                    ProjectID: result.pID
+                  }
+                },
+                { transaction: transaction }
+              );
+            } else {
+              await db.project_info.update(
+                { ProjectStatusID: 3, UpdatedBy: req.body.userid }, //set 3(Wait Instructor)
+                {
+                  where: {
+                    ProjectID: result.pID
+                  }
+                },
+                { transaction: transaction }
+              );
+            }
 
-          break;
-        case "REJECT":
-          console.log("reject");
-          await db.project_info.update(
-            { ProjectStatusID: 8, RejectedRemark: req.body.remark, UpdatedBy: req.body.userid }, //set to Rejected
-            {
-              where: {
-                ProjectID: result.pID
-              }
-            }
-          );
-          break;
-      }
-    })
-    .then(() => {
-      res.status(200).send();
-    })
-    .catch(err => {
-      res.status(500).send({
-        message: "Error updating!" + err
+            break;
+          case "REJECT":
+            console.log("reject");
+            await db.project_info.update(
+              { ProjectStatusID: 8, RejectedRemark: req.body.remark, UpdatedBy: req.body.userid }, //set to Rejected
+              {
+                where: {
+                  ProjectID: result.pID
+                }
+              },
+              { transaction: transaction }
+            );
+            break;
+        }
       });
-    });
+    await transaction.commit();
+  } catch (error) {
+    await transaction.rollback();
+    res.send({ message: error.message });
+  }
 });
 
 // .then(num => {
@@ -231,29 +235,22 @@ router.put("/:id", async (req, res) => {
 
 // delete
 router.delete("/:id", async (req, res) => {
-  await db.project_advisor
-    .destroy({
-      where: [
-        {
-          Advisor_ID: req.params.id
-        }
-      ]
-    })
-    .then(num => {
-      if (num == 1) {
-        res.send({
-          message: "Deleted successfully!"
-        });
-      } else {
-        res.send({
-          message: `Can't delete, Maybe not found!`
-        });
-      }
-    })
-    .catch(() => {
-      res.status(500).send({
-        message: "Error deleting!"
-      });
-    });
+  const transaction = await db.sequelize.transaction();
+  try {
+    await db.project_advisor.destroy(
+      {
+        where: [
+          {
+            Advisor_ID: req.params.id
+          }
+        ]
+      },
+      { transaction: transaction }
+    );
+    await transaction.commit();
+  } catch (error) {
+    await transaction.rollback();
+    res.send({ message: error.message });
+  }
 });
 module.exports = router;
