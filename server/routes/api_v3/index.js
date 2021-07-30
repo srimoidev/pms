@@ -11,4 +11,5 @@ router.use("/notification", require("./notification"));
 router.use("/project", require("./project"));
 router.use("/section", require("./section"));
 router.use("/user", require("./user"));
+// router.use("/uploads", require("./uploads"));
 module.exports = router;

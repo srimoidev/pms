@@ -1,6 +1,6 @@
 <template>
   <div v-if="user.ProjectID" class="d-flex ma-2">
-    <v-card class="elevation-1 mr-2" style="width:70%;" tile v-resize="onResize" :height="windowHeight">
+    <v-card class="elevation-1 mr-2" style="width:70%;" tile v-resize="onResize" :min-height="windowHeight">
       <v-toolbar flat color="white">
         <v-toolbar-title style="max-width:50%">
           {{ txtHeaderNameTH }}
@@ -23,7 +23,7 @@
           ออกจากกลุ่ม
         </v-btn>
       </v-toolbar>
-      <v-container>
+      <v-container class="overflow-y-auto" :style="{ 'max-height': windowHeight - 50 + 'px' }">
         <ValidationObserver ref="observer">
           <v-card class="ma-2 px-4 pa-2 elevation-0" outlined :height="windowHeight - 100">
             <v-row dense v-for="item in title" :key="item.name">
@@ -33,7 +33,7 @@
               </v-col>
               <v-col cols="9">
                 <div v-if="item.name == 'Project_Members' || item.name == 'Project_Advisors'">
-                  <template v-for="i in data[item.name]">
+                  <!-- <template v-for="i in data[item.name]">
                     <div :key="i.UserID">
                       <v-chip label class="mb-2">
                         <v-avatar left color="blue">
@@ -42,7 +42,18 @@
                         <span class="grey--text text--darken-1">{{ i.User_Firstname + " " + i.User_Lastname }}</span>
                       </v-chip>
                     </div>
-                  </template>
+                  </template> -->
+                  <v-list>
+                    <template v-for="(item, index) in data.Project_Members">
+                      <v-list-item :key="item.UserID" dense>
+                        <v-list-item-content>
+                          <v-list-item-title>{{ item.Firstname + " " + item.Lastname }}</v-list-item-title>
+                          <v-list-item-subtitle>{{ `รหัส : ${item.StudentID} ปีการศึกษา : ${item.AcademicYear}` }}</v-list-item-subtitle>
+                        </v-list-item-content>
+                      </v-list-item>
+                      <v-divider v-if="index != data.Project_Members.length - 1" class="mx-2" :key="item.UserID"></v-divider>
+                    </template>
+                  </v-list>
                 </div>
                 <div v-else-if="item.name == 'Project_Section'">
                   {{
@@ -61,7 +72,6 @@
                 <div v-else-if="item.name == 'ProjectDetail'">
                   <v-textarea v-model="data[item.name]" outlined rows="5" counter no-resize :readonly="!isEdit"></v-textarea>
                 </div>
-
                 <div v-else>
                   <ValidationProvider v-slot="{ errors }" :name="item.text" rules="required">
                     <v-text-field v-model="data[item.name]" dense outlined :readonly="!isEdit" :error-messages="errors"></v-text-field>
@@ -80,8 +90,52 @@
     </v-card>
     <div style="width:30%">
       <v-card class="elevation-1 mb-2" tile>
-        <v-card-text>{{ "สมาชิก" }}</v-card-text>
+        <v-card-text class="d-flex">
+          <span>สมาชิก</span>
+          <v-spacer></v-spacer>
+          <v-btn v-if="data.Project_Status.ProjectStatusID == 8" icon @click="modalEditTeacher = !modalEditTeacher" small>
+            <v-icon>mdi-square-edit-outline</v-icon>
+          </v-btn>
+        </v-card-text>
         <v-divider></v-divider>
+        <div v-if="modalEditTeacher" class="mx-4 mt-2">
+          <ValidationObserver ref="obsAdvisors">
+            <ValidationProvider v-slot="{ errors }" name="อาจารย์ที่ปรึกษา" rules="select_required|maxSelected:2">
+              <v-autocomplete
+                :error-messages="errors"
+                v-model="selectedAdvisors"
+                :items="allTeacher"
+                color="blue-grey lighten-2"
+                label="อาจารย์ที่ปรึกษา"
+                :item-text="Firstname + ' ' + Lastname"
+                item-value="UserID"
+                multiple
+                hide-no-data
+                clearable
+                outlined
+                dense
+              >
+                <template v-slot:selection="teacher">
+                  <v-chip v-bind="teacher.attrs" :input-value="teacher.selected" @click="teacher.select" @click:close="remove(teacher.item)" small>
+                    {{ `${teacher.item.Firstname} ${teacher.item.Lastname}` }}
+                  </v-chip>
+                </template>
+                <template v-slot:item="teacher">
+                  <v-list-item-content>
+                    <v-list-item-title :key="teacher.item.UserID">
+                      {{ `${teacher.item.Firstname} ${teacher.item.Lastname}` }}
+                    </v-list-item-title>
+                  </v-list-item-content>
+                </template>
+              </v-autocomplete>
+            </ValidationProvider>
+          </ValidationObserver>
+          <div class="d-flex pb-2">
+            <v-spacer></v-spacer>
+            <v-btn class="mr-2" color="success" small @click="saveNewAdvisors">เสร็จสิ้น</v-btn>
+            <v-btn class="elevation-0" color="white" small @click="cancelEditTeacher">ยกเลิก</v-btn>
+          </div>
+        </div>
         <v-list>
           <template v-for="(item, index) in data.Project_Members">
             <v-list-item :key="item.UserID">
@@ -211,6 +265,7 @@ export default {
       data: {},
       modalEditTeacher: false,
       allTeacher: [],
+      allStudent: [],
       selectedAdvisors: [],
       newAdvisors: [],
       isEdit: false,
@@ -218,8 +273,8 @@ export default {
         { name: "ProjectNameTH", text: "ชื่อภาษาไทย" },
         { name: "ProjectNameEN", text: "ชื่อภาษาอังกฤษ" },
         { name: "ProjectDetail", text: "รายละเอียด" },
-        // { name: "Project_Members", text: "สมาชิก" },
-        // { name: "Project_Advisors", text: "อาจารย์ที่ปรึกษา" },
+        { name: "Project_Members", text: "สมาชิก" },
+        { name: "Project_Advisors", text: "อาจารย์ที่ปรึกษา" },
         { name: "Project_Section", text: "Section" },
         { name: "Project_Status", text: "สถานะ" }
       ],
@@ -281,6 +336,7 @@ export default {
         console.log(this.data);
       });
       this.allTeacher = await this.User.UserTeacher();
+      this.allStudent = await this.User.UserStudent();
     },
     leaveProject() {
       this.$swal

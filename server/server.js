@@ -5,14 +5,13 @@ const multer = require("multer");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const app = express();
-const fs = require("fs");
 const uuid = require("uuid").v4;
 const path = require("path");
 const PORT = 3000;
 
 app.use(cors());
-var storage = multer.diskStorage({
-  destination: "./uploads/",
+var forms_storage = multer.diskStorage({
+  destination: "./uploads/forms",
   filename: function(req, file, cb) {
     const ext = path.extname(file.originalname);
     const originalname = `${uuid()}${ext}`;
@@ -20,9 +19,24 @@ var storage = multer.diskStorage({
   }
 });
 
+var img_storage = multer.diskStorage({
+  destination: "./uploads/profile_images",
+  filename: function(req, file, cb) {
+    const ext = path.extname(file.originalname);
+    const originalname = `${uuid()}${ext}`;
+    cb(null, originalname);
+  }
+});
 app.use(
+  "/api/v3/form/sent",
   multer({
-    storage: storage
+    storage: forms_storage
+  }).any()
+);
+app.use(
+  "/api/v3/user",
+  multer({
+    storage: img_storage
   }).any()
 );
 // app.use(

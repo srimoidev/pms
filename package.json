@@ -38,10 +38,12 @@
     "vue-router": "^3.4.3",
     "vue-smooth-dnd": "^0.8.1",
     "vue-sweetalert2": "^4.2.1",
+    "vue-xlsx": "^0.2.1",
     "vuedraggable": "^2.24.1",
     "vuetify": "^2.3.9",
     "vuex": "^3.5.1",
-    "vuex-persistedstate": "^3.1.0"
+    "vuex-persistedstate": "^3.1.0",
+    "xlsx": "^0.17.0"
   },
   "devDependencies": {
     "@intlify/vue-i18n-loader": "^1.0.0",

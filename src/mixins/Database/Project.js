@@ -122,11 +122,10 @@ export async function New(pProject, pAdvisors, pMember) {
   });
 }
 
-export async function Join(pID, uID) {
-  console.log(pID, uID);
+export async function Join(pProjectID, pUserID) {
   await HTTP.post("/project/member", {
-    Member_ProjectID: pID,
-    Member_UserID: uID
+    ProjectID: pProjectID,
+    UserID: pUserID
   }).catch(() => {
     console.error("Can't Join");
   });

@@ -65,7 +65,7 @@ router.post("/", async (req, res) => {
       const project = await db.project_info.findOne({
         where: { ProjectID: req.body.ProjectID }
       });
-      const createBy = await db.user_profile.findOne({ where: { User_ID: project.CreatedBy } });
+      const createBy = await db.user_profile.findOne({ where: { UserID: project.CreatedBy } });
       if (members.count == project.MaxMember) {
         /***อัพเดต Project_StatusID ถ้า Member เข้าร่วมกลุ่มครบตามจำนวน
          * เป็น 2 (Wait Advisor เมื่อนักศึกษาเป็นคนสร้างกลุ่ม)
