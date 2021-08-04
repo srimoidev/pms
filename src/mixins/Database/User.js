@@ -56,17 +56,20 @@ export async function Validate(pUsername) {
 }
 export async function ProfileImage(pUserID) {
   return await HTTP.get(`/user/profile_image/${pUserID}`, { responseType: "blob" }).then(res => {
-    const file = new Blob([res.data], {
-      type: "image/jpeg"
-    });
-    return URL.createObjectURL(file);
+    if (res.data.type == "text/xml") {
+      const file = new Blob([res.data], {
+        type: "image/jpeg"
+      });
+      return URL.createObjectURL(file);
+    } else {
+      return null;
+    }
   });
 }
 //#endregion outbound
 
 //#region inbound
 export async function New(pUserID, pUsername, pPassword, pPrefix, pFirstname, pLastname, pStudentID, pEmail, pTelephoneNo, pUserTypeID, pProfileImg) {
-  console.log(pProfileImg);
   var formData = new FormData();
   formData.append("Username", pUsername);
   formData.append("Password", pPassword);
@@ -81,6 +84,44 @@ export async function New(pUserID, pUsername, pPassword, pPrefix, pFirstname, pL
   formData.append("UpdatedBy", pUserID);
   formData.append("file", pProfileImg);
   return HTTP.post("/user", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data"
+    }
+  }).then(res => {
+    if (res.data.message?.errors) {
+      return res.data.message.original.sqlMessage;
+    }
+  });
+}
+export async function Update(
+  pUserID,
+  pUpdatedUserID,
+  pPassword,
+  pPrefix,
+  pFirstname,
+  pLastname,
+  pStudentID,
+  pEmail,
+  pTelephoneNo,
+  pIsActive,
+  pProfileImg
+) {
+  console.log(pIsActive);
+  var formData = new FormData();
+  formData.append("Password", pPassword);
+  formData.append("Prefix", pPrefix);
+  formData.append("Firstname", pFirstname);
+  formData.append("Lastname", pLastname);
+  formData.append("StudentID", pStudentID);
+  formData.append("Email", pEmail);
+  formData.append("TelephoneNo", pTelephoneNo);
+  formData.append("IsActive", pIsActive);
+  formData.append("UpdatedBy", pUserID);
+  console.log(pProfileImg);
+  if (pProfileImg) {
+    formData.append("file", pProfileImg);
+  }
+  return HTTP.put(`/user/${pUpdatedUserID}`, formData, {
     headers: {
       "Content-Type": "multipart/form-data"
     }

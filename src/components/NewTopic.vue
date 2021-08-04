@@ -154,6 +154,17 @@
               </template>
             </v-select>
           </ValidationProvider>
+          <ValidationProvider v-slot="{ errors }" name="CE01" rules="file_required">
+            <v-file-input
+              v-model="fileImport"
+              type="file"
+              accept="application/pdf"
+              label="CE01"
+              :error-messages="errors"
+              outlined
+              dense
+            ></v-file-input>
+          </ValidationProvider>
         </form>
       </ValidationObserver>
       <div class="d-flex">
@@ -179,6 +190,10 @@ extend("select_required", {
   ...required,
   message: "โปรดเลือก {_field_}"
 });
+extend("file_required", {
+  ...required,
+  message: "โปรดแนบเอกสาร {_field_}"
+});
 
 extend("max", {
   ...max,
@@ -189,7 +204,7 @@ extend("max", {
 //   validate: function()
 // })
 extend("maxSelected", {
-  message: "{_field_} จำกัด {length} คน",
+  message: "{_field_}เกินจำนวนที่กำหนด",
   validate: (value, maxCount) => !!(value.length <= maxCount[0])
 });
 extend("thaiLang", {
@@ -242,6 +257,7 @@ export default {
       type: null,
       advisors: [],
       members: [],
+      fileImport: null,
       dayText: [
         { id: 1, text: "วันอาทิตย์" },
         { id: 2, text: "วันจันทร์" },

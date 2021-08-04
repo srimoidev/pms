@@ -21,11 +21,7 @@ var Utils = {
         var obj = {};
         for (var C = range.s.c; C <= range.e.c; ++C) {
           var cellref = XLSX.utils.encode_cell({ c: C, r: R }); // construct A1 reference for cell
-          if (worksheet[cellref]) {
-            obj[worksheet[XLSX.utils.encode_cell({ c: C, r: pFirstRowToRead - 1 })]?.v] = worksheet[cellref]?.v;
-          } else {
-            continue;
-          }
+          obj[worksheet[XLSX.utils.encode_cell({ c: C, r: pFirstRowToRead - 1 })]?.v] = worksheet[cellref]?.v ? worksheet[cellref]?.v : "";
         }
         if (obj?.Username) output.push(obj);
       }

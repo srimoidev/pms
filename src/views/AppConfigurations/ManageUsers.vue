@@ -84,7 +84,7 @@
       <template v-slot:[`item.actions`]="{ item }">
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
-            <v-icon v-bind="attrs" v-on="on" class="mr-2" size="20">
+            <v-icon v-bind="attrs" v-on="on" class="mr-2" size="20" @click="editUser(item)">
               mdi-square-edit-outline
             </v-icon>
           </template>
@@ -138,15 +138,22 @@
                   hide-details
                   outlined
                   dense
+                  :disabled="isEdit"
                 >
                 </v-select>
+                <div v-if="isEdit" class="mx-16">
+                  <v-radio-group v-model="rdoActive" row hide-details>
+                    <v-radio color="success" label="Active" :value="true"></v-radio>
+                    <v-radio color="error" label="Disable" :value="false"></v-radio>
+                  </v-radio-group>
+                </div>
               </v-col>
               <v-col cols="8">
                 <ValidationObserver ref="observer">
                   <div class="mt-4 mr-4">
                     <ValidationProvider v-slot="{ errors }" name="ชื่อผู้ใช้" rules="required">
-                      <v-text-field v-model="txtUsername" label="ชื่อผู้ใช้" outlined dense :error-messages="errors">
-                        <template v-slot:[`append-outer`]>
+                      <v-text-field v-model="txtUsername" label="ชื่อผู้ใช้" outlined dense :error-messages="errors" :disabled="isEdit">
+                        <template v-slot:[`append-outer`] v-if="!isEdit">
                           <v-tooltip bottom>
                             <template v-slot:activator="{ on, attrs }">
                               <v-btn color="primary" small v-bind="attrs" v-on="on" class="mx-4" @click="validate">ตรวจสอบ</v-btn>
@@ -170,7 +177,7 @@
                     </ValidationProvider>
                     <v-row no-gutters>
                       <v-col cols="6"
-                        ><ValidationProvider v-slot="{ errors }" name="รหัสผ่าน" rules="required">
+                        ><ValidationProvider v-slot="{ errors }" name="password" :rules="!isEdit ? 'required' : ''">
                           <v-text-field
                             v-model="txtPassword"
                             class="mr-2"
@@ -182,7 +189,11 @@
                           ></v-text-field> </ValidationProvider
                       ></v-col>
                       <v-col cols="6"
-                        ><ValidationProvider v-slot="{ errors }" name="ยืนยันรหัสผ่าน" rules="required">
+                        ><ValidationProvider
+                          v-slot="{ errors }"
+                          name="confirm"
+                          :rules="!isEdit ? 'required|password:@password' : txtPassword ? 'required|password:@password' : ''"
+                        >
                           <v-text-field
                             v-model="txtConfirmPassword"
                             label="ยืนยันรหัสผ่าน"
@@ -237,7 +248,8 @@
           </div>
           <div class="d-flex pa-4">
             <v-spacer></v-spacer>
-            <v-btn class="mr-2" color="success" @click="saveNewUser">บันทึก</v-btn>
+            <v-btn v-if="!isEdit" class="mr-2" color="success" @click="saveNewUser">บันทึก</v-btn>
+            <v-btn v-else class="mr-2" color="success" @click="updateUser">บันทึก</v-btn>
             <v-btn color="">ยกเลิก</v-btn>
           </div>
         </v-card>
@@ -249,7 +261,7 @@
 import { mapGetters } from "vuex";
 import ModalContainer from "@/components/ModalContainer";
 
-import { required, confirmed, email, numeric } from "vee-validate/dist/rules";
+import { required, email, numeric } from "vee-validate/dist/rules";
 import { extend, ValidationObserver, ValidationProvider, setInteractionMode } from "vee-validate";
 
 setInteractionMode("eager");
@@ -263,9 +275,12 @@ extend("select_required", {
   ...required,
   message: "โปรดเลือก {_field_}"
 });
-extend("confirmed", {
-  ...confirmed,
-  message: "พาสเวิร์ดไม่ตรงกัน {_field_}"
+extend("password", {
+  params: ["target"],
+  validate(value, { target }) {
+    return value === target;
+  },
+  message: "พาสเวิร์ดไม่ตรงกัน"
 });
 extend("email", {
   ...email,
@@ -293,6 +308,7 @@ export default {
         { text: "สถานะ", value: "IsActive" },
         { text: "", value: "actions" }
       ],
+      isEdit: false,
       typeFilter: 1,
       searchText: "",
       userType: [],
@@ -307,16 +323,18 @@ export default {
       selectedUser: [],
       selectedImgUrl: null,
       selectedImg: null,
-      txtUsername: null,
-      txtPassword: null,
-      txtConfirmPassword: null,
-      txtPrefix: null,
-      txtFirstname: null,
-      txtLastname: null,
-      txtStudentID: null,
-      txtEmail: null,
-      txtTelephoneNo: null,
-      isValid: null
+      txtUsername: "",
+      txtPassword: "",
+      txtConfirmPassword: "",
+      txtPrefix: "",
+      txtFirstname: "",
+      txtLastname: "",
+      txtStudentID: "",
+      txtEmail: "",
+      txtTelephoneNo: "",
+      updatedUserID: null,
+      isValid: null,
+      rdoActive: true
     };
   },
   computed: {
@@ -362,28 +380,10 @@ export default {
     },
     importUser() {
       let validation = true;
-      this.importedData.every(item => {
+      console.log(this.importedData);
+      for (const item of this.importedData) {
         const email_validate = new RegExp("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$");
         const tel_validate = new RegExp("^[0-9]*$");
-        console.log(item.TelephoneNo, !tel_validate.test(item.TelephoneNo));
-        console.log(
-          !item.Username,
-          !item.Password,
-          !item.Prefix,
-          !item.Firstname,
-          !item.Lastname,
-          !!(item.Email && !email_validate.test(item.Email)),
-          !!(item.TelephoneNo && !tel_validate.test(item.TelephoneNo))
-        );
-        console.log(
-          !item.Username ||
-            !item.Password ||
-            !item.Prefix ||
-            !item.Firstname ||
-            !item.Lastname ||
-            !!(item.Email && !email_validate.test(item.Email)) ||
-            !!(item.TelephoneNo && !tel_validate.test(item.TelephoneNo))
-        );
         if (
           !item.Username ||
           !item.Password ||
@@ -401,9 +401,9 @@ export default {
             confirmButtonText: "ยืนยัน!"
           });
           validation = false;
-          return false;
+          break;
         }
-      });
+      }
       if (validation) {
         this.User.ImportUser(this.user.UserID, this.importedData).then(res => {
           if (res) {
@@ -483,19 +483,21 @@ export default {
       }
     },
     modalNewUserClose() {
+      this.isEdit = false;
       this.modalNewUser = false;
-      this.txtUsername = null;
-      this.txtPassword = null;
-      this.txtConfirmPassword = null;
-      this.txtPrefix = null;
-      this.txtFirstname = null;
-      this.txtLastname = null;
-      this.txtStudentID = null;
-      this.txtEmail = null;
-      this.txtTelephoneNo = null;
+      this.txtUsername = "";
+      this.txtPassword = "";
+      this.txtConfirmPassword = "";
+      this.txtPrefix = "";
+      this.txtFirstname = "";
+      this.txtLastname = "";
+      this.txtStudentID = "";
+      this.txtEmail = "";
+      this.txtTelephoneNo = "";
       this.isValid = null;
       this.selectedImgUrl = null;
       this.selectedImg = null;
+      this.newUserType = 1;
       this.$refs.observer.reset();
       window.URL.revokeObjectURL(this.selectedImgUrl);
     },
@@ -505,6 +507,21 @@ export default {
         this.selectedImgUrl = window.URL.createObjectURL(event.target.files[0]);
         this.selectedImg = event.target.files[0];
       }
+    },
+    async editUser(item) {
+      this.isEdit = true;
+      this.modalNewUser = true;
+      this.updatedUserID = item.UserID;
+      this.txtUsername = item.Username;
+      this.txtPrefix = item.Prefix;
+      this.txtFirstname = item.Firstname;
+      this.txtLastname = item.Lastname;
+      this.txtStudentID = item.StudentID;
+      this.txtEmail = item.Email;
+      this.txtTelephoneNo = item.TelephoneNo;
+      this.newUserType = item.UserTypeID;
+      this.rdoActive = item.IsActive;
+      this.selectedImgUrl = await this.User.ProfileImage(item.UserID);
     },
     async saveNewUser() {
       if (await this.$refs.observer.validate()) {
@@ -532,6 +549,39 @@ export default {
           });
           this.modalNewUserClose();
           this.loadData();
+        });
+      }
+    },
+    async updateUser() {
+      if (await this.$refs.observer.validate()) {
+        this.User.Update(
+          this.user.UserID,
+          this.updatedUserID,
+          this.txtPassword,
+          this.txtPrefix,
+          this.txtFirstname,
+          this.txtLastname,
+          this.txtStudentID,
+          this.txtEmail,
+          this.txtTelephoneNo,
+          this.rdoActive,
+          this.selectedImg
+        ).then(() => {
+          this.$swal.fire({
+            timer: 3000,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            position: "top-end",
+            toast: true,
+            icon: "success",
+            title: "Success"
+          });
+          this.modalNewUserClose();
+          if (this.user.UserID == this.updatedUserID) {
+            this.$store.dispatch("user/getLoggedInUserData").then(() => {
+              this.loadData();
+            });
+          }
         });
       }
     },

@@ -7,6 +7,7 @@ const Op = db.Sequelize.Op;
 router.get("/", async (req, res) => {
   try {
     var whereStr = [];
+    var excludes = ["Password", "CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"];
     if (req.query.typeid) {
       whereStr.push({
         UserTypeID: {
@@ -18,6 +19,7 @@ router.get("/", async (req, res) => {
       whereStr.push({
         IsActive: true
       });
+      excludes.push("Username");
     }
 
     const data = await db.user_profile.findAll({
@@ -25,7 +27,7 @@ router.get("/", async (req, res) => {
         include: [
           [db.Sequelize.fn("concat", db.Sequelize.col("Prefix"), " ", db.Sequelize.col("Firstname"), " ", db.Sequelize.col("Lastname")), "Fullname"]
         ],
-        exclude: ["Username", "Password", "CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"]
+        exclude: excludes
       },
       where: whereStr
     });
@@ -155,12 +157,27 @@ router.post("/import", async (req, res) => {
 // update
 router.put("/:id", async (req, res) => {
   const transaction = await db.sequelize.transaction();
+  console.log(req.files[0]);
+  const user = {
+    Password: req.body.Password,
+    Prefix: req.body.Prefix,
+    Firstname: req.body.Firstname,
+    Lastname: req.body.Lastname,
+    StudentID: req.body.StudentID,
+    Email: req.body.Email,
+    TelephoneNo: req.body.TelephoneNo,
+    IsActive: req.body.IsActive,
+    UpdatedBy: req.body.UpdatedBy
+  };
+  if (req.files[0]) {
+    user.ImgProfile = req.files[0]?.filename;
+  }
   try {
     await db.user_profile.update(
-      req.body,
+      user,
       {
         where: {
-          User_ID: req.params.id
+          UserID: req.params.id
         }
       },
       { transaction: transaction }
@@ -253,11 +270,15 @@ router.get("/profile_image/:id", async (req, res) => {
         }
       ]
     });
-    const path = `./uploads/profile_images/${data.ImgProfile}`;
-    if (fs.existsSync(path)) {
-      //file exists
-      var file = fs.createReadStream(path);
-      return file.pipe(res);
+    if (data.ImgProfile) {
+      const path = `./uploads/profile_images/${data.ImgProfile}`;
+      if (fs.existsSync(path)) {
+        //file exists
+        var file = fs.createReadStream(path);
+        return file.pipe(res);
+      }
+    } else {
+      return res.send({ msg: "Not Found!" });
     }
   } catch (error) {
     return res.status(500).json({
