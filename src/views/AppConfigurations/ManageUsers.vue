@@ -334,7 +334,8 @@ export default {
       txtTelephoneNo: "",
       updatedUserID: null,
       isValid: null,
-      rdoActive: true
+      rdoActive: true,
+      progress: 0
     };
   },
   computed: {
@@ -405,7 +406,9 @@ export default {
         }
       }
       if (validation) {
-        this.User.ImportUser(this.user.UserID, this.importedData).then(res => {
+        this.User.ImportUser(this.user.UserID, this.importedData, event => {
+          this.progress = Math.round((100 * event.loaded) / event.total);
+        }).then(res => {
           if (res) {
             this.$swal.fire({
               title: `<span style="font-size:18px">${res.msg}</span>`,
@@ -581,6 +584,8 @@ export default {
             this.$store.dispatch("user/getLoggedInUserData").then(() => {
               this.loadData();
             });
+          } else {
+            this.loadData();
           }
         });
       }

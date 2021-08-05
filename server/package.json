@@ -10,9 +10,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^5.0.1",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
+    "hashids": "^2.2.8",
     "mysql": "^2.18.1",
     "mysql2": "^2.2.5",
     "nodemon": "^2.0.4",

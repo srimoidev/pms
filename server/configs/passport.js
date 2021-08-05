@@ -1,4 +1,7 @@
 const dotenv = require("dotenv");
+const bcrypt = require("bcrypt");
+const db = require("../models");
+
 dotenv.config();
 const passport = require("passport"),
   passportJWT = require("passport-jwt"),
@@ -6,26 +9,26 @@ const passport = require("passport"),
   JWTStrategy = passportJWT.Strategy,
   LocalStrategy = require("passport-local").Strategy;
 
-const database = require("../database/index");
-
 passport.use(
   new LocalStrategy(
     {
       usernameField: "username",
       passwordField: "password"
     },
-    (username, password, cb) => {
+    async (username, password, cb) => {
       //this one is typically a DB call.
-      const sqlStr = `SELECT UserID,UserTypeID,IsActive FROM user_profile ` + `WHERE Username = "${username}" AND Password = "${password}"`;
-      database.query(sqlStr, (err, rows) => {
-        var data, msg;
-        if (rows?.length > 0) {
+      const user = await db.user_profile.findOne({ where: { Username: username } });
+      var data, msg;
+      bcrypt.compare(password, user.Password, (err, res) => {
+        if (err) {
+          throw err;
+        }
+        if (res) {
           data = {
-            UserID: rows[0].UserID,
-            UserTypeID: rows[0].UserTypeID
+            UserID: user.UserID,
+            UserTypeID: user.UserTypeID
           };
-          console.log(rows[0]);
-          if (rows[0].IsActive == 0) {
+          if (user.IsActive == 0) {
             msg = "ผู้ใช้นี้ถูกระงับกรุณาติดต่อผู้ดูแลระบบ!";
             data = null;
           } else {

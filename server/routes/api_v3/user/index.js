@@ -3,6 +3,8 @@ const db = require("../../../models");
 router.use("/type", require("./type"));
 const fs = require("fs");
 const Op = db.Sequelize.Op;
+const bcrypt = require("bcrypt");
+const saltRounds = 10;
 
 router.get("/", async (req, res) => {
   try {
@@ -41,7 +43,6 @@ router.get("/", async (req, res) => {
 router.get("/validate", async (req, res) => {
   try {
     var msg = {};
-    console.log(req.query.username);
     msg = await db.user_profile.findAndCountAll({ where: { Username: req.query.username } }).then(res => {
       if (res.count > 0) {
         return { isExist: true };
@@ -81,9 +82,9 @@ router.get("/:id", async (req, res) => {
 
 // create
 router.post("/", async (req, res) => {
-  const user = {
+  let user = {
     Username: req.body.Username,
-    Password: req.body.Password,
+    Password: await bcrypt.hash(req.body.Password, saltRounds),
     Prefix: req.body.Prefix,
     Firstname: req.body.Firstname,
     Lastname: req.body.Lastname,
@@ -96,6 +97,7 @@ router.post("/", async (req, res) => {
     CreatedBy: req.body.CreatedBy,
     UpdatedBy: req.body.UpdatedBy
   };
+
   const transaction = await db.sequelize.transaction();
   try {
     await db.user_profile.create(user, { transaction: transaction });
@@ -115,24 +117,27 @@ router.post("/import", async (req, res) => {
   const transaction = await db.sequelize.transaction();
   try {
     const UserType = await db.user_type.findAll();
-    let importUserID = [];
+    let importUserName = [];
     req.body.importedUser.forEach(element => {
-      console.log(element);
-      importUserID.push(element.Username);
+      importUserName.push(element.Username);
     });
     const checkDuplicated = await db.user_profile.findAll({
-      where: { Username: importUserID },
+      where: { Username: importUserName },
       attributes: ["Username"]
     });
     if (checkDuplicated?.length == 0) {
-      req.body.importedUser.map(item => {
+      const hashedUser = req.body.importedUser.map(async item => {
+        item.Password = await bcrypt.hash(item.Password, saltRounds);
         item.IsActive = true; //default IsActive : true
         item.CreatedBy = req.body.user;
         item.UpdatedBy = req.body.user;
         item.UserTypeID = UserType.find(o => o.UserTypeNameEN == item.UserType)?.UserTypeID;
         delete item.UserType;
+        return item;
       });
-      await db.user_profile.bulkCreate(req.body.importedUser, { transaction: transaction });
+      const newUser = await Promise.all(hashedUser);
+
+      await db.user_profile.bulkCreate(newUser, { transaction: transaction });
       await transaction.commit().then(() => {
         return res.status(200).send();
       });
@@ -159,7 +164,6 @@ router.put("/:id", async (req, res) => {
   const transaction = await db.sequelize.transaction();
   console.log(req.files[0]);
   const user = {
-    Password: req.body.Password,
     Prefix: req.body.Prefix,
     Firstname: req.body.Firstname,
     Lastname: req.body.Lastname,
@@ -169,6 +173,9 @@ router.put("/:id", async (req, res) => {
     IsActive: req.body.IsActive,
     UpdatedBy: req.body.UpdatedBy
   };
+  if (req.body.Password) {
+    user.Password = req.body.Password;
+  }
   if (req.files[0]) {
     user.ImgProfile = req.files[0]?.filename;
   }

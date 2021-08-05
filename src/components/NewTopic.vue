@@ -280,6 +280,7 @@ export default {
       this.advisors.push(this.createUser.UserID);
     } else {
       this.members.push(this.createUser.UserID);
+      console.log(this.students);
     }
   },
   methods: {
