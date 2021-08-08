@@ -3,8 +3,21 @@ const db = require("../../../models");
 
 router.get("/", async (req, res) => {
   try {
+    let whereStr = [];
+    if (req.query.subject == 1) {
+      whereStr.push({
+        Project: true
+      });
+    }
+    if (req.query.subject == 2) {
+      whereStr.push({
+        PreProject: true
+      });
+    }
+    whereStr.push({ isActive: true });
+    console.log(whereStr);
     const data = await db.form_type.findAll({
-      where: { isActive: true }
+      where: whereStr
     });
     return res.json(data);
   } catch (error) {
@@ -13,6 +26,7 @@ router.get("/", async (req, res) => {
     });
   }
 });
+
 router.get("/all", async (req, res) => {
   try {
     const data = await db.form_type.findAll({

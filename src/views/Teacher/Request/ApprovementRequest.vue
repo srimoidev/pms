@@ -101,7 +101,13 @@ export default {
   },
   methods: {
     async loadData() {
-      this.data = await this.Form.WaitforApprove(this.user.UserID, 1);
+      console.log(this.user.UserTypeID);
+      if (this.user.UserTypeID == 2) {
+        this.data = await this.Form.WaitforAdvisorApprove(this.user.UserID);
+      } else if (this.user.UserTypeID == 3 || this.user.UserTypeID == 5) {
+        this.data = await this.Form.WaitforInstructorApprove(this.user.UserID);
+      }
+
       this.formStatus = await this.Form.Status();
       console.log(this.data);
       // const role = "Advisor";

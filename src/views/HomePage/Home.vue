@@ -136,7 +136,7 @@ export default {
           let backToDashBoard = { title: "กลับสู่ Dashboard", isHideOnLoggedin: false };
           if (this.typeID == 1) {
             backToDashBoard.route = "/student";
-          } else if (this.typeID == 2 || this.typeID == 3) {
+          } else if (this.typeID == 2 || this.typeID == 3 || this.typeID == 5) {
             backToDashBoard.route = "/teacher";
           }
           this.tabs.push(backToDashBoard);

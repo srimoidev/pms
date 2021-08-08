@@ -1,7 +1,19 @@
 <template>
   <div>
     <v-toolbar flat absolute width="100%">
-      <v-toolbar-title>{{ form_export_name }}</v-toolbar-title>
+      <v-toolbar-title
+        >{{ form_export_name }}
+        <v-breadcrumbs :items="breadcrumbs" large class="mr-4 pa-0">
+          <template v-slot:item="{ item }">
+            <v-breadcrumbs-item :to="item.url" :disabled="item.disabled">
+              <span style="font-size:12px">{{ item.text }}</span>
+            </v-breadcrumbs-item>
+          </template>
+          <template v-slot:divider>
+            <span style="font-size:12px">/</span>
+          </template>
+        </v-breadcrumbs>
+      </v-toolbar-title>
       <v-divider class="mx-4" inset vertical></v-divider>
       <v-spacer></v-spacer>
       <v-btn icon tile @click="$refs.pdfComponent.print()">
@@ -150,14 +162,38 @@ export default {
       typeID: "user/TypeID",
       isLoggedIn: "authentication/isLoggedIn"
     }),
-    project_id() {
+    ProjectID() {
       return this.$route.query.pid;
     },
-    form_id() {
+    FormID() {
       return this.$route.query.fid;
     },
     form_export_name() {
       return `Form_${this.form?.Form_Type.FormTypeName}`;
+    },
+    breadcrumbs() {
+      return [
+        {
+          text: "ที่ปรึกษาโครงงาน",
+          disabled: false,
+          url: "/teacher/project"
+        },
+        {
+          text: "จัดการโปรเจ็ค",
+          disabled: false,
+          url: `/teacher/documents?pid=${this.ProjectID}`
+        },
+        {
+          text: this.form?.Form_Type.FormTypeName,
+          disabled: false,
+          url: `/teacher/form_ce?project=${this.ProjectID}&type=${this.form?.Form_Type.FormTypeID}`
+        },
+        {
+          text: this.form_export_name,
+          disabled: true,
+          url: "/teacher/form_preview"
+        }
+      ];
     }
   },
   beforeMount() {
@@ -165,14 +201,14 @@ export default {
   },
   methods: {
     async loadData() {
-      this.form = await this.Form.Form(this.form_id);
-      this.fileUrl = await this.Form.FormPDF(this.form_id);
-      this.commentData = await this.Form.Comment(this.form_id);
+      this.form = await this.Form.Form(this.FormID);
+      this.fileUrl = await this.Form.FormPDF(this.FormID);
+      this.commentData = await this.Form.Comment(this.FormID);
       console.log(this.form);
       console.log(this.commentData);
     },
     async saveNewComment() {
-      await this.Form.NewComment(this.form_id, this.user.UserID, this.newCommentData);
+      await this.Form.NewComment(this.FormID, this.user.UserID, this.newCommentData);
       this.newComment = !this.newComment;
       this.newCommentData = "";
       this.loadData();
@@ -227,8 +263,9 @@ export default {
           confirmButtonText: "ยืนยัน!"
         })
         .then(async result => {
-          await this.Form.ApproveOrReject(this.user.UserID, this.form_id, this.form_id, status).then(() => {
-            if (result.isConfirmed) {
+          if (result.isConfirmed) {
+            console.log(this.user.UserID, this.ProjectID, this.FormID, status);
+            await this.Form.ApproveOrReject(this.user.UserID, this.ProjectID, this.FormID, status).then(() => {
               this.$swal.fire({
                 toast: true,
                 icon: "success",
@@ -242,8 +279,8 @@ export default {
                   toast.addEventListener("mouseleave", this.$swal.resumeTimer);
                 }
               });
-            }
-          });
+            });
+          }
         });
     },
     rejectForm() {

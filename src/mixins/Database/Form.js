@@ -50,8 +50,8 @@ export async function Comment(pFormID) {
     });
 }
 //Form type
-export async function Types() {
-  return HTTP.get("form/type")
+export async function Types(pSubject) {
+  return HTTP.get(`form/type?subject=${pSubject}`)
     .then(res => {
       return res.data;
     })
@@ -85,16 +85,21 @@ export async function Status() {
   });
 }
 //Form deadline
-export async function Deadline() {
-  return (await HTTP.get("form/deadline")).data;
+export async function Deadline(pSubject) {
+  return (await HTTP.get(`form/deadline${pSubject ? "?subject=" + pSubject : ""}`)).data;
 }
 //Form ล่าสุดของแต่ละ CE
 export async function LatestEachForm(pID) {
   return await (await HTTP.get(`form/sent/${pID}/latest`)).data;
 }
 
-export async function WaitforApprove(pUserID, pStatus) {
-  return await HTTP.get(`form/sent?advisorid${pUserID}&status=${pStatus}`).then(res => {
+export async function WaitforAdvisorApprove(pUserID) {
+  return await HTTP.get(`form/sent?advisorid=${pUserID}`).then(res => {
+    return res.data;
+  });
+}
+export async function WaitforInstructorApprove(pUserID) {
+  return await HTTP.get(`form/sent?instructorid=${pUserID}`).then(res => {
     return res.data;
   });
 }

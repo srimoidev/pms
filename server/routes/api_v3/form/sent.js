@@ -16,21 +16,14 @@ router.get("/", async (req, res) => {
         FormTypeID: req.query.formtypeid
       });
     }
-    if (req.query.status) {
-      whereStr.push({
-        FormStatusID: req.query.status
-      });
-    }
     if (req.query.advisorid) {
+      whereStr.push({ [Op.and]: [{ "$Form_Project.Project_Advisors.UserID$": req.query.advisorid }, { FormStatusID: 1 }] });
+    }
+    if (req.query.instructorid) {
       whereStr.push({
-        "$Form_Project.Project_Advisors.UserID$": req.query.advisorid
+        [Op.or]: [{ [Op.and]: [{ "$Form_Project.Project_Advisors.UserID$": req.query.instructorid }, { FormStatusID: 1 }] }, { FormStatusID: 2 }]
       });
     }
-    // if (req.query.sectionid) {
-    //   whereStr.push({
-    //     "$Deadline.SectionID$": req.query.sectionid
-    //   });
-    // }
     const data = await db.form_sent.findAll({
       include: [
         {
@@ -46,7 +39,18 @@ router.get("/", async (req, res) => {
         {
           model: db.project_info,
           as: "Form_Project",
-          attributes: { exclude: ["CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] }
+          attributes: { exclude: ["CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] },
+          include: [
+            {
+              model: db.user_profile,
+              as: "Project_Advisors",
+              through: {
+                as: "Advisors",
+                attributes: ["AdvisorID"]
+              },
+              attributes: { exclude: ["Username", "Password", "StudentID", "AcademicYear", "CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] }
+            }
+          ]
         },
         {
           model: db.deadline,
@@ -56,12 +60,19 @@ router.get("/", async (req, res) => {
         {
           model: db.user_profile,
           as: "UpdatedUser",
-          attributes: ["UserID", [db.Sequelize.fn("concat", db.Sequelize.col("Firstname"), " ", db.Sequelize.col("Lastname")), "Fullname"]]
+          attributes: [
+            "UserID",
+            [db.Sequelize.fn("concat", db.Sequelize.col("UpdatedUser.Firstname"), " ", db.Sequelize.col("UpdatedUser.Lastname")), "Fullname"]
+          ]
         }
       ],
       group: "FormID",
-      // attributes: { exclude: [""] },
-      where: whereStr
+      where: whereStr,
+      order: [
+        ["Form_Project", "ProjectID", "asc"],
+        ["Form_Project", "ProjectNameTH", "asc"],
+        ["Form_Type", "FormTypeName", "asc"]
+      ]
     });
     return res.json(data);
   } catch (error) {
@@ -199,8 +210,9 @@ router.post("/", async (req, res) => {
 router.put("/:id", async (req, res) => {
   console.log(req.body);
   var isAdvisor = await db.project_advisor.findOne({ where: { ProjectID: req.body.ProjectID, UserID: req.body.UpdatedBy }, raw: true });
+  console.log(isAdvisor);
   var status;
-  if (isAdvisor?.length > 0) {
+  if (isAdvisor) {
     status = req.body.FormStatusID ? 2 : 3; //ถ้าอนุมัติโดยที่ปรึกษาเปลี่ยนสถานะเป็น 2(Wait Instructor) ถ้าไม่อนุมัติเป็น 3(Advisor Rejected)
   } else {
     status = req.body.FormStatusID ? 5 : 4; //ถ้าอนุมัติโดยประจำวิชาเปลี่ยนสถานะเป็น 5(Approved) ถ้าไม่อนุมัติเป็น 4(Instructor Rejected)

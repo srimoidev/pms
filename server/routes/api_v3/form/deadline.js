@@ -15,6 +15,11 @@ router.get("/", async (req, res) => {
         FormTypeID: req.query.formtypeid
       });
     }
+    if (req.query.subject) {
+      whereStr.push({
+        "$Section.Subject$": req.query.subject
+      });
+    }
     const data = await db.deadline.findAll({
       include: [
         {
@@ -28,7 +33,11 @@ router.get("/", async (req, res) => {
           attributes: { exclude: ["CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] }
         }
       ],
-      where: whereStr
+      where: whereStr,
+      order: [
+        ["Section", "Subject", "ASC"],
+        ["Section", "Sequence", "ASC"]
+      ]
     });
     return res.json(data);
   } catch (error) {

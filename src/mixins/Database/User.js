@@ -12,7 +12,7 @@ export async function All() {
   });
 }
 export async function UserTeacher() {
-  return HTTP.get("/user?typeid[]=2&typeid[]=3").then(res => {
+  return HTTP.get("/user?typeid[]=2&typeid[]=3&typeid[]=5").then(res => {
     return res.data;
   });
 }

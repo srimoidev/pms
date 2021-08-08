@@ -195,7 +195,7 @@ export default {
         this.allStatus = await this.Project.AllStatus();
         this.allTeacher = await this.User.UserTeacher();
         this.allStudent = await this.User.UserStudent();
-        this.allSection = await this.Section.All();
+        this.allSection = await this.Section.All(1); //ดึงแค่ sec ของ Pre-Project
         this.projectType = type.slice();
         this.allType = type.slice();
         this.projectType.push({

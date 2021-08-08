@@ -3,10 +3,22 @@
     <v-data-table :headers="headers" :items="data" :loading="loading" loading-text="Loading... Please wait" :height="windowHeight"
       ><template v-slot:top>
         <v-toolbar flat>
-          <v-toolbar-title>{{ "CE0" + formTID }}</v-toolbar-title>
+          <v-toolbar-title>
+            {{ form.FormTypeName }}
+            <v-breadcrumbs :items="breadcrumbs" large class="mr-4 pa-0">
+              <template v-slot:item="{ item }">
+                <v-breadcrumbs-item :to="item.url" :disabled="item.disabled">
+                  <span style="font-size:12px">{{ item.text }}</span>
+                </v-breadcrumbs-item>
+              </template>
+              <template v-slot:divider>
+                <span style="font-size:12px">/</span>
+              </template>
+            </v-breadcrumbs>
+          </v-toolbar-title>
           <v-divider class="mx-4" inset vertical></v-divider>
           <v-spacer></v-spacer>
-          <!-- <v-btn @click="upNewDoc = !upNewDoc">Upload new document</v-btn> -->
+          <v-btn @click="upNewDoc = !upNewDoc">Upload new document</v-btn>
           <template>
             <modal-container :active="upNewDoc" :cancellable="1">
               <template>
@@ -20,7 +32,8 @@
                   </v-card-title>
                   <div class="pa-5">
                     <v-file-input
-                      accept="application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                      accept="application/pdf"
+                      type="file"
                       show-size
                       truncate-length="50"
                       outlined
@@ -50,14 +63,14 @@
           <span>ส่งเอกสารใหม่</span>
         </v-tooltip>
       </template>
-      <template v-slot:[`item.Form_UpdatedTime`]="{ item }">
-        <router-link class="text-none" :to="{ path: 'form_preview', query: { d: item.FormID } }">{{
-          new Date(item.Form_UpdatedTime).toLocaleDateString()
+      <template v-slot:[`item.UpdatedTime`]="{ item }">
+        <router-link class="text-none" :to="{ path: 'form_preview', query: { pid: ProjectID, fid: item.FormID } }">{{
+          new Date(item.UpdatedTime).toLocaleDateString()
         }}</router-link>
         <!-- <v-badge color="red" inline content="5"></v-badge> -->
       </template>
-      <template v-slot:[`item.Form_StatusID`]="{ item }">
-        <form-status :status="item.Form_StatusID"></form-status>
+      <template v-slot:[`item.FormStatusID`]="{ item }">
+        <form-status :status="item.Form_Status"></form-status>
       </template>
     </v-data-table>
   </v-card>
@@ -82,7 +95,9 @@ export default {
       message: "",
       upNewDoc: false,
       loading: true,
+      form: {},
       data: [],
+      project: {},
       comment: [],
       headers: [
         { text: "#", value: "index" },
@@ -90,10 +105,10 @@ export default {
           text: "อัปเดตล่าสุด",
           align: "start",
           sortable: false,
-          value: "Form_UpdatedTime"
+          value: "UpdatedTime"
         },
-        { text: "อัปเดตโดย", value: "UpdatedBy", sortable: false },
-        { text: "สถานะ", value: "Form_StatusID" }
+        { text: "อัปเดตโดย", value: "UpdatedUser.Fullname", sortable: false },
+        { text: "สถานะ", value: "FormStatusID" }
       ]
     };
   },
@@ -103,11 +118,30 @@ export default {
       typeID: "user/TypeID",
       isLoggedIn: "authentication/isLoggedIn"
     }),
-    formTID() {
+    FormTypeID() {
       return this.$route.query.type;
     },
-    projectID() {
+    ProjectID() {
       return this.$route.query.project;
+    },
+    breadcrumbs() {
+      return [
+        {
+          text: "ที่ปรึกษาโครงงาน",
+          disabled: false,
+          url: "/teacher/project"
+        },
+        {
+          text: "จัดการโปรเจ็ค",
+          disabled: false,
+          url: `/teacher/documents?pid=${this.ProjectID}`
+        },
+        {
+          text: this.form.FormTypeName,
+          disabled: true,
+          url: "/teacher/form_ce"
+        }
+      ];
     }
   },
   watch: {
@@ -120,9 +154,10 @@ export default {
   },
   methods: {
     async loadData() {
-      // this.user = JSON.parse(localStorage.getItem("user"));
-      this.data = await this.Form.AllFormEachType(this.projectID, this.formTID);
-      console.log(this.user, this.formTID, this.data);
+      this.form = await this.Form.Type(this.FormTypeID);
+      this.project = await this.Project.Project(this.ProjectID);
+      this.data = await this.Form.AllFormEachType(this.ProjectID, this.FormTypeID, this.project.Project_Section.SectionID);
+      console.log(this.project, this.data);
       // if (temp) {
       //   temp.map(async item => {
       //     // item.Comments = await DB.Project.form_comment(item.Form_ID);
@@ -157,7 +192,7 @@ export default {
 
       this.message = "";
 
-      this.Form.Upload(this.projectID, this.formTID, this.currentFile, event => {
+      this.Form.Upload(this.user.UserID, this.user.ProjectID, this.FormTypeID, this.currentFile, event => {
         this.progress = Math.round((100 * event.loaded) / event.total);
       })
         .catch(() => {

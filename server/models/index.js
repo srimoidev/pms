@@ -68,6 +68,13 @@ db.app_privileges.belongsTo(db.app_menus, {
 
 //#endregion
 
+//#region User
+db.user_profile.belongsTo(db.user_type, {
+  foreignKey: "UserTypeID",
+  as: "UserType"
+});
+//#endregion
+
 //#region Project
 db.project_info.belongsToMany(db.user_profile, {
   through: db.project_member,

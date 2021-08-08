@@ -17,7 +17,10 @@ passport.use(
     },
     async (username, password, cb) => {
       //this one is typically a DB call.
-      const user = await db.user_profile.findOne({ where: { Username: username } });
+      const user = await db.user_profile.findOne({
+        include: [{ model: db.user_type, as: "UserType" }],
+        where: { Username: username }
+      });
       var data, msg;
       bcrypt.compare(password, user.Password, (err, res) => {
         if (err) {
@@ -26,7 +29,8 @@ passport.use(
         if (res) {
           data = {
             UserID: user.UserID,
-            UserTypeID: user.UserTypeID
+            UserTypeID: user.UserTypeID,
+            UserTypeName: user.UserType.UserTypeNameEN
           };
           if (user.IsActive == 0) {
             msg = "ผู้ใช้นี้ถูกระงับกรุณาติดต่อผู้ดูแลระบบ!";

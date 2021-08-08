@@ -39,7 +39,7 @@ import Teacher_TestReq from "../views/Teacher/Request/TestRequest.vue";
 import Teacher_ApprovementReq from "../views/Teacher/Request/ApprovementRequest.vue";
 import Teacher_ProjectManual from "../views/Teacher/ProjectManual/ProjectManual.vue";
 import Teacher_FormPreview from "../views/Teacher/ManageProject/FormPreview.vue";
-import Teacher_AdviserRequest from "../views/Teacher/Request/AdviserRequest.vue";
+import Teacher_AdvisorRequest from "../views/Teacher/Request/AdvisorRequest.vue";
 import Teacher_Documents from "../views/Teacher/ManageProject/Documents";
 import Teacher_FormCE from "../views/Teacher/ManageProject/FormCE";
 import Teacher_NewProjects from "../views/Teacher/Request/NewProjects";
@@ -88,7 +88,7 @@ const routes = [
       }
     ]
   },
-
+  //Student
   {
     path: "/student",
     name: "Student",
@@ -194,7 +194,7 @@ const routes = [
       }
     ]
   },
-
+  //Teacher
   {
     path: "/teacher",
     name: "Teacher",
@@ -227,10 +227,10 @@ const routes = [
         meta: { title: "Topic Proposal | PMS" }
       },
       {
-        path: "adviser_req",
-        name: "Adviser Request",
-        component: Teacher_AdviserRequest,
-        meta: { title: "Adviser Request | PMS" }
+        path: "advisor_req",
+        name: "Advisor Request",
+        component: Teacher_AdvisorRequest,
+        meta: { title: "Advisor Request | PMS" }
       },
       {
         path: "test_req",
@@ -294,6 +294,52 @@ const routes = [
       }
     ]
   },
+  //Admin
+  {
+    path: "/admin",
+    name: "Admin",
+    meta: { is_admin: true },
+    component: Dashboard,
+    redirect: "/admin/app_configs",
+    children: [
+      // {
+      //   path: "dashboard",
+      //   name: "Dashboard",
+      //   component: Admin_Dashboard,
+      //   meta: { title: "Dashboard | PMS" }
+      // },
+      {
+        path: "app_configs",
+        name: "App Environment Configuration",
+        component: App_Configs,
+        meta: { title: "App Environment Configuration | PMS" }
+      },
+      // {
+      //   path: "all_project",
+      //   name: "All Projects",
+      //   component: Teacher_AllProject,
+      //   meta: { title: "All Projects | PMS" }
+      // },
+      {
+        path: "project_manual",
+        name: "Project Manual",
+        component: Teacher_ProjectManual,
+        meta: { title: "Project Manual | PMS" }
+      },
+      {
+        path: "form_preview",
+        name: "Form Preview",
+        component: Teacher_FormPreview,
+        meta: { title: "Form Preview | PMS" }
+      },
+      {
+        path: "manage_users",
+        name: "Manage Users",
+        component: App_ManageUsers,
+        meta: { title: "Manage Users | PMS" }
+      }
+    ]
+  },
   { path: "*", redirect: "/" }
 ];
 
@@ -334,7 +380,7 @@ router.beforeEach((to, from, next) => {
           next("/");
         }
       } else if (to.matched.some(record => record.meta.is_teacher)) {
-        if (userTypeID == 2 || userTypeID == 3) {
+        if (userTypeID == 2 || userTypeID == 3 || userTypeID == 5) {
           next();
         } else {
           next("/");

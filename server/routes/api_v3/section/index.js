@@ -3,6 +3,12 @@ const db = require("../../../models");
 
 router.get("/", async (req, res) => {
   try {
+    var whereStr = [];
+    if (req.query.subject) {
+      whereStr.push({
+        Subject: req.query.subject
+      });
+    }
     const data = await db.section.findAll({
       include: [
         {
@@ -18,6 +24,7 @@ router.get("/", async (req, res) => {
           ]
         }
       ],
+      where: whereStr,
       order: [["Subject", "ASC"]]
     });
     return res.json(data);

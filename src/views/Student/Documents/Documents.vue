@@ -9,7 +9,6 @@
         loading-text="Loading... Please wait"
         :height="windowHeight - 64 - 59"
       >
-        <!-- :custom-sort="dateSorting" -->
         <template v-slot:top>
           <v-toolbar flat>
             <v-toolbar-title>จัดการโปรเจ็ค</v-toolbar-title>
@@ -31,6 +30,7 @@
         </template>
         <template v-slot:[`item.FormTypeName`]="{ item }">
           <router-link
+            v-if="item.PassPreRequisite"
             class="text-none"
             :to="{
               path: 'form_ce',
@@ -39,6 +39,16 @@
           >
             {{ item.FormTypeName }}
           </router-link>
+          <v-tooltip v-else right>
+            <template v-slot:activator="{ on, attrs }">
+              <span v-bind="attrs" v-on="on">
+                {{ item.FormTypeName }}
+              </span>
+            </template>
+            <span>
+              {{ "ยังไม่ผ่านฟอร์มที่กำหนด กรุณาดำเนินการให้เสร็จก่อน" }}
+            </span>
+          </v-tooltip>
         </template>
         <template v-slot:[`item.UpdatedTime`]="{ item }">
           <span v-if="item.LatestForm">
@@ -135,16 +145,22 @@ export default {
     async loadData() {
       if (this.user.ProjectID) {
         await this.Project.Project(this.user.ProjectID).then(async res => {
-          console.log(res);
+          // console.log(res);
           if ([1, 2, 3, 8].includes(res.Project_Status.ProjectStatusID)) {
             this.isUserAllow = false;
             return;
           }
-          const initData = await this.Form.Types();
+          let initData;
+          console.log(res.IsProject);
+          if (res.IsProject) {
+            initData = await this.Form.Types(1); //Project
+          } else {
+            initData = await this.Form.Types(2); //Pre-Project
+          }
+
           const preq = await this.Form.Prerequisite();
           const latest = await this.Form.LatestEachForm(this.user.ProjectID);
           let deadline = await this.Form.Deadline();
-          console.log(latest);
           if (latest) {
             initData.map(element => {
               element.LatestForm = latest.find(item => item.FormTypeID == element.FormTypeID) || null;
@@ -154,6 +170,7 @@ export default {
               element.Prerequisite.map(item => {
                 item.Status = latest.find(t => t.FormTypeID == item.RequireForm.FormTypeID)?.Form_Status?.FormStatusID;
               });
+              element.PassPreRequisite = element.Prerequisite.filter(item => item.Status == 5).length == element.Prerequisite.length;
             });
           }
           console.log(initData);

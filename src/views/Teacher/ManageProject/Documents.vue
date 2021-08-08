@@ -9,27 +9,38 @@
         loading-text="Loading... Please wait"
         :height="windowHeight - 64 - 59"
       >
-        <!-- :custom-sort="dateSorting" -->
         <template v-slot:top>
           <v-toolbar flat>
-            <v-toolbar-title>จัดการโปรเจ็ค</v-toolbar-title>
+            <v-toolbar-title
+              >จัดการโปรเจ็ค
+              <v-breadcrumbs :items="breadcrumbs" large class="mr-4 pa-0">
+                <template v-slot:item="{ item }">
+                  <v-breadcrumbs-item :to="item.url" :disabled="item.disabled">
+                    <span style="font-size:12px">{{ item.text }}</span>
+                  </v-breadcrumbs-item>
+                </template>
+                <template v-slot:divider>
+                  <span style="font-size:12px">/</span>
+                </template>
+              </v-breadcrumbs>
+            </v-toolbar-title>
             <v-divider class="mx-4" inset vertical></v-divider>
             <v-spacer></v-spacer>
           </v-toolbar>
         </template>
         <template v-slot:[`item.Prerequisite`]="{ item }">
-          <div class="d-flex align-baseline" v-for="pre in item.Prerequisite" :key="pre.Pre_ID">
+          <div class="d-flex align-baseline" v-for="pre in item.Prerequisite" :key="pre.PrerequisiteID">
             <v-icon class="mr-2" :color="pre.Status == 5 ? 'success' : 'error'" small>{{
               pre.Status == 5 ? "mdi-check-circle-outline" : "mdi-close-circle-outline"
             }}</v-icon>
-            <span>{{ pre.Pre_FormReqType.FormType_Name }}</span>
+            <span>{{ pre.RequireForm.FormTypeName }}</span>
           </div>
         </template>
         <template v-slot:[`item.LatestForm`]="{ item }">
-          <form-status v-if="item.LatestForm" :status="item.LatestForm.Form_StatusID"></form-status>
+          <form-status v-if="item.LatestForm" :status="item.LatestForm.Form_Status"></form-status>
           <form-status v-else></form-status>
         </template>
-        <template v-slot:[`item.FormType_Name`]="{ item }">
+        <template v-slot:[`item.FormTypeName`]="{ item }">
           <router-link
             class="text-none"
             :to="{
@@ -37,18 +48,18 @@
               query: { project: pid, type: item.FormTypeID }
             }"
           >
-            {{ item.FormType_Name }}
+            {{ item.FormTypeName }}
           </router-link>
         </template>
-        <template v-slot:[`item.Form_UpdatedTime`]="{ item }">
+        <template v-slot:[`item.UpdatedTime`]="{ item }">
           <span v-if="item.LatestForm">
-            {{ new Date(item.LatestForm.Form_UpdatedTime).toLocaleDateString() }}
+            {{ new Date(item.LatestForm.UpdatedTime).toLocaleString() }}
           </span>
         </template>
         <template v-slot:[`item.Deadline`]="{ item }">
-          <div v-if="item.Deadline != undefined">
+          <div v-if="item.Deadline.OnDate != null">
             <div style="font-size: 16px">
-              {{ new Date(item.Deadline.Deadline_DateTime).toLocaleString("th-TH") }}
+              {{ new Date(item.Deadline.OnDate).toLocaleString("th-TH") }}
             </div>
             <v-chip
               v-if="item.isReachDeadline <= 10 && item.isReachDeadline > 0"
@@ -89,10 +100,10 @@ export default {
     dialog: false,
     dialogDelete: false,
     headers: [
-      { text: "ชื่อเอกสาร", value: "FormType_Name" },
+      { text: "ชื่อเอกสาร", value: "FormTypeName" },
       { text: "จำเป็นต้องทำก่อน", value: "Prerequisite", sortable: false },
-      { text: "อัปเดตครั้งที่", value: "rev", sortable: false },
-      { text: "อัปเดตล่าสุด", value: "Form_UpdatedTime", sortable: false },
+      { text: "อัปเดตล่าสุด", value: "UpdatedTime", sortable: false },
+      { text: "อัปเดตครั้งที่", value: "LatestForm.Rev", sortable: false },
       { text: "วันกำหนดส่ง", value: "Deadline", sortable: false },
       { text: "สถานะ", value: "LatestForm", sortable: false }
     ],
@@ -110,6 +121,20 @@ export default {
     },
     pid() {
       return this.$route.query.pid;
+    },
+    breadcrumbs() {
+      return [
+        {
+          text: "ที่ปรึกษาโครงงาน",
+          disabled: false,
+          url: "/teacher/project"
+        },
+        {
+          text: "จัดการโปรเจ็ค",
+          disabled: true,
+          url: `/teacher/documents`
+        }
+      ];
     }
   },
 
@@ -131,24 +156,35 @@ export default {
   methods: {
     async loadData() {
       if (this.pid) {
-        const initData = await this.Form.Types();
-        const preq = await this.Form.Prerequisite();
-        const latest = await this.Form.LatestEachForm(this.pid);
-        let deadline = await this.Form.Deadline();
+        await this.Project.Project(this.pid).then(async res => {
+          // console.log(res);
+          let initData;
+          console.log(res.IsProject);
+          if (res.IsProject) {
+            initData = await this.Form.Types(1); //Project
+          } else {
+            initData = await this.Form.Types(2); //Pre-Project
+          }
 
-        if (latest) {
-          initData.map(element => {
-            element.LatestForm = latest.find(item => item.FormTypeID == element.FormTypeID) || null;
-            element.Prerequisite = preq.filter(item => item.PrerequisiteID == element.FormTypeID);
-            element.Deadline = deadline.find(item => item.FormTypeID == element.FormTypeID) || undefined;
-            element.isReachDeadline = (new Date(element?.Deadline?.OnDate) - new Date()) / (1000 * 3600 * 24);
-            element.Prerequisite.map(item => {
-              item.Status = latest.find(t => t.FormTypeID == item.PrerequisiteID)?.FormStatusID;
+          const preq = await this.Form.Prerequisite();
+          const latest = await this.Form.LatestEachForm(this.pid);
+          let deadline = await this.Form.Deadline();
+          if (latest) {
+            initData.map(element => {
+              element.LatestForm = latest.find(item => item.FormTypeID == element.FormTypeID) || null;
+              element.Prerequisite = preq.filter(item => item.FormTypeID == element.FormTypeID);
+              element.Deadline = deadline.find(item => item.FormTypeID == element.FormTypeID) || undefined;
+              element.isReachDeadline = (new Date(element?.Deadline?.OnDate) - new Date()) / (1000 * 3600 * 24);
+              element.Prerequisite.map(item => {
+                item.Status = latest.find(t => t.FormTypeID == item.RequireForm.FormTypeID)?.Form_Status?.FormStatusID;
+              });
+              // element.PassPreRequisite = element.Prerequisite.filter(item => item.Status == 5).length == element.Prerequisite.length;
             });
-          });
-        }
-        this.data = initData;
-        this.loading = false;
+          }
+          console.log(initData);
+          this.data = initData;
+          this.loading = false;
+        });
       }
     },
     onResize() {

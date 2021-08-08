@@ -47,6 +47,7 @@
                                   dense
                                   label="โปรดเลือก"
                                   :error-messages="errors"
+                                  :disabled="user.UserTypeID != 4"
                                 ></v-select>
                               </ValidationProvider>
                             </v-col>
@@ -378,7 +379,7 @@
                           <div class="d-flex">
                             <v-spacer></v-spacer>
                             <v-btn color="success" class="mr-2" small @click="formAddSubmit">Save</v-btn>
-                            <v-btn class="elevation-0" color="white" small @click="formAddCancel">Cancel</v-btn>
+                            <v-btn class="elevation-0" color="white" small @click="clearFormAdd">Cancel</v-btn>
                           </div>
                         </v-container>
                       </ValidationObserver>
@@ -608,8 +609,9 @@ export default {
     //sec
     sections: [],
     edited_section: [],
-    newSubject: 1,
+    // newSubject: 1,
     newTerm: 1,
+    newSubject: null,
     newSecDetail: null,
     newDayOfWeek: null,
     newStartTime: null,
@@ -635,8 +637,22 @@ export default {
   methods: {
     async loadData() {
       var form = await this.Form.AllType();
-      let deadline = await this.Form.Deadline();
+      let deadline;
+      this.newDeadlines = [];
       this.allTeacher = await this.User.UserTeacher();
+      if (this.user.UserTypeID == 3) {
+        this.newSubject = 1; //Project
+        this.sections = await this.Section.All(1);
+        deadline = await this.Form.Deadline(1);
+      } else if (this.user.UserTypeID == 5) {
+        this.newSubject = 2; //Pre-Project
+        this.sections = await this.Section.All(2);
+        deadline = await this.Form.Deadline(2);
+      } else {
+        this.sections = await this.Section.All();
+        deadline = await this.Form.Deadline();
+      }
+
       form.forEach(element => {
         this.formTemp.push({ FormTypeID: element.FormTypeID, FormTypeName: element.FormTypeName });
         var typeTemp = [];
@@ -658,7 +674,7 @@ export default {
         });
       });
       this.form_loading = false;
-      this.sections = await this.Section.All();
+
       this.sections.forEach(item => {
         this.newDeadlines.push({ SectionID: item.SectionID, OnDate: null });
       });
@@ -720,8 +736,8 @@ export default {
             icon: "success",
             title: "Success"
           });
+          this.clearFormAdd();
           this.loadData();
-          this.formAddCancel();
         });
       }
     },
@@ -753,21 +769,19 @@ export default {
                 icon: "success",
                 title: "Success"
               });
+              this.clearFormAdd();
               this.loadData();
             });
           }
         });
     },
-    async formAddCancel() {
+    async clearFormAdd() {
       this.newName = null;
       this.newIsPreProject = null;
       this.newIsProject = null;
       this.newIsActive = null;
-      this.newDeadlines = [];
+      // this.newDeadlines = [];
       this.newRequireForm = [];
-      this.sections.forEach(item => {
-        this.newDeadlines.push({ SectionID: item.SectionID, OnDate: null });
-      });
       this.isAddForm = false;
     },
     async sectionAddSubmit() {

@@ -40,6 +40,10 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.STRING,
         field: "RejectedRemark"
       },
+      IsProject: {
+        type: Sequelize.BOOLEAN,
+        field: "IsProject"
+      },
       CreatedBy: {
         type: Sequelize.INTEGER,
         field: "CreatedBy"
