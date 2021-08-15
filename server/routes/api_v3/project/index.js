@@ -7,6 +7,7 @@ router.use("/member", require("./member"));
 router.use("/progress", require("./progress"));
 router.use("/status", require("./status"));
 router.use("/type", require("./type"));
+router.use("/example_files", require("./example_files"));
 router.get("/", async (req, res) => {
   try {
     var whereStr = [];

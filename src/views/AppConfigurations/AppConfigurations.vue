@@ -680,6 +680,7 @@ export default {
       });
       this.edited_section = JSON.parse(JSON.stringify(this.sections));
       this.sec_loading = false;
+      console.log(this.edited_section);
     },
     resetDateTime(pItem, pDeadline) {
       const item_idx = this.edited_form.findIndex(item => item.FormTypeID == pItem.FormTypeID);

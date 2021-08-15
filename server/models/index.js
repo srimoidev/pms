@@ -58,6 +58,7 @@ db.section = require("./section")(sequelize, Sequelize);
 db.user = require("./user")(sequelize, Sequelize);
 db.user_profile = require("./user_profile")(sequelize, Sequelize);
 db.user_type = require("./user_type")(sequelize, Sequelize);
+db.example_files = require("./example_files")(sequelize, Sequelize);
 
 // ALLRELATIONSHIP
 
@@ -165,6 +166,10 @@ db.project_committee.belongsTo(db.project_committee_role, {
   as: "Committee_Role",
   foreignKey: "CommitteeRoleID"
 });
+db.example_files.belongsTo(db.user_profile, {
+  as: "CreatedUser",
+  foreignKey: "CreatedBy"
+});
 
 //#endregion
 
@@ -239,6 +244,10 @@ db.deadline.belongsTo(db.section, {
 db.form_sent.belongsTo(db.project_info, {
   as: "Form_Project",
   foreignKey: "ProjectID"
+});
+db.form_sent.belongsTo(db.user_profile, {
+  as: "CreatedUser",
+  foreignKey: "CreatedBy"
 });
 db.form_sent.belongsTo(db.user_profile, {
   as: "UpdatedUser",

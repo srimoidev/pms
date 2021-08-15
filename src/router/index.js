@@ -15,13 +15,14 @@ import GoogleDrive from "../views/GoogleDrive/GoogleDrive.vue";
 import Profile from "../views/Profile/Profile.vue";
 import Trello from "../views/Trello/TrelloBoard.vue";
 import Dashboard from "../views/Dashboard.vue";
+import ProjectManual from "../views/ProjectManual/ProjectManual.vue";
 
 //student pages
 import Student_Meeting from "../views/Student/Meeting/Meeting.vue";
 import Student_MeetingDetail from "../views/Student/Meeting/MeetingDetail.vue";
 import Student_Overview from "../views/Student/Overview/Overview.vue";
 import Student_Description from "../views/Student/ProjecDescription/Description.vue";
-import Student_ProjectManual from "../views/Student/ProjectManual/ProjectManual.vue";
+
 import Student_Project from "../views/Student/Project/Project.vue";
 import Student_Documents from "../views/Student/Documents/Documents.vue";
 import Student_ProgressionRecord from "../views/Student/ProgressionRecord/ProgressionRecord.vue";
@@ -37,12 +38,12 @@ import Teacher_AllProject from "../views/Teacher/AllProject/AllProject.vue";
 import Teacher_ManageProject from "../views/Teacher/ManageProject/ManageProject.vue";
 import Teacher_TestReq from "../views/Teacher/Request/TestRequest.vue";
 import Teacher_ApprovementReq from "../views/Teacher/Request/ApprovementRequest.vue";
-import Teacher_ProjectManual from "../views/Teacher/ProjectManual/ProjectManual.vue";
 import Teacher_FormPreview from "../views/Teacher/ManageProject/FormPreview.vue";
 import Teacher_AdvisorRequest from "../views/Teacher/Request/AdvisorRequest.vue";
 import Teacher_Documents from "../views/Teacher/ManageProject/Documents";
 import Teacher_FormCE from "../views/Teacher/ManageProject/FormCE";
 import Teacher_NewProjects from "../views/Teacher/Request/NewProjects";
+import Teacher_Exam from "../views/Teacher/Exam/Exam.vue";
 
 //App Environment Configuration
 import App_Configs from "../views/AppConfigurations/AppConfigurations.vue";
@@ -153,7 +154,7 @@ const routes = [
       {
         path: "project_manual",
         name: "ProjectManual",
-        component: Student_ProjectManual,
+        component: ProjectManual,
         meta: { title: "Project Manual | PMS" }
       },
       {
@@ -247,7 +248,7 @@ const routes = [
       {
         path: "project_manual",
         name: "Project Manual",
-        component: Teacher_ProjectManual,
+        component: ProjectManual,
         meta: { title: "Project Manual | PMS" }
       },
       {
@@ -291,6 +292,12 @@ const routes = [
         name: "Manage Users",
         component: App_ManageUsers,
         meta: { title: "Manage Users | PMS" }
+      },
+      {
+        path: "exam",
+        name: "Exam",
+        component: Teacher_Exam,
+        meta: { title: "Exam | PMS" }
       }
     ]
   },
@@ -323,7 +330,7 @@ const routes = [
       {
         path: "project_manual",
         name: "Project Manual",
-        component: Teacher_ProjectManual,
+        component: ProjectManual,
         meta: { title: "Project Manual | PMS" }
       },
       {

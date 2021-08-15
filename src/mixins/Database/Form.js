@@ -34,8 +34,6 @@ export async function FormPDF(pFormID) {
     const file = new Blob([res.data], {
       type: "application/pdf"
     });
-    console.log(file);
-    console.log(res.data);
     return URL.createObjectURL(file);
   });
 }

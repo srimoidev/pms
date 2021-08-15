@@ -59,6 +59,14 @@ router.get("/", async (req, res) => {
         },
         {
           model: db.user_profile,
+          as: "CreatedUser",
+          attributes: [
+            "UserID",
+            [db.Sequelize.fn("concat", db.Sequelize.col("CreatedUser.Firstname"), " ", db.Sequelize.col("CreatedUser.Lastname")), "Fullname"]
+          ]
+        },
+        {
+          model: db.user_profile,
           as: "UpdatedUser",
           attributes: [
             "UserID",
@@ -242,16 +250,27 @@ router.put("/:id", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   const transaction = await db.sequelize.transaction();
   try {
-    await db.form_sent.destroy(
-      {
-        where: [
-          {
+    let deletedFile = await db.form_sent.findOne({
+      where: {
+        FormID: req.params.id
+      }
+    });
+    await db.form_sent
+      .destroy(
+        {
+          where: {
             FormID: req.params.id
           }
-        ]
-      },
-      { transaction: transaction }
-    );
+        },
+        { transaction: transaction }
+      )
+      .then(() => {
+        fs.unlink(`./uploads/forms/${deletedFile.FileName}`, err => {
+          if (err) {
+            throw err;
+          }
+        });
+      });
     await transaction.commit().then(() => {
       return res.status(200).send();
     });

@@ -1,5 +1,4 @@
 import HTTP from "./config";
-
 //#region outbound
 
 //โปรเจ็คทั้งหมด
@@ -112,6 +111,22 @@ export async function GetAllNotConfirmAdvisorByProjectID(pID) {
     return res.data;
   });
 }
+
+export async function ExampleFiles() {
+  return await HTTP.get(`/project/example_files`).then(res => {
+    return res.data;
+  });
+}
+//blob pdf file
+export async function ExampleFile(pExampleFileID) {
+  return await HTTP.get(`project/example_files/file/${pExampleFileID}`, { responseType: "blob" }).then(res => {
+    console.log(res.data.type);
+    const file = new Blob([res.data], {
+      type: res.data.type
+    });
+    return URL.createObjectURL(file);
+  });
+}
 //#endregion outbound
 
 //#region inbound
@@ -157,11 +172,29 @@ export async function Resend(pUserID, pProjectID, pUpdateObj, pAdvisors) {
     //
   });
 }
+export async function UploadExampleFile(pUserID, pFile, onUploadProgress) {
+  var formData = new FormData();
+  formData.append("CreatedBy", pUserID);
+  formData.append("UpdatedBy", pUserID);
+  formData.append("file", pFile);
+  return HTTP.post("/project/example_files", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data"
+    },
+    onUploadProgress
+  }).then(res => {
+    console.log(res.data);
+  });
+}
+export async function DeleteExampleFile(pExampleFileID) {
+  await HTTP.delete(`/project/example_files/${pExampleFileID}`).catch(() => {
+    //
+  });
+}
 //#endregion inbound
 
 export async function Form(pID) {
   return await HTTP.post("/form", { Form_GroupID: pID }).then(res => {
-    console.log(res.data);
     return res.data;
   });
 }

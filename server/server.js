@@ -27,6 +27,15 @@ var img_storage = multer.diskStorage({
     cb(null, originalname);
   }
 });
+
+var example_files_storage = multer.diskStorage({
+  destination: "./uploads/example_files",
+  filename: function(req, file, cb) {
+    const ext = path.extname(file.originalname);
+    const originalname = `${uuid()}${ext}`;
+    cb(null, originalname);
+  }
+});
 app.use(
   "/api/v3/form/sent",
   multer({
@@ -37,6 +46,12 @@ app.use(
   "/api/v3/user",
   multer({
     storage: img_storage
+  }).any()
+);
+app.use(
+  "/api/v3/project/example_files",
+  multer({
+    storage: example_files_storage
   }).any()
 );
 // app.use(

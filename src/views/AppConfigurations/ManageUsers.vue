@@ -141,17 +141,17 @@
                   :disabled="isEdit"
                 >
                 </v-select>
-                <div v-if="isEdit" class="mx-16">
+                <div v-if="isEdit" class="mx-15">
                   <v-radio-group v-model="rdoActive" row hide-details>
                     <v-radio color="success" label="Active" :value="true"></v-radio>
-                    <v-radio color="error" label="Disable" :value="false"></v-radio>
+                    <v-radio color="error" label="Inactive" :value="false"></v-radio>
                   </v-radio-group>
                 </div>
               </v-col>
               <v-col cols="8">
                 <ValidationObserver ref="observer">
                   <div class="mt-4 mr-4">
-                    <ValidationProvider v-slot="{ errors }" name="ชื่อผู้ใช้" rules="required">
+                    <ValidationProvider v-slot="{ errors }" name="ชื่อผู้ใช้" rules="required|username">
                       <v-text-field v-model="txtUsername" label="ชื่อผู้ใช้" outlined dense :error-messages="errors" :disabled="isEdit">
                         <template v-slot:[`append-outer`] v-if="!isEdit">
                           <v-tooltip bottom>
@@ -290,6 +290,10 @@ extend("numeric", {
   ...numeric,
   message: "{_field_} ไม่ถูกต้อง"
 });
+extend("username", {
+  message: "ภาษาอักกฤษและตัวเลขเท่านั้น, อย่างน้อย 6 ตัวอักษร, ขึ้นต้นด้วยภาษาอังกฤษ",
+  validate: value => /^[a-zA-Z0-9_]{5,}[a-zA-Z]+[0-9]*$/.test(value)
+});
 export default {
   components: {
     ModalContainer,
@@ -383,10 +387,30 @@ export default {
       let validation = true;
       console.log(this.importedData);
       for (const item of this.importedData) {
+        /**
+         * ===== Username Validation Rules =====
+         * 1. Minimum 6 characters
+         * 2. Only numbers are not allowed at least one character should be there
+         * 3. No special characters allowed except _
+         * 4. No space allowed
+         * 5. Character only is allowed
+         *
+         * ===== Email Validation Rules =====
+         * 1. Email form
+         *
+         * ===== Telephone Number Validation Rules =====
+         * 1. Number Only
+         *
+         * ===== Require Field =====
+         * Username,Password,Prefix,Firstname,Lastname
+         */
+        const username_validate = new RegExp("^[a-zA-Z0-9_]{5,}[a-zA-Z]+[0-9]*$");
         const email_validate = new RegExp("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$");
         const tel_validate = new RegExp("^[0-9]*$");
+        console.log(!item.Username, !username_validate.test(item.Username), !!(!item.Username && !username_validate.test(item.Username)));
         if (
           !item.Username ||
+          !username_validate.test(item.Username) ||
           !item.Password ||
           !item.Prefix ||
           !item.Firstname ||

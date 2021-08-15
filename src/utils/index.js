@@ -1,5 +1,7 @@
 // import sorting from "./sorting";
 import XLSX from "xlsx";
+import fileicon from "./fileicon";
+
 var Utils = {
   ConvertISOtoLocaleDateTime(pDatetime) {
     return new Date(new Date(new Date(pDatetime).setHours(new Date(pDatetime).getHours() - new Date().getTimezoneOffset() / 60)))
@@ -29,13 +31,18 @@ var Utils = {
     reader.readAsArrayBuffer(pFile);
     return output;
   },
-  s2ab(s) {
-    var buf = new ArrayBuffer(s.length);
-    var view = new Uint8Array(buf);
-    for (var i = 0; i != s.length; ++i) {
-      view[i] = s.charCodeAt(i) & 0xff;
+  bytesToSize(bytes) {
+    var sizes = ["Bytes", "KB", "MB", "GB", "TB"];
+    if (bytes == 0) return "0 Byte";
+    var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+    if (i > 1) {
+      return parseFloat(bytes / Math.pow(1024, i)).toFixed(2) + " " + sizes[i];
+    } else {
+      return Math.round(bytes / Math.pow(1024, i), 2) + " " + sizes[i];
     }
-    return buf;
+  },
+  fileicon(type) {
+    return fileicon(type);
   }
 };
 
