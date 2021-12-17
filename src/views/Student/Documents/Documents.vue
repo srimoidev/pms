@@ -146,10 +146,10 @@ export default {
       if (this.user.ProjectID) {
         await this.Project.Project(this.user.ProjectID).then(async res => {
           // console.log(res);
-          if ([1, 2, 3, 8].includes(res.Project_Status.ProjectStatusID)) {
-            this.isUserAllow = false;
-            return;
-          }
+          // if ([1, 2, 3, 8].includes(res.Project_Status.ProjectStatusID)) {
+          //   this.isUserAllow = false;
+          //   return;
+          // }
           let initData;
           console.log(res.IsProject);
           if (res.IsProject) {

@@ -154,17 +154,6 @@
               </template>
             </v-select>
           </ValidationProvider>
-          <ValidationProvider v-slot="{ errors }" name="CE01" rules="file_required">
-            <v-file-input
-              v-model="fileImport"
-              type="file"
-              accept="application/pdf"
-              label="CE01"
-              :error-messages="errors"
-              outlined
-              dense
-            ></v-file-input>
-          </ValidationProvider>
         </form>
       </ValidationObserver>
       <div class="d-flex">

@@ -46,7 +46,6 @@ router.get("/", async (req, res) => {
           },
           raw: true
         });
-        console.log(allProject);
         allProject = allProject.map(i => i.ProjectID);
         whereStr.push({
           ProjectID: { [Op.in]: allProject },
@@ -287,22 +286,24 @@ router.post("/", async (req, res) => {
 
 //สร้างกลุ่ม เพิ่่มอาจารย์ที่ปรึกษา เพิ่มสมาชิก
 router.post("/create", async (req, res) => {
+  // console.log(req.io)
   let initStatus;
-  const createBy = await db.user_profile.findOne({ where: { UserID: req.body.project.CreatedBy } });
+  // const createBy = await db.user_profile.findOne({ where: { UserID: req.body.project.CreatedBy } });
   //กรณีนักศึกษาเป็นผู้สร้าง
-  if (createBy.UserTypeID == 1) {
-    if (req.body.project.MaxMember == req.body.members?.length) {
-      initStatus = 2; //Wait Advisor ถ้า Add member มาเต็มจำนวน
-    } else {
-      initStatus = 1; //Draft ถ้า Add มาไม่เต็ม
-    }
-  } else {
-    if (req.body.project.MaxMember == req.body.members?.length) {
-      initStatus = 3; //Wait Advisor ถ้า Add member มาเต็มจำนวน
-    } else {
-      initStatus = 1; //Draft ถ้า Add มาไม่เต็ม
-    }
-  }
+  initStatus = 1; //Draft
+  // if (createBy.UserTypeID == 1) {
+  //   if (req.body.project.MaxMember == req.body.members?.length) {
+  //     initStatus = 2; //Wait Advisor ถ้า Add member มาเต็มจำนวน
+  //   } else {
+  //     initStatus = 1; //Draft ถ้า Add มาไม่เต็ม
+  //   }
+  // } else {
+  //   if (req.body.project.MaxMember == req.body.members?.length) {
+  //     initStatus = 3; //Wait Advisor ถ้า Add member มาเต็มจำนวน
+  //   } else {
+  //     initStatus = 1; //Draft ถ้า Add มาไม่เต็ม
+  //   }
+  // }
   req.body.project.ProjectStatusID = initStatus;
   const transaction = await db.sequelize.transaction();
   try {
@@ -338,6 +339,10 @@ router.post("/create", async (req, res) => {
     await transaction.commit().then(() => {
       return res.status(200).send();
     });
+    req.body.members.forEach(user => {
+      req.io.to(`room_${user}`).emit("notifications", { msg: "add new Project" });
+    });
+
     res.send(project);
   } catch (err) {
     await transaction.rollback();

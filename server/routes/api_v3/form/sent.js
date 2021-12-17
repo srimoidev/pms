@@ -194,20 +194,39 @@ router.get("/:id", async (req, res) => {
 router.post("/", async (req, res) => {
   const transaction = await db.sequelize.transaction();
   try {
-    await db.form_sent.create(
-      {
-        ProjectID: req.body.ProjectID,
-        FormTypeID: req.body.FormTypeID,
-        CreatedBy: req.body.CreatedBy,
-        UpdatedBy: req.body.UpdatedBy,
-        FileName: req.files[0].filename,
-        FormStatusID: 1
-      },
-      { transaction: transaction }
-    );
-    await transaction.commit().then(() => {
-      return res.status(200).send();
-    });
+    await db.form_sent
+      .create(
+        {
+          ProjectID: req.body.ProjectID,
+          FormTypeID: req.body.FormTypeID,
+          CreatedBy: req.body.CreatedBy,
+          UpdatedBy: req.body.UpdatedBy,
+          FileName: req.files[0].filename,
+          FormStatusID: 1
+        },
+        { transaction: transaction }
+      )
+      .then(() => {
+        db.app_environments.findOne({ where: { EnvName: "FormFirstRequire" } }).then(res => {
+          if (req.body.FormTypeID == parseInt(res.EnvValue)) {
+            db.project_info.update(
+              { ProjectStatusID: 2, UpdatedBy: req.body.UpdatedBy },
+              {
+                where: {
+                  ProjectID: req.body.ProjectID
+                }
+              },
+              { transaction: transaction }
+            );
+          }
+        });
+      })
+      .then(async () => {
+        await transaction.commit().then(() => {
+          return res.status(200).send();
+        });
+        // db.notifications
+      });
   } catch (error) {
     await transaction.rollback();
     res.send({ message: error.message });

@@ -5,6 +5,7 @@ import Vuex from "vuex";
 // import UserAuthen from "./modules/UserAuthen"
 import { authentication } from "./modules/authentication.module";
 import { user } from "./modules/user.module";
+import { notifications } from "./modules/notifications.module";
 // import persistedState from "vuex-persistedstate";
 Vue.use(Vuex);
 
@@ -21,7 +22,8 @@ export default new Vuex.Store({
   actions: {},
   modules: {
     authentication,
-    user
+    user,
+    notifications
   }
   // plugins:[
   //   persistedState()

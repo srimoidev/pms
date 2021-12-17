@@ -66,6 +66,11 @@ export async function ProfileImage(pUserID) {
     }
   });
 }
+export async function Notifications(pUserID) {
+  return await HTTP.get(`/notifications?userid=${pUserID}`).then(res => {
+    return res.data;
+  });
+}
 //#endregion outbound
 
 //#region inbound
@@ -151,6 +156,11 @@ export async function BulkDelete(pUserIDs) {
     if (res.data.message?.errors) {
       return res.data.message.original.sqlMessage;
     }
+  });
+}
+export async function TestNoti(pUserID, pNotiTypeID, pTitle, pMessage) {
+  return await HTTP.post(`/notifications`, { UserID: pUserID, NotiTypeID: pNotiTypeID, Title: pTitle, Message: pMessage }).then(res => {
+    return res.data;
   });
 }
 //#endregion inbound

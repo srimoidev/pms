@@ -34,6 +34,7 @@ db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
 // ALLTABLE
+db.app_environments = require("./app_environments")(sequelize, Sequelize);
 db.app_menus = require("./app_menus")(sequelize, Sequelize);
 db.app_privileges = require("./app_privileges")(sequelize, Sequelize);
 db.deadline = require("./deadline")(sequelize, Sequelize);
@@ -44,8 +45,8 @@ db.form_sent = require("./form_sent")(sequelize, Sequelize);
 db.form_status = require("./form_status")(sequelize, Sequelize);
 db.form_type = require("./form_type")(sequelize, Sequelize);
 db.meeting = require("./meeting")(sequelize, Sequelize);
-db.notification = require("./notification")(sequelize, Sequelize);
-db.notification_status = require("./notification_status")(sequelize, Sequelize);
+db.notifications = require("./notifications")(sequelize, Sequelize);
+db.notification_types = require("./notification_types")(sequelize, Sequelize);
 db.project_advisor = require("./project_advisor")(sequelize, Sequelize);
 db.project_committee = require("./project_committee")(sequelize, Sequelize);
 db.project_committee_role = require("./project_committee_role")(sequelize, Sequelize);
@@ -265,5 +266,14 @@ db.meeting.belongsTo(db.user_profile, {
   foreignKey: "TeacherID"
 });
 //#endregion
+
+db.notifications.belongsTo(db.notification_types, {
+  as: "NotiType",
+  foreignKey: "NotiTypeID"
+});
+db.notifications.belongsTo(db.user_profile, {
+  as: "CreatedUser",
+  foreignKey: "CreatedBy"
+});
 
 module.exports = db;

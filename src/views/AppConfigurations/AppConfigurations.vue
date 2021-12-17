@@ -296,7 +296,7 @@
               <div class="d-flex my-2">
                 <v-spacer></v-spacer>
                 <v-btn class="primary mr-2" small @click="isAddForm = true">เพิ่มเอกสาร</v-btn>
-                <v-btn class="error" small>เริ่มปีการศึกษาใหม่</v-btn>
+                <!-- <v-btn class="error" small>เริ่มปีการศึกษาใหม่</v-btn> -->
               </div>
               <v-data-table
                 :headers="documents_header"

@@ -8,6 +8,12 @@ const app = express();
 const uuid = require("uuid").v4;
 const path = require("path");
 const PORT = 3000;
+const server = require("http").createServer(app);
+const io = require("socket.io")(server, {
+  cors: {
+    origin: "*"
+  }
+});
 
 app.use(cors());
 var forms_storage = multer.diskStorage({
@@ -54,21 +60,7 @@ app.use(
     storage: example_files_storage
   }).any()
 );
-// app.use(
-//   multer({
-//     dest: __dirname + '/uploads/',
-//     rename: function (fieldname, filename) {
-//       return Date.now()
-//     },
-//     limits: {
-//       fileSize: 100000
-//     },
-//     onFileSizeLimit: function (file) {
-//       console.log('Failed: ' + file.originalname + ' is limited')
-//       fs.unlink(file.path)
-//     }
-//   }).any()
-// )
+
 app.use(bodyParser.json());
 app.use(
   bodyParser.urlencoded({
@@ -88,6 +80,10 @@ app.use(
 //   // passport.authenticate("jwt", { session: false }),
 //   require("./routes/api_v2")
 // );
+app.use((req, res, next) => {
+  req.io = io;
+  return next();
+});
 app.use(
   "/api/v3",
   // passport.authenticate("jwt", { session: false }),
@@ -95,6 +91,21 @@ app.use(
 );
 app.use("/login", require("./routes/login"));
 
-app.listen(PORT, () => {
-  console.log(`server is listening on port ${PORT} | http://localhost:${PORT}`);
+io.on("connection", socket => {
+  console.log("a user connected/n/n");
+  socket.on("create", function(id) {
+    console.log(`room_${id}`);
+    socket.join(`room_${id}`);
+  });
+  // socket.on("notifications", function(msg) {
+  //   console.log("socket by : ", socket.id, " message: " + msg);
+  //   // trick function client
+  //   io.emit("notifications", msg);
+  // });
 });
+
+server.listen(3000);
+
+// app.listen(PORT, () => {
+//   console.log(`server is listening on port ${PORT} | http://localhost:${PORT}`);
+// });

@@ -3,14 +3,20 @@ const db = require("../../../models");
 
 router.get("/", async (req, res) => {
   try {
-    var whereStr = [];
-    if (req.query.userid) {
-      whereStr.push({
-        Notification_UserID: req.query.userid
-      });
-    }
-    const data = await db.notification.findAll({
-      where: whereStr
+    const data = await db.notifications.findAll({
+      include: [
+        {
+          model: db.notification_types,
+          as: "NotiType",
+          attributes: { exclude: ["CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] }
+        },
+        {
+          model: db.user_profile,
+          as: "CreatedUser",
+          attributes: { exclude: ["Username", "Password", "CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] }
+        }
+      ],
+      where: { UserID: req.query.userid }
     });
     return res.json(data);
   } catch (error) {
@@ -41,10 +47,14 @@ router.get("/:id", async (req, res) => {
 router.post("/", async (req, res) => {
   const transaction = await db.sequelize.transaction();
   try {
-    await db.notification.create(req.body, { transaction: transaction });
+    req.body.CreatedBy = 1581;
+    req.body.UpdatedBy = 1581;
+    await db.notifications.create(req.body, { transaction: transaction });
     await transaction.commit().then(() => {
       return res.status(200).send();
     });
+    console.log(req.body);
+    req.io.to(`room_${req.body.UserID}`).emit("notifications", { msg: "add new Project" });
   } catch (error) {
     await transaction.rollback();
     res.send({ message: error.message });

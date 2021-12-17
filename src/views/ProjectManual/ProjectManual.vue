@@ -137,12 +137,13 @@ export default {
     },
     async download(item) {
       this.fileUrl = await this.Project.ExampleFile(item.ExampleFileID);
+      console.log(this.fileUrl);
       const link = document.createElement("a");
       link.href = this.fileUrl;
       link.setAttribute("download", item.OriginalFileName);
       document.body.appendChild(link);
       link.click();
-      window.URL.revokeObjectURL(this.fileUrl);
+      // window.URL.revokeObjectURL(this.fileUrl);
     },
     async deleteFile(file) {
       this.$swal

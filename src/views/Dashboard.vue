@@ -42,12 +42,13 @@
       <v-toolbar-title style="width: 300px" class="ml-0 pl-4">
         <router-link to="/" class="text-none white--text"><span class="hidden-sm-and-down" v-t="{ path: 'APP.APP_NAME' }"></span></router-link>
       </v-toolbar-title>
+      <v-btn @click="asd">asdasd</v-btn>
       <v-spacer />
       <!-- <div class="select-lang">
         <v-select v-model="$i18n.locale" :items="langs" single-line @input="changeLang" item-text="title"></v-select>
       </div> -->
       <div class="text-center">
-        <dashboard-notification :noti="noti"></dashboard-notification>
+        <dashboard-notification :noti.sync="notiData"></dashboard-notification>
       </div>
       <div>
         <dashboard-profile :data="user" @logout="logout"></dashboard-profile>
@@ -81,34 +82,35 @@ export default {
       { title: "ไทย", value: "th" },
       { title: "English", value: "en" }
     ],
-    noti: [
-      {
-        avatar: "https://cdn.vuetifyjs.com/images/lists/1.jpg",
-        title: "Brunch this weekend?",
-        subtitle:
-          "<span class='text--primary'>Ali Connors</span> &mdash; I'll be in your neighborhood doing errands this weekend. Do you want to hang out?"
-      },
-      {
-        avatar: "https://cdn.vuetifyjs.com/images/lists/2.jpg",
-        title: 'Summer BBQ <span class="grey--text text--lighten-1">4</span>',
-        subtitle: "<span class='text--primary'>to Alex, Scott, Jennifer</span> &mdash; Wish I could come, but I'm out of town this weekend."
-      },
-      {
-        avatar: "https://cdn.vuetifyjs.com/images/lists/3.jpg",
-        title: "Oui oui",
-        subtitle: "<span class='text--primary'>Sandra Adams</span> &mdash; Do you have Paris recommendations? Have you ever been?"
-      },
-      {
-        avatar: "https://cdn.vuetifyjs.com/images/lists/4.jpg",
-        title: "Birthday gift",
-        subtitle: "<span class='text--primary'>Trevor Hansen</span> &mdash; Have any ideas about what we should get Heidi for her birthday?"
-      },
-      {
-        avatar: "https://cdn.vuetifyjs.com/images/lists/5.jpg",
-        title: "Recipe to try",
-        subtitle: "<span class='text--primary'>Britta Holt</span> &mdash; We should eat this: Grate, Squash, Corn, and tomatillo Tacos."
-      }
-    ],
+    // notifications: [
+    //   {
+    //     avatar: "https://cdn.vuetifyjs.com/images/lists/1.jpg",
+    //     title: "Brunch this weekend?",
+    //     subtitle:
+    //       "<span class='text--primary'>Ali Connors</span> &mdash; I'll be in your neighborhood doing errands this weekend. Do you want to hang out?"
+    //   },
+    //   {
+    //     avatar: "https://cdn.vuetifyjs.com/images/lists/2.jpg",
+    //     title: 'Summer BBQ <span class="grey--text text--lighten-1">4</span>',
+    //     subtitle: "<span class='text--primary'>to Alex, Scott, Jennifer</span> &mdash; Wish I could come, but I'm out of town this weekend."
+    //   },
+    //   {
+    //     avatar: "https://cdn.vuetifyjs.com/images/lists/3.jpg",
+    //     title: "Oui oui",
+    //     subtitle: "<span class='text--primary'>Sandra Adams</span> &mdash; Do you have Paris recommendations? Have you ever been?"
+    //   },
+    //   {
+    //     avatar: "https://cdn.vuetifyjs.com/images/lists/4.jpg",
+    //     title: "Birthday gift",
+    //     subtitle: "<span class='text--primary'>Trevor Hansen</span> &mdash; Have any ideas about what we should get Heidi for her birthday?"
+    //   },
+    //   {
+    //     avatar: "https://cdn.vuetifyjs.com/images/lists/5.jpg",
+    //     title: "Recipe to try",
+    //     subtitle: "<span class='text--primary'>Britta Holt</span> &mdash; We should eat this: Grate, Squash, Corn, and tomatillo Tacos."
+    //   }
+    // ],
+    notiData: [],
     twoLine: true,
     avatar: true,
     TestReq: 8,
@@ -134,16 +136,70 @@ export default {
   beforeMount() {
     this.loadData();
   },
+  sockets: {
+    connect() {
+      // Fired when the socket connects.
+      this.$store.dispatch("notifications/connect");
+    },
+
+    disconnect() {
+      this.isConnected = false;
+      this.$store.dispatch("notifications/disconnect");
+    },
+
+    // Fired when the server sends something on the "messageChannel" channel.
+    async notifications(data) {
+      this.$swal.fire({
+        toast: true,
+        icon: "success",
+        title: data,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 2000,
+        timerProgressBar: true,
+        didOpen: toast => {
+          toast.addEventListener("mouseenter", this.$swal.stopTimer);
+          toast.addEventListener("mouseleave", this.$swal.resumeTimer);
+        }
+      });
+      console.log(data);
+      this.notiData = await this.User.Notifications(this.user.UserID);
+      this.notiData.map(async item => {
+        item.ProfileImage = await this.User.ProfileImage(item.CreatedBy);
+        item.TimeInterval = this.Utils.timeInterval(item.CreatedTime);
+      });
+      // this.socketMessage = data;
+    }
+  },
+
+  // methods: {
+  //   pingServer() {
+  //     // Send the "pingServer" event to the server.
+  //     this.$socket.emit("pingServer", "PING!");
+  //   }
+  // }
   methods: {
+    asd() {
+      this.$socket.emit("test", { msg: "asdas asdasd asdasd", UserID: 15 });
+      this.User.TestNoti(this.user.UserID, 1, "Title 1", "ทดสอบ noti");
+    },
     async loadData() {
       this.$store.dispatch("user/getLoggedInUserData").then(async () => {
+        this.$socket.emit("create", this.user.UserID);
         this.menu = this.initMenu(await this.App.Menus(this.typeID));
+        this.notiData = await this.User.Notifications(this.user.UserID);
+        this.notiData.map(async item => {
+          item.ProfileImage = await this.User.ProfileImage(item.CreatedBy);
+          item.TimeInterval = this.Utils.timeInterval(item.CreatedTime);
+        });
+        console.log(this.notiData);
         //เป็นอาจารย์
         // if (this.typeID == 2) {
         //   this.waitAdvisorsConfirmProject = await this.Project.WaitAdviserConfirmProject(this.user.UserID);
         // }
         // console.log(this.waitAdvisorsConfirmProject);
       });
+
       // console.log(this.menu, this.user);
       // if (this.user.User_ID) {
       //   this.menu = await this.App.Menus(this.user.UserType_ID);
