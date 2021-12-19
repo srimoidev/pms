@@ -4,6 +4,7 @@ router.use("/type", require("./type"));
 const fs = require("fs");
 const Op = db.Sequelize.Op;
 const bcrypt = require("bcrypt");
+const { sequelize } = require("../../../models");
 const saltRounds = 10;
 
 router.get("/", async (req, res) => {
@@ -23,7 +24,6 @@ router.get("/", async (req, res) => {
       });
       excludes.push("Username");
     }
-
     const data = await db.user_profile.findAll({
       attributes: {
         include: [
@@ -33,6 +33,46 @@ router.get("/", async (req, res) => {
       },
       where: whereStr
     });
+    return res.json(data);
+  } catch (error) {
+    return res.status(500).json({
+      msg: error
+    });
+  }
+});
+router.get("/studentsnogroup", async (req, res) => {
+  try {
+    var strSql = `SELECT user_profile.UserID,
+                    Prefix,
+                    Firstname,
+                    Lastname,
+                    StudentID,
+                    Email,
+                    TelephoneNo,
+                    AcademicYear,
+                    UserTypeID,
+                    IsActive,
+                    ImgProfile,
+                    CONCAT(
+                      Prefix,
+                      ' ',
+                      Firstname,
+                      ' ',
+                      Lastname
+                    ) AS Fullname
+                  FROM
+                    user_profile AS user_profile
+                  WHERE
+                  (
+                    user_profile.UserTypeID IN('1') AND user_profile.IsActive = TRUE AND NOT EXISTS(
+                    SELECT
+                      *
+                    FROM
+                      project_member as project_member
+                    WHERE
+                      project_member.UserID = user_profile.UserID
+                  ))`;
+    const data = await sequelize.query(strSql, { type: sequelize.QueryTypes.SELECT });
     return res.json(data);
   } catch (error) {
     return res.status(500).json({
@@ -116,7 +156,7 @@ router.post("/", async (req, res) => {
 router.post("/import", async (req, res) => {
   const transaction = await db.sequelize.transaction();
   try {
-    const UserType = await db.user_type.findAll();
+    // const UserType = await db.user_type.findAll();
     let importUserName = [];
     req.body.importedUser.forEach(element => {
       importUserName.push(element.Username);
@@ -125,18 +165,20 @@ router.post("/import", async (req, res) => {
       where: { Username: importUserName },
       attributes: ["Username"]
     });
+    console.log(req.body);
     if (checkDuplicated?.length == 0) {
       const hashedUser = req.body.importedUser.map(async item => {
-        item.Password = await bcrypt.hash(item.Password, saltRounds);
+        item.Password = await bcrypt.hash(String(item.Password), saltRounds);
         item.IsActive = true; //default IsActive : true
         item.CreatedBy = req.body.user;
         item.UpdatedBy = req.body.user;
-        item.UserTypeID = UserType.find(o => o.UserTypeNameEN == item.UserType)?.UserTypeID;
+        // item.UserTypeID = UserType.find(o => o.UserTypeNameEN == item.UserType)?.UserTypeID;
+        // item.UserTypeID = item.UserType;
         delete item.UserType;
         return item;
       });
-      const newUser = await Promise.all(hashedUser);
 
+      const newUser = await Promise.all(hashedUser);
       await db.user_profile.bulkCreate(newUser, { transaction: transaction });
       await transaction.commit().then(() => {
         return res.status(200).send();

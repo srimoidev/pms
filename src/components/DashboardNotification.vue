@@ -44,7 +44,6 @@ export default {
   },
   computed: {
     noti_count() {
-      // return this.noti.length;
       return this.noti.filter(item => !item.IsRead).length;
     }
   },

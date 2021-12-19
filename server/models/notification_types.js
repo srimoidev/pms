@@ -2,15 +2,34 @@ module.exports = (sequelize, Sequelize) => {
   const notification_types = sequelize.define(
     "notification_types",
     {
+      id: {
+        type: Sequelize.INTEGER,
+        field: "id",
+        primaryKey: true
+      },
       NotiTypeID: {
         type: Sequelize.INTEGER,
-        field: "NotiTypeID",
-        primaryKey: true
+        field: "NotiTypeID"
+      },
+      UserTypeID: {
+        type: Sequelize.INTEGER,
+        field: "UserTypeID"
       },
       NotiTypeName: {
         type: Sequelize.STRING,
-        field: "NotiTypeName",
-        unique: true
+        field: "NotiTypeName"
+      },
+      TitleTemplate: {
+        type: Sequelize.STRING,
+        field: "TitleTemplate"
+      },
+      MessageTemplate: {
+        type: Sequelize.STRING,
+        field: "MessageTemplate"
+      },
+      ActionPage: {
+        type: Sequelize.STRING,
+        field: "ActionPage"
       },
       CreatedBy: {
         type: Sequelize.INTEGER,

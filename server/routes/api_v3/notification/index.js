@@ -16,7 +16,8 @@ router.get("/", async (req, res) => {
           attributes: { exclude: ["Username", "Password", "CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] }
         }
       ],
-      where: { UserID: req.query.userid }
+      where: { UserID: req.query.userid },
+      order: [["CreatedTime", "DESC"]]
     });
     return res.json(data);
   } catch (error) {

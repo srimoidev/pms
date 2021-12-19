@@ -152,7 +152,7 @@ export default {
       this.$swal.fire({
         toast: true,
         icon: "success",
-        title: data,
+        title: data.msg,
         position: "top-end",
         showConfirmButton: false,
         timer: 2000,
@@ -162,7 +162,6 @@ export default {
           toast.addEventListener("mouseleave", this.$swal.resumeTimer);
         }
       });
-      console.log(data);
       this.notiData = await this.User.Notifications(this.user.UserID);
       this.notiData.map(async item => {
         item.ProfileImage = await this.User.ProfileImage(item.CreatedBy);

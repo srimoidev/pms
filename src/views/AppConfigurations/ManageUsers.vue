@@ -292,7 +292,7 @@ extend("numeric", {
 });
 extend("username", {
   message: "ภาษาอักกฤษและตัวเลขเท่านั้น, อย่างน้อย 6 ตัวอักษร, ขึ้นต้นด้วยภาษาอังกฤษ",
-  validate: value => /^[a-zA-Z0-9_]{5,}[a-zA-Z]+[0-9]*$/.test(value)
+  validate: value => /^[a-zA-Z0-9_][a-zA-Z]+[0-9]*$/.test(value)
 });
 export default {
   components: {
@@ -404,7 +404,7 @@ export default {
          * ===== Require Field =====
          * Username,Password,Prefix,Firstname,Lastname
          */
-        const username_validate = new RegExp("^[a-zA-Z0-9_]{5,}[a-zA-Z]+[0-9]*$");
+        const username_validate = new RegExp("^[a-zA-Z0-9_][a-zA-Z]+[0-9]*$");
         const email_validate = new RegExp("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$");
         const tel_validate = new RegExp("^[0-9]*$");
         console.log(!item.Username, !username_validate.test(item.Username), !!(!item.Username && !username_validate.test(item.Username)));

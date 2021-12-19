@@ -21,6 +21,11 @@ export async function UserStudent() {
     return res.data;
   });
 }
+export async function StudentsNoGroup() {
+  return HTTP.get("/user/studentsnogroup").then(res => {
+    return res.data;
+  });
+}
 export async function Profile(uID) {
   return HTTP.get(`/user/${uID}`).then(res => {
     return res.data;
