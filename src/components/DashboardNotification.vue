@@ -22,7 +22,10 @@
               <v-list-item-content :class="{ 'grey--text': item.IsRead }">
                 <v-list-item-title v-html="item.Title"></v-list-item-title>
                 <v-list-item-subtitle v-if="twoLine || threeLine" :class="{ 'grey--text': item.IsRead }">
-                  <span :class="{ 'grey--text text--darken-3': !item.IsRead }">{{ item.CreatedUser.Firstname + " " + item.CreatedUser.Lastname }}</span> &mdash; {{ item.Message }}
+                  <span :class="{ 'grey--text text--darken-3': !item.IsRead }">{{
+                    item.CreatedUser.Firstname + " " + item.CreatedUser.Lastname
+                  }}</span>
+                  &mdash; {{ item.Message }}
                 </v-list-item-subtitle>
                 <span :class="{ 'grey--text': item.IsRead, 'primary--text': !item.IsRead }" class=" caption">{{ item.TimeInterval }}</span>
               </v-list-item-content>
