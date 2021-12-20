@@ -24,7 +24,7 @@
             dense
             label="ประเภท"
             class="mr-2"
-            style="width:0"
+            style="width: 0"
           ></v-select>
           <v-select
             v-model="filterStatus"
@@ -36,9 +36,12 @@
             dense
             label="สถานะ"
             class="mr-2"
-            style="width:0"
+            style="width: 0"
           ></v-select>
           <v-spacer></v-spacer>
+          <v-btn color="primary" icon @click="calendarDialog = !calendarDialog">
+            <v-icon>mdi-calendar</v-icon>
+          </v-btn>
           <v-btn class="primary white--text" @click="addModal">
             <v-icon class="mr-2">mdi-text-box-plus-outline</v-icon>
             เพิ่มนัดหมาย
@@ -79,6 +82,33 @@
         <v-icon v-if="item.RequestStatus != 4 && item.RequestStatus != 1" class="mr-2" @click="deleteItem(item.MeetingID)"> mdi-delete </v-icon>
       </template>
     </v-data-table>
+    <v-dialog v-model="calendarDialog" width="1000">
+      <v-card>
+        <v-system-bar color="primary darken-2" dark>
+          <v-spacer></v-spacer>
+          <v-icon>mdi-window-minimize</v-icon>
+          <v-icon>mdi-window-maximize</v-icon>
+          <v-icon dense small @click="calendarDialog = false">mdi-close</v-icon>
+        </v-system-bar>
+        <v-card-text class="pa-3">
+          <v-sheet height="64">
+            <v-toolbar flat>
+              <v-spacer></v-spacer>
+              <v-toolbar-title v-if="$refs.calendar">
+                {{ $refs.calendar.title }}
+              </v-toolbar-title>
+              <v-btn fab text small color="grey darken-2" @click="prev">
+                <v-icon small> mdi-chevron-left </v-icon>
+              </v-btn>
+              <v-btn fab text small color="grey darken-2" @click="next">
+                <v-icon small> mdi-chevron-right </v-icon>
+              </v-btn>
+            </v-toolbar>
+          </v-sheet>
+          <v-calendar ref="calendar" v-model="value" :weekdays="weekday" :events="events" @change="getEvents" @click:event="clickEvent"></v-calendar>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
     <ModalContainer
       :active="modalVisable"
       :teachers="allTeacher"
@@ -145,7 +175,11 @@ export default {
         { text: "เวลา", value: "OnDate" },
         { text: "สถานะ", align: "center", value: "RequestStatus" },
         { text: "Action", value: "actions" }
-      ]
+      ],
+      weekday: [0, 1, 2, 3, 4, 5, 6],
+      value: "",
+      events: [],
+      calendarDialog: false
     };
   },
   computed: {
@@ -156,13 +190,13 @@ export default {
     }),
     filteredItems() {
       return this.allMeeting
-        .filter(item => {
+        .filter((item) => {
           return !this.filterType || item.MeetingType == this.filterType;
         })
-        .filter(item => {
+        .filter((item) => {
           return !this.filterStatus || item.RequestStatus == this.filterStatus;
         })
-        .filter(item => {
+        .filter((item) => {
           return item.ProjectID == this.user.ProjectID;
         });
     }
@@ -170,14 +204,34 @@ export default {
   beforeMount() {
     this.loadData(); //จับตอน เปลี่ยน route
   },
-  watch: {},
+  watch: {
+    events(newValue) {
+      this.events = newValue;
+    }
+  },
   methods: {
     async loadData() {
       this.allMeeting = await this.Meeting.GetAll();
       this.allTeacher = await this.User.UserTeacher();
       this.allProject = await this.Project.GetAll();
       this.meetingType = this.user.UserTypeID;
+      this.getEvents();
       this.loading = false;
+    },
+    getEvents() {
+      const events = [];
+      this.allMeeting.forEach((item) => {
+        let onDate = new Date(item.OnDate);
+        onDate = onDate = onDate.getFullYear() + "-" + (onDate.getMonth() + 1) + "-" + onDate.getDate();
+        events.push({
+          name: item.Title,
+          start: onDate,
+          end: onDate,
+          id: item.MeetingID
+        });
+      });
+      console.log(events);
+      this.events = events;
     },
     async submit(pData) {
       await this.Meeting.New({
@@ -201,6 +255,12 @@ export default {
       this.data.Title = this.meetingData.Title;
       this.modalVisable = true;
     },
+    prev() {
+      this.$refs.calendar.prev();
+    },
+    next() {
+      this.$refs.calendar.next();
+    },
     deleteItem(pID) {
       this.$swal
         .fire({
@@ -213,7 +273,7 @@ export default {
           cancelButtonText: "ยกเลิก",
           confirmButtonText: "ยืนยัน!"
         })
-        .then(result => {
+        .then((result) => {
           if (result.isConfirmed) {
             this.Meeting.Delete(pID).then(() => {
               this.loadData();
@@ -233,13 +293,16 @@ export default {
           cancelButtonText: "ยกเลิก",
           confirmButtonText: "ยืนยัน!"
         })
-        .then(result => {
+        .then((result) => {
           if (result.isConfirmed) {
             this.Meeting.Approve(pID).then(() => {
               this.loadData();
             });
           }
         });
+    },
+    clickEvent(item) {
+      this.$router.push(`/student/meeting/${item.event.id}`);
     },
     decilneItem(pID) {
       this.$swal
@@ -253,7 +316,7 @@ export default {
           cancelButtonText: "ยกเลิก",
           confirmButtonText: "ยืนยัน!"
         })
-        .then(result => {
+        .then((result) => {
           if (result.isConfirmed) {
             this.Meeting.Decline(pID).then(() => {
               this.loadData();
