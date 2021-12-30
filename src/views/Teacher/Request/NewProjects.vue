@@ -118,9 +118,24 @@ export default {
       //table footer 59px
       this.windowHeight = window.innerHeight - 64 - 64 - 16 - 59;
     },
-    showDetail(project) {
+    async showDetail(project) {
       this.selectedProject = project;
-      this.modal = true;
+      await Promise.all(
+        this.selectedProject.Project_Members.map(async (item) => {
+          item.ProfileImage = await this.User.ProfileImage(item.UserID);
+        })
+      )
+        .then(async () => {
+          await Promise.all(
+            this.selectedProject.Project_Advisors.map(async (item) => {
+              item.ProfileImage = await this.User.ProfileImage(item.UserID);
+            })
+          );
+        })
+        .then(() => {
+          this.modal = true;
+        });
+      // this.modal = true;
     },
     async Confirm(pProjectID, pStatus, pRemark) {
       //TODO ส่ง UserID กับ array Project_ID ไป
