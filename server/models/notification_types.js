@@ -27,9 +27,9 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.STRING,
         field: "MessageTemplate"
       },
-      ActionPage: {
+      ActionTemplate: {
         type: Sequelize.STRING,
-        field: "ActionPage"
+        field: "ActionTemplate"
       },
       CreatedBy: {
         type: Sequelize.INTEGER,

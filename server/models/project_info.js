@@ -44,6 +44,14 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.BOOLEAN,
         field: "IsProject"
       },
+      Grade: {
+        type: Sequelize.INTEGER,
+        field: "Grade"
+      },
+      ProjectStatusID: {
+        type: Sequelize.FLOAT,
+        field: "ProjectStatusID"
+      },
       CreatedBy: {
         type: Sequelize.INTEGER,
         field: "CreatedBy"

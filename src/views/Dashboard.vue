@@ -42,7 +42,6 @@
       <v-toolbar-title style="width: 300px" class="ml-0 pl-4">
         <router-link to="/" class="text-none white--text"><span class="hidden-sm-and-down" v-t="{ path: 'APP.APP_NAME' }"></span></router-link>
       </v-toolbar-title>
-      <v-btn @click="asd">asdasd</v-btn>
       <v-spacer />
       <!-- <div class="select-lang">
         <v-select v-model="$i18n.locale" :items="langs" single-line @input="changeLang" item-text="title"></v-select>
@@ -82,34 +81,6 @@ export default {
       { title: "ไทย", value: "th" },
       { title: "English", value: "en" }
     ],
-    // notifications: [
-    //   {
-    //     avatar: "https://cdn.vuetifyjs.com/images/lists/1.jpg",
-    //     title: "Brunch this weekend?",
-    //     subtitle:
-    //       "<span class='text--primary'>Ali Connors</span> &mdash; I'll be in your neighborhood doing errands this weekend. Do you want to hang out?"
-    //   },
-    //   {
-    //     avatar: "https://cdn.vuetifyjs.com/images/lists/2.jpg",
-    //     title: 'Summer BBQ <span class="grey--text text--lighten-1">4</span>',
-    //     subtitle: "<span class='text--primary'>to Alex, Scott, Jennifer</span> &mdash; Wish I could come, but I'm out of town this weekend."
-    //   },
-    //   {
-    //     avatar: "https://cdn.vuetifyjs.com/images/lists/3.jpg",
-    //     title: "Oui oui",
-    //     subtitle: "<span class='text--primary'>Sandra Adams</span> &mdash; Do you have Paris recommendations? Have you ever been?"
-    //   },
-    //   {
-    //     avatar: "https://cdn.vuetifyjs.com/images/lists/4.jpg",
-    //     title: "Birthday gift",
-    //     subtitle: "<span class='text--primary'>Trevor Hansen</span> &mdash; Have any ideas about what we should get Heidi for her birthday?"
-    //   },
-    //   {
-    //     avatar: "https://cdn.vuetifyjs.com/images/lists/5.jpg",
-    //     title: "Recipe to try",
-    //     subtitle: "<span class='text--primary'>Britta Holt</span> &mdash; We should eat this: Grate, Squash, Corn, and tomatillo Tacos."
-    //   }
-    // ],
     notiData: [],
     twoLine: true,
     avatar: true,

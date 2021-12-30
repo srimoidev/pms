@@ -165,7 +165,6 @@ router.put("/:id", async (req, res) => {
       .then(async result => {
         switch (result.code) {
           case "ALLCONFIRM":
-            console.log(req.query.isbypass == "true", result.pID);
             if (req.query.isbypass == "true") {
               await db.project_info.update(
                 { ProjectStatusID: 4, UpdatedBy: req.body.userid }, //ถ้า isbypass เป็น true set 4(In Progress)
@@ -177,15 +176,94 @@ router.put("/:id", async (req, res) => {
                 { transaction: transaction }
               );
             } else {
-              await db.project_info.update(
-                { ProjectStatusID: 3, UpdatedBy: req.body.userid }, //set 3(Wait Instructor)
-                {
-                  where: {
-                    ProjectID: result.pID
-                  }
-                },
-                { transaction: transaction }
-              );
+              await db.project_info
+                .update(
+                  { ProjectStatusID: 3, UpdatedBy: req.body.userid }, //set 3(Wait Instructor)
+                  {
+                    where: {
+                      ProjectID: result.pID
+                    }
+                  },
+                  { transaction: transaction }
+                )
+                .then(async () => {
+                  const notiTemplate = await db.notification_types.findAll({
+                    where: { NotiTypeID: 3, UserTypeID: [1, 3, 5] }, //นักศึกษาและที่ปรึกษา
+                    raw: true
+                  });
+                  let template;
+                  const createBy = await db.user_profile.findOne({ where: { UserID: req.body.userid } });
+                  const project = await db.project_info.findOne({
+                    where: { ProjectID: result.pID },
+                    raw: true
+                  });
+                  await db.project_member
+                    .findAll({ where: { ProjectID: result.pID }, raw: true })
+                    .then(async members => {
+                      // project = project.toJSON();
+                      members.forEach(async item => {
+                        if (item.UserID != req.body.userid) {
+                          template = notiTemplate.find(item => item.UserTypeID == 1);
+                          req.io
+                            .to(`room_${item.UserID}`)
+                            .emit("notifications", { msg: createBy.Firstname + " " + createBy.Lastname + template.MessageTemplate });
+                          await db.notifications.create({
+                            NotiTypeID: 3,
+                            UserID: item.UserID,
+                            Title: template.TitleTemplate,
+                            ActionPage: template.ActionTemplate,
+                            Message: template.MessageTemplate,
+                            CreatedBy: req.body.userid,
+                            UpdatedBy: req.body.userid
+                          });
+                        }
+                      });
+                    })
+                    .then(async () => {
+                      console.log(!!project.IsProject,!project.IsProject);
+                      if (!project.IsProject) {
+                        await db.user_profile.findAll({ where: { UserTypeID: 3 }, raw: true }).then(user => {
+                          console.log("a", user);
+                          user.forEach(async item => {
+                            template = notiTemplate.find(item => item.UserTypeID == 3);
+                            template.MessageTemplate = template.MessageTemplate.replace("{ProjectName}", project.ProjectNameTH);
+                            req.io
+                              .to(`room_${item.UserID}`)
+                              .emit("notifications", { msg: createBy.Firstname + " " + createBy.Lastname + template.MessageTemplate });
+                            await db.notifications.create({
+                              NotiTypeID: 3,
+                              UserID: item.UserID,
+                              Title: template.TitleTemplate,
+                              Message: template.MessageTemplate,
+                              ActionPage: template.ActionTemplate,
+                              CreatedBy: req.body.userid,
+                              UpdatedBy: req.body.userid
+                            });
+                          });
+                        });
+                      } else {
+                        await db.user_profile.findAll({ where: { UserTypeID: 5 }, raw: true }).then(user => {
+                          console.log("b", user);
+                          user.forEach(async item => {
+                            template = notiTemplate.find(item => item.UserTypeID == 5);
+                            template.MessageTemplate = template.MessageTemplate.replace("{ProjectName}", project.ProjectNameTH);
+                            req.io
+                              .to(`room_${item.UserID}`)
+                              .emit("notifications", { msg: createBy.Firstname + " " + createBy.Lastname + template.MessageTemplate });
+                            await db.notifications.create({
+                              NotiTypeID: 3,
+                              UserID: item.UserID,
+                              Title: template.TitleTemplate,
+                              Message: template.MessageTemplate,
+                              ActionPage: template.ActionTemplate,
+                              CreatedBy: req.body.userid,
+                              UpdatedBy: req.body.userid
+                            });
+                          });
+                        });
+                      }
+                    });
+                });
             }
 
             break;

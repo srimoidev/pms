@@ -11,9 +11,7 @@
     >
       <template v-slot:top>
         <v-toolbar flat color="white">
-          <v-toolbar-title>
-            โครงงานทั้งหมด
-          </v-toolbar-title>
+          <v-toolbar-title> โครงงานทั้งหมด </v-toolbar-title>
           <v-divider class="mx-4" inset vertical></v-divider>
           <v-text-field v-model="searchText" append-icon="mdi-magnify" label="Search" single-line hide-details class="mr-10"></v-text-field>
           <v-select
@@ -26,7 +24,7 @@
             dense
             label="Type"
             class="mr-2"
-            style="width:1%"
+            style="width: 1%"
           ></v-select>
           <v-select
             v-model="statusFilter"
@@ -37,7 +35,7 @@
             outlined
             dense
             label="Status"
-            style="width:2%"
+            style="width: 2%"
           ></v-select>
           <v-spacer></v-spacer>
           <v-btn v-if="!user.ProjectID" class="primary white--text" @click="showProposalModal">
@@ -50,7 +48,7 @@
         {{ `${item.ProjectNameTH} (${item.ProjectNameEN})` }}
       </template>
       <template v-slot:[`item.Project_Type`]="{ item }">
-        <v-chip class=" white--text" :class="`type-${item.Project_Type.ProjectTypeID}`" small label>
+        <v-chip class="white--text" :class="`type-${item.Project_Type.ProjectTypeID}`" small label>
           {{ allType[item.Project_Type.ProjectTypeID - 1].ProjectTypeNameTH }}
         </v-chip>
       </template>
@@ -75,18 +73,14 @@
             >
               mdi-account-arrow-right-outline
             </v-icon>
-            <v-icon v-else v-bind="attrs" v-on="on" class="mr-2" @click="projectModal(item)" size="20">
-              mdi-open-in-new
-            </v-icon>
+            <v-icon v-else v-bind="attrs" v-on="on" class="mr-2" @click="projectModal(item)" size="20"> mdi-open-in-new </v-icon>
           </template>
           <span v-if="item.Project_Members.length < item.MaxMember">เข้าร่วมกลุ่ม</span>
           <span v-else>ดูรายละเอียด</span>
         </v-tooltip>
         <v-tooltip v-else bottom>
           <template v-slot:activator="{ on, attrs }">
-            <v-icon v-bind="attrs" v-on="on" class="mr-2" @click="projectModal(item)" size="20">
-              mdi-open-in-new
-            </v-icon>
+            <v-icon v-bind="attrs" v-on="on" class="mr-2" @click="projectModal(item)" size="20"> mdi-open-in-new </v-icon>
           </template>
           <span>ดูรายละเอียด</span>
         </v-tooltip>
@@ -172,10 +166,10 @@ export default {
     }),
     filteredItems() {
       return this.allProject
-        .filter(item => {
+        .filter((item) => {
           return !this.typeFilter || item.Project_Type.ProjectTypeID == this.typeFilter;
         })
-        .filter(item => {
+        .filter((item) => {
           return !this.statusFilter || item.Project_Status.ProjectStatusID == this.statusFilter;
         });
     }
@@ -217,15 +211,29 @@ export default {
         this.$router.push("/student/project");
       });
     },
-    projectModal(pProject) {
+    async projectModal(pProject) {
       this.selectedProject = pProject;
-      //ถ้ามีกลุ่มแล้ว หรือ สมาชิกกลุ่มนั้นๆเต็มแล้ว หรือ สถานะ != 1(Draft) จะไม่สามารถเข้าร่วมกลุ่มได้
-      if (!!this.user.ProjectID || pProject.Project_Members.length == pProject.MaxMember || pProject.Project_Status.ProjectStatusID != 1) {
-        this.isJoinable = false;
-      } else {
-        this.isJoinable = true;
-      }
-      this.joinProjectModal = true;
+      await Promise.all(
+        this.selectedProject.Project_Members.map(async (item) => {
+          item.ProfileImage = await this.User.ProfileImage(item.UserID);
+        })
+      )
+        .then(async() => {
+          await Promise.all(
+            this.selectedProject.Project_Advisors.map(async (item) => {
+              item.ProfileImage = await this.User.ProfileImage(item.UserID);
+            })
+          );
+        })
+        .then(() => {
+          //ถ้ามีกลุ่มแล้ว หรือ สมาชิกกลุ่มนั้นๆเต็มแล้ว หรือ สถานะ != 1(Draft) จะไม่สามารถเข้าร่วมกลุ่มได้
+          if (!!this.user.ProjectID || pProject.Project_Members.length == pProject.MaxMember || pProject.Project_Status.ProjectStatusID != 1) {
+            this.isJoinable = false;
+          } else {
+            this.isJoinable = true;
+          }
+          this.joinProjectModal = true;
+        });
     },
     joinProject(pProjectID) {
       this.Project.Join(pProjectID, this.user.UserID).then(() => {
@@ -244,7 +252,7 @@ export default {
           cancelButtonText: "ยกเลิก",
           confirmButtonText: "ยืนยัน!"
         })
-        .then(result => {
+        .then((result) => {
           if (result.isConfirmed) {
             this.Project.Leave(this.user.UserID).then(() => {
               location.reload();

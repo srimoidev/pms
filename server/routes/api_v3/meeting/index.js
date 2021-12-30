@@ -112,10 +112,10 @@ router.get("/:id", async (req, res) => {
 
 // create
 router.post("/", async (req, res) => {
-  console.log(req);
+  console.log(req.body);
   const transaction = await db.sequelize.transaction();
   try {
-    await db.meeting.create(req.body, { transaction: transaction });
+    await db.meeting.create(req.body, { transaction: transaction }).then();
     await transaction.commit().then(() => {
       return res.status(200).send();
     });

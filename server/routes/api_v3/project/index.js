@@ -290,7 +290,7 @@ router.post("/create", async (req, res) => {
   let initStatus;
   const createBy = await db.user_profile.findOne({ where: { UserID: req.body.project.CreatedBy } });
   //กรณีนักศึกษาเป็นผู้สร้าง
-  initStatus = 1; //Draft
+  initStatus = 2; //Wait advisor
   // if (createBy.UserTypeID == 1) {
   //   if (req.body.project.MaxMember == req.body.members?.length) {
   //     initStatus = 2; //Wait Advisor ถ้า Add member มาเต็มจำนวน
@@ -304,7 +304,6 @@ router.post("/create", async (req, res) => {
   //     initStatus = 1; //Draft ถ้า Add มาไม่เต็ม
   //   }
   // }
-  console.log(req.body);
   req.body.project.ProjectStatusID = initStatus;
   const transaction = await db.sequelize.transaction();
   try {
@@ -355,13 +354,13 @@ router.post("/create", async (req, res) => {
           UserID: userid,
           Title: template.TitleTemplate,
           Message: template.MessageTemplate,
+          ActionPage: template.ActionTemplate,
           CreatedBy: req.body.project.CreatedBy,
           UpdatedBy: req.body.project.UpdatedBy
         });
       }
     });
     req.body.advisors.forEach(async userid => {
-      console.log(userid);
       if (userid != req.body.project.CreatedBy) {
         template = notiTemplate.find(item => item.UserTypeID == 2);
 
@@ -373,6 +372,7 @@ router.post("/create", async (req, res) => {
           UserID: userid,
           Title: template.TitleTemplate,
           Message: template.MessageTemplate,
+          ActionPage: template.ActionTemplate,
           CreatedBy: req.body.project.CreatedBy,
           UpdatedBy: req.body.project.UpdatedBy
         });
