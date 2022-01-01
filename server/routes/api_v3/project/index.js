@@ -337,53 +337,59 @@ router.post("/create", async (req, res) => {
       );
     }
 
-    const notiTemplate = await db.notification_types.findAll({
-      where: { NotiTypeID: 1, UserTypeID: [1, 2] }, //นักศึกษาและที่ปรึกษา
-      raw: true
-    });
-    let template;
-    req.body.members.forEach(async userid => {
-      if (userid != req.body.project.CreatedBy) {
-        template = notiTemplate.find(item => item.UserTypeID == 1);
+    await db.notification_types
+      .findAll({
+        where: { NotiTypeID: 1, UserTypeID: [1, 2] }, //นักศึกษาและที่ปรึกษา
+        raw: true
+      })
+      .then(notiTemplate => {
+        let template;
+        req.body.members.forEach(async userid => {
+          if (userid != req.body.project.CreatedBy) {
+            template = notiTemplate.find(item => item.UserTypeID == 1);
 
-        template.TitleTemplate = template.TitleTemplate.replace("{ProjectName}", project.ProjectNameTH);
-        template.MessageTemplate = template.MessageTemplate.replace("{ProjectName}", project.ProjectNameTH);
-        req.io.to(`room_${userid}`).emit("notifications", { msg: createBy.Firstname + " " + createBy.Lastname + template.MessageTemplate });
-        await db.notifications.create({
-          NotiTypeID: 1,
-          UserID: userid,
-          Title: template.TitleTemplate,
-          Message: template.MessageTemplate,
-          ActionPage: template.ActionTemplate,
-          CreatedBy: req.body.project.CreatedBy,
-          UpdatedBy: req.body.project.UpdatedBy
+            template.TitleTemplate = template.TitleTemplate.replace("{ProjectName}", project.ProjectNameTH);
+            template.MessageTemplate = template.MessageTemplate.replace("{ProjectName}", project.ProjectNameTH);
+            req.io.to(`room_${userid}`).emit("notifications", { msg: createBy.Firstname + " " + createBy.Lastname + template.MessageTemplate });
+            await db.notifications.create({
+              NotiTypeID: 1,
+              UserID: userid,
+              Title: template.TitleTemplate,
+              Message: template.MessageTemplate,
+              ActionPage: template.ActionTemplate,
+              CreatedBy: req.body.project.CreatedBy,
+              UpdatedBy: req.body.project.UpdatedBy
+            });
+          }
         });
-      }
-    });
-    req.body.advisors.forEach(async userid => {
-      if (userid != req.body.project.CreatedBy) {
-        template = notiTemplate.find(item => item.UserTypeID == 2);
+        req.body.advisors.forEach(async userid => {
+          if (userid != req.body.project.CreatedBy) {
+            template = notiTemplate.find(item => item.UserTypeID == 2);
 
-        template.TitleTemplate = template.TitleTemplate.replace("{ProjectName}", project.ProjectNameTH);
-        template.MessageTemplate = template.MessageTemplate.replace("{ProjectName}", project.ProjectNameTH);
-        req.io.to(`room_${userid}`).emit("notifications", { msg: createBy.Firstname + " " + createBy.Lastname + template.MessageTemplate });
-        await db.notifications.create({
-          NotiTypeID: 1,
-          UserID: userid,
-          Title: template.TitleTemplate,
-          Message: template.MessageTemplate,
-          ActionPage: template.ActionTemplate,
-          CreatedBy: req.body.project.CreatedBy,
-          UpdatedBy: req.body.project.UpdatedBy
+            template.TitleTemplate = template.TitleTemplate.replace("{ProjectName}", project.ProjectNameTH);
+            template.MessageTemplate = template.MessageTemplate.replace("{ProjectName}", project.ProjectNameTH);
+            req.io.to(`room_${userid}`).emit("notifications", { msg: createBy.Firstname + " " + createBy.Lastname + template.MessageTemplate });
+            await db.notifications.create({
+              NotiTypeID: 1,
+              UserID: userid,
+              Title: template.TitleTemplate,
+              Message: template.MessageTemplate,
+              ActionPage: template.ActionTemplate,
+              CreatedBy: req.body.project.CreatedBy,
+              UpdatedBy: req.body.project.UpdatedBy
+            });
+          }
         });
-      }
-    });
+      })
+      .then(async () => {
+        await transaction.commit().then(() => {
+          return res.status(200).send();
+        });
+      });
 
-    await transaction.commit().then(() => {
-      return res.status(200).send();
-    });
-    res.send(project);
+    // await res.send(project);
   } catch (err) {
+    console.log(err);
     await transaction.rollback();
     res.status(500).send({
       message: err.message || "Some error occurred while creating!"

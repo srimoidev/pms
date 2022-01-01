@@ -35,7 +35,8 @@ import Teacher_Meeting from "../views/Teacher/Meeting/Meeting.vue";
 import Teacher_MeetingDetail from "../views/Teacher/Meeting/MeetingDetail.vue";
 import Teacher_Overview from "../views/Teacher/Overview/Overview.vue";
 import Teacher_AllProject from "../views/Teacher/AllProject/AllProject.vue";
-import Teacher_ManageProject from "../views/Teacher/ManageProject/ManageProject.vue";
+import Teacher_ProjectList from "../views/Teacher/ManageProject/ProjectList.vue";
+import Teacher_Project from "../views/Teacher/ManageProject/Project.vue";
 import Teacher_TestReq from "../views/Teacher/Request/TestRequest.vue";
 import Teacher_ApprovementReq from "../views/Teacher/Request/ApprovementRequest.vue";
 import Teacher_FormPreview from "../views/Teacher/ManageProject/FormPreview.vue";
@@ -222,10 +223,16 @@ const routes = [
         meta: { title: "All Projects | PMS" }
       },
       {
+        path: "project_lists",
+        name: "Project Lists",
+        component: Teacher_ProjectList,
+        meta: { title: "Project List | PMS" }
+      },
+      {
         path: "project",
         name: "Manage Project",
-        component: Teacher_ManageProject,
-        meta: { title: "Topic Proposal | PMS" }
+        component: Teacher_Project,
+        meta: { title: "Project | PMS" }
       },
       {
         path: "advisor_req",

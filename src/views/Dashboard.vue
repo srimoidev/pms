@@ -47,7 +47,7 @@
         <v-select v-model="$i18n.locale" :items="langs" single-line @input="changeLang" item-text="title"></v-select>
       </div> -->
       <div class="text-center">
-        <dashboard-notification :noti.sync="notiData"></dashboard-notification>
+        <dashboard-notification :noti.sync="notiData" @itemClicked="itemClicked"></dashboard-notification>
       </div>
       <div>
         <dashboard-profile :data="user" @logout="logout"></dashboard-profile>
@@ -133,7 +133,7 @@ export default {
           toast.addEventListener("mouseleave", this.$swal.resumeTimer);
         }
       });
-      this.notiData = await this.User.Notifications(this.user.UserID);
+      this.notiData = await this.Notification.Notifications(this.user.UserID);
       this.notiData.map(async item => {
         item.ProfileImage = await this.User.ProfileImage(item.CreatedBy);
         item.TimeInterval = this.Utils.timeInterval(item.CreatedTime);
@@ -149,20 +149,16 @@ export default {
   //   }
   // }
   methods: {
-    asd() {
-      this.$socket.emit("test", { msg: "asdas asdasd asdasd", UserID: 15 });
-      this.User.TestNoti(this.user.UserID, 1, "Title 1", "ทดสอบ noti");
-    },
     async loadData() {
       this.$store.dispatch("user/getLoggedInUserData").then(async () => {
         this.$socket.emit("create", this.user.UserID);
         this.menu = this.initMenu(await this.App.Menus(this.typeID));
-        this.notiData = await this.User.Notifications(this.user.UserID);
+        this.notiData = await this.Notification.Notifications(this.user.UserID);
         this.notiData.map(async item => {
           item.ProfileImage = await this.User.ProfileImage(item.CreatedBy);
           item.TimeInterval = this.Utils.timeInterval(item.CreatedTime);
         });
-        console.log(this.notiData);
+        console.log(this.menu);
         //เป็นอาจารย์
         // if (this.typeID == 2) {
         //   this.waitAdvisorsConfirmProject = await this.Project.WaitAdviserConfirmProject(this.user.UserID);
@@ -180,6 +176,7 @@ export default {
     initMenu(data) {
       var temp = [];
       //parent
+      console.log(data)
       data
         .filter(item => item.app_menu.ParentID == 0)
         .forEach(element => {
@@ -230,6 +227,13 @@ export default {
       window.URL.revokeObjectURL(this.user.ImgProfile);
       this.$store.dispatch("authentication/logout");
       this.$store.dispatch("user/clearUserDate");
+    },
+    itemClicked(v) {
+      this.Notification.Read(v.NotiID).then(() => {
+        this.loadData().then(() => {
+          this.$router.push(v.ActionPage);
+        });
+      });
     }
   }
 };

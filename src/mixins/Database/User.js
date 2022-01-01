@@ -71,11 +71,7 @@ export async function ProfileImage(pUserID) {
     }
   });
 }
-export async function Notifications(pUserID) {
-  return await HTTP.get(`/notifications?userid=${pUserID}`).then(res => {
-    return res.data;
-  });
-}
+
 //#endregion outbound
 
 //#region inbound
