@@ -117,8 +117,11 @@
         <v-list v-if="!editStudent && loadMembersImg">
           <template v-for="(item, index) in newMembers">
             <v-list-item :key="item.UserID">
-              <v-list-item-avatar>
-                <v-img v-show="item.ImgUrl" :src="item.ImgUrl"></v-img>
+              <v-list-item-avatar v-if="item.ImgUrl">
+                <v-img :src="item.ImgUrl"></v-img>
+              </v-list-item-avatar>
+              <v-list-item-avatar v-else left class="d-flex justify-center grey lighten-3" size="40">
+                <v-icon class="grey--text text-darken-2">mdi-account</v-icon>
               </v-list-item-avatar>
               <v-list-item-content>
                 <v-list-item-title>{{ item.Firstname + " " + item.Lastname }}</v-list-item-title>
@@ -180,8 +183,11 @@
         <v-list v-if="!editTeacher && LoadAdvisorsImg">
           <template v-for="(item, index) in newAdvisors">
             <v-list-item :key="item.UserID">
-              <v-list-item-avatar>
-                <v-img v-show="item.ImgUrl" :src="item.ImgUrl"></v-img>
+              <v-list-item-avatar v-if="item.ImgUrl">
+                <v-img :src="item.ImgUrl"></v-img>
+              </v-list-item-avatar>
+              <v-list-item-avatar v-else left class="d-flex justify-center grey lighten-3" size="40">
+                <v-icon class="grey--text text-darken-2">mdi-account</v-icon>
               </v-list-item-avatar>
               <v-list-item-content>
                 {{ item.Firstname + " " + item.Lastname }}

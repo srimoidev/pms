@@ -52,7 +52,7 @@
       </template>
       <template v-slot:[`item.index`]="{ item }">
         <router-link class="text-none" :to="{ path: 'form_preview', query: { d: item.FormID } }">
-          {{ form.FormTypeName + " Rev." + data.indexOf(item) }}
+          {{ form.FormTypeName + " Rev." + (data.length - data.indexOf(item)) }}
         </router-link>
       </template>
       <template v-slot:[`item.actions`]="">

@@ -53,7 +53,7 @@
         </v-chip>
       </template>
       <template v-slot:[`item.MaxMember`]="{ item }">
-        {{ item.Project_Members.length + " / " + item.MaxMember }}
+        {{ item.Project_Members.length }}
       </template>
       <template v-slot:[`item.Project_Section`]="{ item }">
         {{ item.Project_Section.Sequence }}
@@ -64,13 +64,7 @@
       <template v-slot:[`item.actions`]="{ item }">
         <v-tooltip v-if="!user.ProjectID" bottom>
           <template v-slot:activator="{ on, attrs }">
-            <v-icon
-              v-if="item.Project_Members.length < item.MaxMember && [1, 2].includes(item.Project_Status.ProjectStatusID)"
-              v-bind="attrs"
-              v-on="on"
-              class="mr-2"
-              @click="projectModal(item)"
-            >
+            <v-icon v-if="[1, 2].includes(item.Project_Status.ProjectStatusID)" v-bind="attrs" v-on="on" class="mr-2" @click="projectModal(item)">
               mdi-account-arrow-right-outline
             </v-icon>
             <v-icon v-else v-bind="attrs" v-on="on" class="mr-2" @click="projectModal(item)" size="20"> mdi-open-in-new </v-icon>
@@ -87,9 +81,9 @@
       </template>
     </v-data-table>
     <template>
-      <modal-container :active="proposal_modal" :cancellable="1" @close="hideModal" :width="1000">
+      <modal-container :active="proposal_modal" :cancellable="1" @close="hideModalProposal" :width="1000">
         <new-topic
-          @close="hideModal"
+          @close="hideModalProposal"
           @newProject="newProject"
           :teachers="allTeacher"
           :alltype="allType"
@@ -100,8 +94,8 @@
       </modal-container>
     </template>
     <template>
-      <modal-container :active="joinProjectModal" :cancellable="1" @close="hideModal">
-        <project-modal-detail @submit="joinProject" @close="hideModal" :data="selectedProject" :join="isJoinable"> </project-modal-detail>
+      <modal-container :active="joinProjectModal" :cancellable="1" @close="hideModalDetail">
+        <project-modal-detail @submit="joinProject" @close="hideModalDetail" :data="selectedProject" :join="isJoinable"> </project-modal-detail>
       </modal-container>
     </template>
   </v-card>
@@ -166,10 +160,10 @@ export default {
     }),
     filteredItems() {
       return this.allProject
-        .filter((item) => {
+        .filter(item => {
           return !this.typeFilter || item.Project_Type.ProjectTypeID == this.typeFilter;
         })
-        .filter((item) => {
+        .filter(item => {
           return !this.statusFilter || item.Project_Status.ProjectStatusID == this.statusFilter;
         });
     }
@@ -214,26 +208,24 @@ export default {
     async projectModal(pProject) {
       this.selectedProject = pProject;
       await Promise.all(
-        this.selectedProject.Project_Members.map(async (item) => {
+        this.selectedProject.Project_Members.map(async item => {
           item.ProfileImage = await this.User.ProfileImage(item.UserID);
         })
-      )
-        .then(async() => {
-          await Promise.all(
-            this.selectedProject.Project_Advisors.map(async (item) => {
-              item.ProfileImage = await this.User.ProfileImage(item.UserID);
-            })
-          );
-        })
-        .then(() => {
+      ).then(async () => {
+        await Promise.all(
+          this.selectedProject.Project_Advisors.map(async item => {
+            item.ProfileImage = await this.User.ProfileImage(item.UserID);
+          })
+        ).then(() => {
           //ถ้ามีกลุ่มแล้ว หรือ สมาชิกกลุ่มนั้นๆเต็มแล้ว หรือ สถานะ != 1(Draft) จะไม่สามารถเข้าร่วมกลุ่มได้
-          if (!!this.user.ProjectID || pProject.Project_Members.length == pProject.MaxMember || pProject.Project_Status.ProjectStatusID != 1) {
+          if (!!this.user.ProjectID || ![1, 2].includes(pProject.Project_Status.ProjectStatusID)) {
             this.isJoinable = false;
           } else {
             this.isJoinable = true;
           }
           this.joinProjectModal = true;
         });
+      });
     },
     joinProject(pProjectID) {
       this.Project.Join(pProjectID, this.user.UserID).then(() => {
@@ -252,7 +244,7 @@ export default {
           cancelButtonText: "ยกเลิก",
           confirmButtonText: "ยืนยัน!"
         })
-        .then((result) => {
+        .then(result => {
           if (result.isConfirmed) {
             this.Project.Leave(this.user.UserID).then(() => {
               location.reload();
@@ -260,16 +252,40 @@ export default {
           }
         });
     },
-    hideModal() {
+    hideModalProposal() {
+      this.allStudent.map(async item => {
+        URL.revokeObjectURL(item.ProfileImage);
+      });
+      this.allteacher.map(async item => {
+        URL.revokeObjectURL(item.ProfileImage);
+      });
       this.proposal_modal = false;
+    },
+    hideModalDetail() {
+      this.selectedProject.Project_Members.map(async item => {
+        URL.revokeObjectURL(item.ProfileImage);
+      });
+      this.selectedProject.Project_Advisors.map(async item => {
+        URL.revokeObjectURL(item.ProfileImage);
+      });
       this.joinProjectModal = false;
     },
-    showProposalModal() {
-      this.proposal_modal = true;
-    },
-    showJoinGroupModal(Group) {
-      this.selectedGroup = Group;
-      this.joinProjectModal = true;
+    async showProposalModal() {
+      await Promise.all(
+        this.allStudent.map(async item => {
+          item.ProfileImage = await this.User.ProfileImage(item.UserID);
+        })
+      )
+        .then(async () => {
+          await Promise.all(
+            this.allTeacher.map(async item => {
+              item.ProfileImage = await this.User.ProfileImage(item.UserID);
+            })
+          );
+        })
+        .then(() => {
+          this.proposal_modal = true;
+        });
     },
     onResize() {
       //page header 64px

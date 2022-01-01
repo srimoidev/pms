@@ -220,10 +220,9 @@ router.put("/:id", async (req, res) => {
                       });
                     })
                     .then(async () => {
-                      console.log(!!project.IsProject,!project.IsProject);
+                      console.log(!!project.IsProject, !project.IsProject);
                       if (!project.IsProject) {
                         await db.user_profile.findAll({ where: { UserTypeID: 3 }, raw: true }).then(user => {
-                          console.log("a", user);
                           user.forEach(async item => {
                             template = notiTemplate.find(item => item.UserTypeID == 3);
                             template.MessageTemplate = template.MessageTemplate.replace("{ProjectName}", project.ProjectNameTH);
@@ -243,7 +242,6 @@ router.put("/:id", async (req, res) => {
                         });
                       } else {
                         await db.user_profile.findAll({ where: { UserTypeID: 5 }, raw: true }).then(user => {
-                          console.log("b", user);
                           user.forEach(async item => {
                             template = notiTemplate.find(item => item.UserTypeID == 5);
                             template.MessageTemplate = template.MessageTemplate.replace("{ProjectName}", project.ProjectNameTH);
@@ -268,16 +266,47 @@ router.put("/:id", async (req, res) => {
 
             break;
           case "REJECT":
-            console.log("reject");
-            await db.project_info.update(
-              { ProjectStatusID: 8, RejectedRemark: req.body.remark, UpdatedBy: req.body.userid }, //set to Rejected
-              {
-                where: {
-                  ProjectID: result.pID
-                }
-              },
-              { transaction: transaction }
-            );
+            await db.project_info
+              .update(
+                { ProjectStatusID: 8, RejectedRemark: req.body.remark, UpdatedBy: req.body.userid }, //set to Rejected
+                {
+                  where: {
+                    ProjectID: result.pID
+                  }
+                },
+                { transaction: transaction }
+              )
+              .then(async () => {
+                const notiTemplate = await db.notification_types.findAll({
+                  where: { NotiTypeID: 4, UserTypeID: 1 }, //นักศึกษาและที่ปรึกษา
+                  raw: true
+                });
+                let template;
+                const createBy = await db.user_profile.findOne({ where: { UserID: req.body.userid } });
+                const project = await db.project_info.findOne({
+                  where: { ProjectID: result.pID },
+                  raw: true
+                });
+                await db.project_member.findAll({ where: { ProjectID: result.pID }, raw: true }).then(async members => {
+                  members.forEach(async item => {
+                    if (item.UserID != req.body.userid) {
+                      template = notiTemplate.find(item => item.UserTypeID == 1);
+                      req.io
+                        .to(`room_${item.UserID}`)
+                        .emit("notifications", { msg: createBy.Firstname + " " + createBy.Lastname + template.MessageTemplate });
+                      await db.notifications.create({
+                        NotiTypeID: 4,
+                        UserID: item.UserID,
+                        Title: template.TitleTemplate,
+                        ActionPage: template.ActionTemplate,
+                        Message: template.MessageTemplate,
+                        CreatedBy: req.body.userid,
+                        UpdatedBy: req.body.userid
+                      });
+                    }
+                  });
+                });
+              });
             break;
         }
       });

@@ -76,10 +76,13 @@ router.get("/", async (req, res) => {
       ],
       group: "FormID",
       where: whereStr,
-      order: [
-        ["Form_Project", "ProjectID", "asc"],
-        ["Form_Project", "ProjectNameTH", "asc"],
-        ["Form_Type", "FormTypeName", "asc"]
+      // order: [
+      //   ["Form_Project", "ProjectID", "asc"],
+      //   ["Form_Project", "ProjectNameTH", "asc"],
+      //   ["Form_Type", "FormTypeName", "asc"]
+      // ]
+      order:[
+        ["CreatedTime", "desc"],
       ]
     });
     return res.json(data);
