@@ -127,7 +127,7 @@ export default {
         {
           text: "ที่ปรึกษาโครงงาน",
           disabled: false,
-          url: "/teacher/project"
+          url: "/teacher/project_lists"
         },
         {
           text: "จัดการโปรเจ็ค",

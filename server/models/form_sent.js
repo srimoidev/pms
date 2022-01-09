@@ -5,7 +5,8 @@ module.exports = (sequelize, Sequelize) => {
       FormID: {
         type: Sequelize.INTEGER,
         field: "FormID",
-        primaryKey: true
+        primaryKey: true,
+        autoIncrement: true
       },
       ProjectID: {
         type: Sequelize.INTEGER,

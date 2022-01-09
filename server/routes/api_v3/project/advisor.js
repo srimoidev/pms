@@ -220,7 +220,6 @@ router.put("/:id", async (req, res) => {
                       });
                     })
                     .then(async () => {
-                      console.log(!!project.IsProject, !project.IsProject);
                       if (!project.IsProject) {
                         await db.user_profile.findAll({ where: { UserTypeID: 3 }, raw: true }).then(user => {
                           user.forEach(async item => {
