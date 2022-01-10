@@ -18,9 +18,16 @@
           <v-divider class="mx-4" inset vertical></v-divider>
           <v-text-field v-model="searchText" append-icon="mdi-magnify" label="Search" single-line hide-details class="mr-2"></v-text-field>
           <v-spacer></v-spacer>
-          <v-btn class="mr-2" color="success" small @click="approveSelectedList">อนุมัติรายการที่เลือก</v-btn>
-          <v-btn color="error" small @click="rejectSelectedList">ไม่อนุมัติรายการที่เลือก</v-btn>
+          <!-- <v-btn class="mr-2" color="success" small @click="approveSelectedList">อนุมัติรายการที่เลือก</v-btn> -->
+          <!-- <v-btn color="error" small @click="rejectSelectedList">ไม่อนุมัติรายการที่เลือก</v-btn> -->
         </v-toolbar>
+      </template>
+      <template v-slot:[`item.Form_Type`]="{ item }">
+        <div>
+          <router-link :to="'form_preview?pid=' + item.Form_Project.ProjectID + '&fid=' + item.FormID" class="text-none">{{
+            item.Form_Type.FormTypeName
+          }}</router-link>
+        </div>
       </template>
       <template v-slot:[`item.CreatedTime`]="{ item }">
         <div>
@@ -55,15 +62,15 @@ export default {
       headers: [
         // { text: "#", value: "no", sortable: true },
         {
+          text: "ชื่อฟอร์ม",
+          value: "Form_Type",
+          sortable: true
+        },
+        {
           text: "ชื่อโครงงาน",
           align: "start",
           sortable: true,
           value: "Form_Project.ProjectNameTH"
-        },
-        {
-          text: "ชื่อฟอร์ม",
-          value: "Form_Type.FormTypeName",
-          sortable: true
         },
         {
           text: "ส่งเมื่อ",
@@ -102,9 +109,9 @@ export default {
   methods: {
     async loadData() {
       console.log(this.user.UserTypeID);
-      if (this.user.UserTypeID == 2) {
+      if (this.$route.query.MenuID == 102) {
         this.data = await this.Form.WaitforAdvisorApprove(this.user.UserID);
-      } else if (this.user.UserTypeID == 3 || this.user.UserTypeID == 5) {
+      } else if (this.$route.query.MenuID == 201) {
         this.data = await this.Form.WaitforInstructorApprove(this.user.UserID);
       }
 

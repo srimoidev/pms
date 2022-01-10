@@ -8,7 +8,6 @@
       :search="searchText"
       loading-text="Loading... Please wait"
       :height="windowHeight"
-      show-select
       item-key="ProjectID"
     >
       <template v-slot:top>
@@ -19,14 +18,35 @@
           <v-divider class="mx-4" inset vertical></v-divider>
           <v-text-field v-model="searchText" append-icon="mdi-magnify" label="Search" single-line hide-details class="mr-2"></v-text-field>
           <v-spacer></v-spacer>
-          <v-btn class="mr-2" color="success" small @click="approveSelectedList">อนุมัติรายการที่เลือก</v-btn>
+          <!-- <v-btn class="mr-2" color="success" small @click="approveSelectedList">อนุมัติรายการที่เลือก</v-btn> -->
           <!-- <v-btn color="error" small @click="rejectSelectedList">ไม่อนุมัติรายการที่เลือก</v-btn> -->
         </v-toolbar>
+      </template>
+      <template v-slot:[`item.ProjectNameTH`]="{ item }">
+        <router-link :to="`project?pid=` + item.ProjectID" class="text-none">{{item.ProjectNameTH}}</router-link>
       </template>
       <template v-slot:[`item.Project_Type`]="{ item }">
         <v-chip class=" white--text" :class="`type-${item.Project_Type.ProjectTypeID}`" small label>
           {{ allType[item.Project_Type.ProjectTypeID - 1].ProjectTypeNameTH }}
         </v-chip>
+      </template>
+      <template v-slot:[`item.Project_Section`]="{ item }">
+        <span
+          >{{ `Sec : ${item.Project_Section.Sequence}/${item.Project_Section.Year}` }}
+          <br />
+          <span>
+            {{ `อาจารย์ : ${item.Project_Section.Section_Instructor.Fullname}` }}
+          </span>
+          <br />
+          <span>
+            {{
+              `คาบเรียน : ${dayText[item.Project_Section.DayOfWeek - 1].text} ${item.Project_Section.StartTime.slice(
+                0,
+                5
+              )} - ${item.Project_Section.EndTime.slice(0, 5)}`
+            }}
+          </span>
+        </span>
       </template>
       <template v-slot:[`item.actions`]="{ item }">
         <div>
@@ -84,12 +104,21 @@ export default {
         },
         {
           text: "คาบเรียน",
-          value: "Project_Section.Detail"
+          value: "Project_Section"
         },
         {
           value: "actions",
           sortable: false
         }
+      ],
+      dayText: [
+        { id: 1, text: "วันอาทิตย์" },
+        { id: 2, text: "วันจันทร์" },
+        { id: 3, text: "วันอังคาร" },
+        { id: 4, text: "วันพุธ" },
+        { id: 5, text: "วันพฤหัสบดี" },
+        { id: 6, text: "วันศุกร์" },
+        { id: 7, text: "วันเสาร์" }
       ],
       data: [],
       selectedList: []
@@ -137,13 +166,13 @@ export default {
     async showDetail(project) {
       this.selectedProject = project;
       await Promise.all(
-        this.selectedProject.Project_Members.map(async (item) => {
+        this.selectedProject.Project_Members.map(async item => {
           item.ProfileImage = await this.User.ProfileImage(item.UserID);
         })
       )
         .then(async () => {
           await Promise.all(
-            this.selectedProject.Project_Advisors.map(async (item) => {
+            this.selectedProject.Project_Advisors.map(async item => {
               item.ProfileImage = await this.User.ProfileImage(item.UserID);
             })
           );
@@ -153,7 +182,7 @@ export default {
         });
       // this.modal = true;
     },
-    
+
     async Confirm(pProjectID, pStatus, pRemark, pIsBypass) {
       //TODO ส่ง UserID กับ array ProjectID ไป
       const advisor = await this.Project.Advisor(pProjectID, this.user.UserID);

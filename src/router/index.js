@@ -95,7 +95,7 @@ const routes = [
     path: "/student",
     name: "Student",
     component: Dashboard,
-    redirect: "/student/overview",
+    redirect: "/student/all_project",
     meta: { is_student: true },
     children: [
       {
@@ -202,7 +202,7 @@ const routes = [
     name: "Teacher",
     meta: { is_teacher: true },
     component: Dashboard,
-    redirect: "/teacher/overview",
+    redirect: "/teacher/all_project",
     children: [
       {
         path: "overview",

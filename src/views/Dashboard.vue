@@ -182,7 +182,7 @@ export default {
         .forEach(element => {
           var menuObj = {};
           menuObj.id = element.app_menu.MenuID;
-          menuObj.route = element.Route;
+          menuObj.route = element.Route + "?MenuID="+ element.app_menu.MenuID;
           menuObj.icon = element.app_menu.Icon;
           menuObj.name = element.app_menu.MenuName;
           menuObj["icon-alt"] = element.app_menu.IconAlt;
@@ -199,7 +199,7 @@ export default {
           .forEach(element => {
             var menuObj = {};
             menuObj.id = element.app_menu.MenuID;
-            menuObj.route = element.Route;
+            menuObj.route = element.Route + "?MenuID=" +element.app_menu.MenuID;
             menuObj.icon = element.app_menu.Icon;
             menuObj.name = element.app_menu.MenuName;
             // switch (menuObj.id) {
