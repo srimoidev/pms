@@ -198,16 +198,20 @@ router.delete("/", async (req, res) => {
                 template.TitleTemplate = template.TitleTemplate.replace("{FullName}", user.Firstname + " " + user.Lastname);
                 template.MessageTemplate = template.MessageTemplate.replace("{FullName}", user.Firstname + " " + user.Lastname);
                 template.MessageTemplate = template.MessageTemplate.replace("{ProjectName}", project.ProjectNameTH);
-                req.io.to(`room_${member.UserID}`).emit("notifications", { msg: "มีการแจ้งเตือนใหม่" });
-                await db.notifications.create({
-                  NotiTypeID: 8,
-                  UserID: member.UserID,
-                  Title: template.TitleTemplate,
-                  Message: template.MessageTemplate,
-                  ActionPage: template.ActionTemplate,
-                  CreatedBy: user.UserID,
-                  UpdatedBy: user.UserID
-                });
+
+                await db.notifications
+                  .create({
+                    NotiTypeID: 8,
+                    UserID: member.UserID,
+                    Title: template.TitleTemplate,
+                    Message: template.MessageTemplate,
+                    ActionPage: template.ActionTemplate,
+                    CreatedBy: user.UserID,
+                    UpdatedBy: user.UserID
+                  })
+                  .then(() => {
+                    req.io.to(`room_${member.UserID}`).emit("notifications", { msg: "มีการแจ้งเตือนใหม่" });
+                  });
               }
             });
             advisors.forEach(async advisor => {
@@ -218,16 +222,20 @@ router.delete("/", async (req, res) => {
                 template.MessageTemplate = template.MessageTemplate.replace("{FullName}", user.Firstname + " " + user.Lastname);
                 template.MessageTemplate = template.MessageTemplate.replace("{ProjectName}", project.ProjectNameTH);
                 template.ActionTemplate = template.ActionTemplate.replace("{ProjectID}", project.ProjectID);
-                req.io.to(`room_${advisor.UserID}`).emit("notifications", { msg: "มีการแจ้งเตือนใหม่" });
-                await db.notifications.create({
-                  NotiTypeID: 8,
-                  UserID: advisor.UserID,
-                  Title: template.TitleTemplate,
-                  Message: template.MessageTemplate,
-                  ActionPage: template.ActionTemplate,
-                  CreatedBy: user.UserID,
-                  UpdatedBy: user.UserID
-                });
+
+                await db.notifications
+                  .create({
+                    NotiTypeID: 8,
+                    UserID: advisor.UserID,
+                    Title: template.TitleTemplate,
+                    Message: template.MessageTemplate,
+                    ActionPage: template.ActionTemplate,
+                    CreatedBy: user.UserID,
+                    UpdatedBy: user.UserID
+                  })
+                  .then(() => {
+                    req.io.to(`room_${advisor.UserID}`).emit("notifications", { msg: "มีการแจ้งเตือนใหม่" });
+                  });
               }
             });
           });

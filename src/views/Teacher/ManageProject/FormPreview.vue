@@ -16,9 +16,9 @@
       </v-toolbar-title>
       <v-divider class="mx-4" inset vertical></v-divider>
       <v-spacer></v-spacer>
-      <v-btn icon tile @click="$refs.pdfComponent.print()">
+      <!-- <v-btn icon tile @click="$refs.pdfComponent.print()">
         <v-icon>mdi-printer</v-icon>
-      </v-btn>
+      </v-btn> -->
       <v-btn class="cyan lighten-1 white--text" small :href="this.fileUrl" :download="form_export_name">Download</v-btn>
     </v-toolbar>
     <div class="d-flex" style="height:inherit;padding-top:65px">
@@ -269,7 +269,7 @@ export default {
               this.$swal.fire({
                 toast: true,
                 icon: "success",
-                title: "Approved",
+                title: "ดำเนินการเรียบร้อยแล้ว",
                 position: "top-end",
                 showConfirmButton: false,
                 timer: 2000,

@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const { sequelize } = require("../../../models");
 const db = require("../../../models");
-const { QueryTypes } = require('sequelize');
+const { QueryTypes } = require("sequelize");
 // read
 router.get("/", async (req, res) => {
   var whereStr = [];
@@ -94,7 +94,7 @@ router.post("/", async (req, res) => {
           "SELECT * FROM project_info as PI where EXISTS (SELECT * From project_advisor AS PM where PI.ProjectID=PM.ProjectID AND PM.UserID=" +
             req.body.CreatedBy +
             ")",
-          { raw: false,type: QueryTypes.SELECT }
+          { raw: false, type: QueryTypes.SELECT }
         );
         project = project.length > 0 ? project[0] : {};
         console.log(project);
@@ -121,16 +121,20 @@ router.post("/", async (req, res) => {
 
                 template.MessageTemplate = template.MessageTemplate.replace("{FormName}", form.FormTypeName);
                 template.ActionTemplate = template.ActionTemplate.replace("{FormID}", formSent.FormID);
-                req.io.to(`room_${member.UserID}`).emit("notifications", { msg: "มีการแจ้งเตือนใหม่" });
-                await db.notifications.create({
-                  NotiTypeID: 20,
-                  UserID: member.UserID,
-                  Title: template.TitleTemplate,
-                  Message: template.MessageTemplate,
-                  ActionPage: template.ActionTemplate,
-                  CreatedBy: user.UserID,
-                  UpdatedBy: user.UserID
-                });
+
+                await db.notifications
+                  .create({
+                    NotiTypeID: 20,
+                    UserID: member.UserID,
+                    Title: template.TitleTemplate,
+                    Message: template.MessageTemplate,
+                    ActionPage: template.ActionTemplate,
+                    CreatedBy: user.UserID,
+                    UpdatedBy: user.UserID
+                  })
+                  .then(() => {
+                    req.io.to(`room_${member.UserID}`).emit("notifications", { msg: "มีการแจ้งเตือนใหม่" });
+                  });
               }
             });
           });

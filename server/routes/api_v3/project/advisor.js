@@ -204,18 +204,20 @@ router.put("/:id", async (req, res) => {
                       members.forEach(async item => {
                         if (item.UserID != req.body.userid) {
                           template = notiTemplate.find(item => item.UserTypeID == 1);
-                          req.io
-                            .to(`room_${item.UserID}`)
-                            .emit("notifications", { msg: createBy.Firstname + " " + createBy.Lastname + template.MessageTemplate });
-                          await db.notifications.create({
-                            NotiTypeID: 3,
-                            UserID: item.UserID,
-                            Title: template.TitleTemplate,
-                            ActionPage: template.ActionTemplate,
-                            Message: template.MessageTemplate,
-                            CreatedBy: req.body.userid,
-                            UpdatedBy: req.body.userid
-                          });
+
+                          await db.notifications
+                            .create({
+                              NotiTypeID: 3,
+                              UserID: item.UserID,
+                              Title: template.TitleTemplate,
+                              ActionPage: template.ActionTemplate,
+                              Message: template.MessageTemplate,
+                              CreatedBy: req.body.userid,
+                              UpdatedBy: req.body.userid
+                            })
+                            .then(() => {
+                              req.io.to(`room_${item.UserID}`).emit("notifications", { msg: "มีการแจ้งเตือนใหม่" });
+                            });
                         }
                       });
                     })
@@ -225,18 +227,20 @@ router.put("/:id", async (req, res) => {
                           user.forEach(async item => {
                             template = notiTemplate.find(item => item.UserTypeID == 3);
                             template.MessageTemplate = template.MessageTemplate.replace("{ProjectName}", project.ProjectNameTH);
-                            req.io
-                              .to(`room_${item.UserID}`)
-                              .emit("notifications", { msg: createBy.Firstname + " " + createBy.Lastname + template.MessageTemplate });
-                            await db.notifications.create({
-                              NotiTypeID: 3,
-                              UserID: item.UserID,
-                              Title: template.TitleTemplate,
-                              Message: template.MessageTemplate,
-                              ActionPage: template.ActionTemplate,
-                              CreatedBy: req.body.userid,
-                              UpdatedBy: req.body.userid
-                            });
+
+                            await db.notifications
+                              .create({
+                                NotiTypeID: 3,
+                                UserID: item.UserID,
+                                Title: template.TitleTemplate,
+                                Message: template.MessageTemplate,
+                                ActionPage: template.ActionTemplate,
+                                CreatedBy: req.body.userid,
+                                UpdatedBy: req.body.userid
+                              })
+                              .then(() => {
+                                req.io.to(`room_${item.UserID}`).emit("notifications", { msg: "มีการแจ้งเตือนใหม่" });
+                              });
                           });
                         });
                       } else {
@@ -244,18 +248,20 @@ router.put("/:id", async (req, res) => {
                           user.forEach(async item => {
                             template = notiTemplate.find(item => item.UserTypeID == 5);
                             template.MessageTemplate = template.MessageTemplate.replace("{ProjectName}", project.ProjectNameTH);
-                            req.io
-                              .to(`room_${item.UserID}`)
-                              .emit("notifications", { msg: createBy.Firstname + " " + createBy.Lastname + template.MessageTemplate });
-                            await db.notifications.create({
-                              NotiTypeID: 3,
-                              UserID: item.UserID,
-                              Title: template.TitleTemplate,
-                              Message: template.MessageTemplate,
-                              ActionPage: template.ActionTemplate,
-                              CreatedBy: req.body.userid,
-                              UpdatedBy: req.body.userid
-                            });
+
+                            await db.notifications
+                              .create({
+                                NotiTypeID: 3,
+                                UserID: item.UserID,
+                                Title: template.TitleTemplate,
+                                Message: template.MessageTemplate,
+                                ActionPage: template.ActionTemplate,
+                                CreatedBy: req.body.userid,
+                                UpdatedBy: req.body.userid
+                              })
+                              .then(() => {
+                                req.io.to(`room_${item.UserID}`).emit("notifications", { msg: "มีการแจ้งเตือนใหม่" });
+                              });
                           });
                         });
                       }
@@ -290,18 +296,20 @@ router.put("/:id", async (req, res) => {
                   members.forEach(async item => {
                     if (item.UserID != req.body.userid) {
                       template = notiTemplate.find(item => item.UserTypeID == 1);
-                      req.io
-                        .to(`room_${item.UserID}`)
-                        .emit("notifications", { msg: createBy.Firstname + " " + createBy.Lastname + template.MessageTemplate });
-                      await db.notifications.create({
-                        NotiTypeID: 4,
-                        UserID: item.UserID,
-                        Title: template.TitleTemplate,
-                        ActionPage: template.ActionTemplate,
-                        Message: template.MessageTemplate,
-                        CreatedBy: req.body.userid,
-                        UpdatedBy: req.body.userid
-                      });
+
+                      await db.notifications
+                        .create({
+                          NotiTypeID: 4,
+                          UserID: item.UserID,
+                          Title: template.TitleTemplate,
+                          ActionPage: template.ActionTemplate,
+                          Message: template.MessageTemplate,
+                          CreatedBy: req.body.userid,
+                          UpdatedBy: req.body.userid
+                        })
+                        .then(() => {
+                          req.io.to(`room_${item.UserID}`).emit("notifications", { msg: "มีการแจ้งเตือนใหม่" });
+                        });
                     }
                   });
                 });

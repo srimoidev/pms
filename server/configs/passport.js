@@ -22,8 +22,9 @@ passport.use(
         where: { Username: username }
       });
       var data, msg;
-      bcrypt.compare(password, user.Password, (err, res) => {
+      bcrypt.compare(password, user?.Password || "", (err, res) => {
         if (err) {
+          console.log(err)
           throw err;
         }
         if (res) {

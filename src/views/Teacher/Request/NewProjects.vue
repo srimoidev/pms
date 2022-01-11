@@ -8,7 +8,6 @@
       :search="searchText"
       loading-text="Loading... Please wait"
       :height="windowHeight"
-      show-select
       item-key="ProjectID"
     >
       <template v-slot:top>

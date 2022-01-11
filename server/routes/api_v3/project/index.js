@@ -350,7 +350,7 @@ router.post("/create", async (req, res) => {
 
             template.TitleTemplate = template.TitleTemplate.replace("{ProjectName}", project.ProjectNameTH);
             template.MessageTemplate = template.MessageTemplate.replace("{ProjectName}", project.ProjectNameTH);
-            req.io.to(`room_${userid}`).emit("notifications", { msg: createBy.Firstname + " " + createBy.Lastname + template.MessageTemplate });
+            
             await db.notifications.create({
               NotiTypeID: 1,
               UserID: userid,
@@ -359,6 +359,8 @@ router.post("/create", async (req, res) => {
               ActionPage: template.ActionTemplate,
               CreatedBy: req.body.project.CreatedBy,
               UpdatedBy: req.body.project.UpdatedBy
+            }).then(()=>{
+              req.io.to(`room_${userid}`).emit("notifications", { msg: "มีการแจ้งเตือนใหม่" });
             });
           }
         });
@@ -368,7 +370,7 @@ router.post("/create", async (req, res) => {
 
             template.TitleTemplate = template.TitleTemplate.replace("{ProjectName}", project.ProjectNameTH);
             template.MessageTemplate = template.MessageTemplate.replace("{ProjectName}", project.ProjectNameTH);
-            req.io.to(`room_${userid}`).emit("notifications", { msg: createBy.Firstname + " " + createBy.Lastname + template.MessageTemplate });
+            
             await db.notifications.create({
               NotiTypeID: 1,
               UserID: userid,
@@ -377,6 +379,8 @@ router.post("/create", async (req, res) => {
               ActionPage: template.ActionTemplate,
               CreatedBy: req.body.project.CreatedBy,
               UpdatedBy: req.body.project.UpdatedBy
+            }).then(()=>{
+              req.io.to(`room_${userid}`).emit("notifications", { msg: "มีการแจ้งเตือนใหม่"});
             });
           }
         });
