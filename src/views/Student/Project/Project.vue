@@ -1,8 +1,8 @@
 <template>
   <div v-if="user.ProjectID" class="d-flex ma-2">
-    <v-card class="elevation-1 mr-2" style="width:70%;" tile v-resize="onResize" :min-height="windowHeight">
+    <v-card class="elevation-1 mr-2" style="width: 70%" tile v-resize="onResize" :min-height="windowHeight">
       <v-toolbar flat color="white">
-        <v-toolbar-title style="max-width:50%">
+        <v-toolbar-title style="max-width: 50%">
           {{ txtHeaderNameTH }}
         </v-toolbar-title>
         <v-divider class="mx-4" inset vertical></v-divider>
@@ -15,9 +15,9 @@
           >{{ txtInfoLabel }}</v-chip
         >
         <v-spacer></v-spacer>
-        <v-btn class="mr-2" :color="isEdit ? 'amber' : 'primary'" @click="isEdit = !isEdit"
-          ><v-icon class="mr-2">mdi-square-edit-outline</v-icon> แก้ไข</v-btn
-        >
+        <v-btn class="mr-2" :color="isEdit ? 'amber' : 'primary'" @click="editForm">
+          <v-icon class="mr-2">mdi-square-edit-outline</v-icon> แก้ไข
+        </v-btn>
         <v-btn class="error white--text" @click="leaveProject">
           <v-icon class="mr-2">mdi-account-cancel-outline</v-icon>
           ออกจากกลุ่ม
@@ -56,16 +56,16 @@
                 </div>
               </v-col>
             </v-row>
-            <div v-if="isEdit" class="mr-4 mb-4" style="position:absolute;right:0;bottom:0">
+            <div v-if="isEdit" class="mr-4 mb-4" style="position: absolute; right: 0; bottom: 0">
               <v-spacer></v-spacer>
-              <v-btn class="mr-2" color="success">บันทึก</v-btn>
+              <v-btn class="mr-2" color="success" @click="submitForm">บันทึก</v-btn>
               <v-btn class="" color="" @click="isEdit = !isEdit">ยกเลิก</v-btn>
             </div>
           </v-card>
         </ValidationObserver>
       </v-container>
     </v-card>
-    <div style="width:30%">
+    <div style="width: 30%">
       <v-card class="elevation-1 mb-2" tile>
         <v-card-text class="d-flex">
           <span>สมาชิก</span>
@@ -206,8 +206,8 @@
       </div>
     </div>
   </div>
-  <div v-else class="text-center" style="height:inherit">
-    <div style="padding-top:19%">
+  <div v-else class="text-center" style="height: inherit">
+    <div style="padding-top: 19%">
       <v-icon size="128">mdi-alert-circle-outline</v-icon>
       <p>โปรดไปที่เมนู "โปรเจ็คทั้งหมด" เพื่อสร้างกลุ่มใหม่หรือเข้าร่วมกลุ่มก่อนจัดการโปรเจ็ค</p>
     </div>
@@ -319,16 +319,16 @@ export default {
       this.$store.dispatch("user/getLoggedInUserData").then(async () => {
         this.data = await this.Project.Project(this.user.ProjectID);
         this.txtHeaderNameTH = `Manage Project - ${this.data.ProjectNameTH}`;
-        this.data.Project_Advisors.map(item => {
+        this.data.Project_Advisors.map((item) => {
           this.selectedAdvisors.push(item.UserID);
         });
-        this.data.Project_Members.map(item => {
+        this.data.Project_Members.map((item) => {
           this.selectedMembers.push(item.UserID);
         });
 
         this.newMembers = this.data.Project_Members;
         Promise.all(
-          this.newMembers.map(async item => {
+          this.newMembers.map(async (item) => {
             item.ImgUrl = await this.User.ProfileImage(item.UserID);
           })
         ).then(() => {
@@ -337,7 +337,7 @@ export default {
 
         this.newAdvisors = this.data.Project_Advisors;
         Promise.all(
-          this.newAdvisors.map(async item => {
+          this.newAdvisors.map(async (item) => {
             item.ImgUrl = await this.User.ProfileImage(item.UserID);
           })
         ).then(() => {
@@ -361,7 +361,7 @@ export default {
           cancelButtonText: "ยกเลิก",
           confirmButtonText: "ยืนยัน!"
         })
-        .then(result => {
+        .then((result) => {
           if (result.isConfirmed) {
             this.Project.Leave(this.user.ProjectID, this.user.UserID);
             this.$router.push("/student/all_project");
@@ -378,11 +378,11 @@ export default {
     async saveNewAdvisors() {
       if (await this.$refs.obsAdvisors.validate()) {
         const temp = this.selectedAdvisors;
-        this.newAdvisors = this.allTeacher.filter(item => {
+        this.newAdvisors = this.allTeacher.filter((item) => {
           return temp.includes(item.UserID);
         });
         Promise.all(
-          this.newAdvisors.map(async item => {
+          this.newAdvisors.map(async (item) => {
             item.ImgUrl = await this.User.ProfileImage(item.UserID);
           })
         ).then(() => {
@@ -392,7 +392,7 @@ export default {
     },
     cancelEditTeacher() {
       this.selectedAdvisors = [];
-      this.newAdvisors.map(item => {
+      this.newAdvisors.map((item) => {
         this.selectedAdvisors.push(item.UserID);
       });
       this.editTeacher = false;
@@ -400,11 +400,11 @@ export default {
     async saveNewMember() {
       if (await this.$refs.obsAdvisors.validate()) {
         const temp = this.selectedMembers;
-        this.newMembers = this.allStudent.filter(item => {
+        this.newMembers = this.allStudent.filter((item) => {
           return temp.includes(item.UserID);
         });
         Promise.all(
-          this.newMembers.map(async item => {
+          this.newMembers.map(async (item) => {
             item.ImgUrl = await this.User.ProfileImage(item.UserID);
           })
         ).then(() => {
@@ -414,7 +414,7 @@ export default {
     },
     cancelEditMember() {
       this.selectedMembers = [];
-      this.newMembers.map(item => {
+      this.newMembers.map((item) => {
         this.selectedMembers.push(item.UserID);
       });
       this.editStudent = false;
@@ -433,6 +433,12 @@ export default {
     async imgUrl(pUserID) {
       console.log(await this.User.ProfileImage(pUserID));
       return await this.User.ProfileImage(pUserID);
+    },
+    editForm() {
+      this.isEdit = !this.isEdit;
+    },
+    submitForm() {
+      // test
     }
   }
 };

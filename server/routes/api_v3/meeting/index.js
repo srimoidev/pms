@@ -112,7 +112,7 @@ router.get("/:id", async (req, res) => {
 
 // create
 router.post("/", async (req, res) => {
-  console.log(req);
+  console.log(req.body);
   const transaction = await db.sequelize.transaction();
   try {
     await db.meeting.create(req.body, { transaction: transaction });
@@ -120,8 +120,9 @@ router.post("/", async (req, res) => {
       return res.status(200).send();
     });
   } catch (error) {
-    await transaction.rollback();
     res.send({ message: error.message });
+    console.log(error.message);
+    // await transaction.rollback();
   }
 });
 

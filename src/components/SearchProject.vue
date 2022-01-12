@@ -4,7 +4,7 @@
       <v-text-field
         v-if="!isSearch"
         v-model="searchText"
-        style="margin:0 15% 0 15%"
+        style="margin: 0 15% 0 15%"
         append-icon="mdi-magnify"
         label="คำค้นหา"
         solo
@@ -12,7 +12,7 @@
         @click:append="submitSearch"
         @keypress.enter="submitSearch"
       ></v-text-field>
-      <div v-if="isSearch" style="width:inherit;align-self: flex-start;">
+      <div v-if="isSearch" style="width: inherit; align-self: flex-start">
         <v-text-field
           v-model="searchText"
           append-icon="mdi-magnify"
@@ -39,35 +39,37 @@
         </div>
         <v-row>
           <v-col cols="3">
-            <v-select v-model="a" :items="allType" item-text="ProjectType_Name" item-value="ProjectType_ID" solo dense> </v-select>
+            <v-select v-model="typeFilter" :items="allType" item-text="ProjectTypeNameTH" item-value="ProjectTypeID" solo dense> </v-select>
           </v-col>
           <v-col cols="9">
-            <div class="overflow-y-auto pr-2" style="max-height: calc(100vh - 180px);">
-              <v-card v-for="item in searchResult" :key="item.Project_ID" class="mb-2">
+            <div class="overflow-y-auto pr-2" style="max-height: calc(100vh - 180px)">
+              <v-card v-for="item in filteredItems" :key="item.Project_ID" class="mb-2">
                 <div class="d-flex">
-                  <v-card-title style="width:100%">
-                    <router-link to="/student" class="text-none">{{ `${item.Project_NameTH} (${item.Project_NameEN})` }} </router-link>
+                  <v-card-title style="width: 100%">
+                    <router-link :to="'/project/' + item.ProjectID" class="text-none"
+                      >{{ `${item.ProjectNameTH} (${item.ProjectNameEN})` }}
+                    </router-link>
                   </v-card-title>
                   <div class="mt-5 mx-5">
-                    <v-chip class=" white--text" :class="`type-${item.Project_Type.ProjectType_ID}`" small label>
-                      {{ item.Project_Type.ProjectType_Name }}
+                    <v-chip class="white--text" :class="`type-${item.Project_Type.ProjectTypeID}`" small label>
+                      {{ item.Project_Type.ProjectTypeNameTH }}
                     </v-chip>
                   </div>
                 </div>
                 <v-card-subtitle>
-                  <div style="text-indent:2em">{{ item.Project_Detail }}</div>
+                  <div style="text-indent: 2em">{{ item.ProjectDetail }}</div>
                   <v-divider class="my-2"></v-divider>
                   <v-row no-gutters>
                     <v-col cols="8">
                       <span class="grey--text text--darken-3">สมาชิก</span>
-                      <div v-for="(item, index) in item.Project_Members" :key="item.User_ID" class="ml-4">
-                        {{ index + 1 + ". " + item.User_Firstname + " " + item.User_Lastname }}
+                      <div v-for="(item, index) in item.Project_Members" :key="index" class="ml-4">
+                        {{ index + 1 + ". " + item.Firstname + " " + item.Lastname }}
                       </div>
                     </v-col>
                     <v-col cols="4">
                       <span class="grey--text text--darken-3">อาจารย์ที่ปรึกษา</span>
-                      <div v-for="(item, index) in item.Project_Advisors" :key="item.User_ID" class="ml-4">
-                        {{ index + 1 + ". " + item.User_Firstname + " " + item.User_Lastname }}
+                      <div v-for="(item, index) in item.Project_Advisors" :key="index" class="ml-4">
+                        {{ index + 1 + ". " + item.Firstname + " " + item.Lastname }}
                       </div>
                     </v-col>
                   </v-row>
@@ -94,14 +96,32 @@ export default {
       ],
       searchResult: [],
       allType: [],
-      a: 1
+      a: 1,
+      typeFilter: 0,
+      statusFilter: 0
     };
+  },
+  computed: {
+    filteredItems() {
+      return this.searchResult
+        .filter((item) => {
+          return !this.typeFilter || item.Project_Type.ProjectTypeID == this.typeFilter;
+        })
+        .filter((item) => {
+          return !this.statusFilter || item.Project_Status.ProjectStatusID == this.statusFilter;
+        });
+    }
   },
   methods: {
     async submitSearch() {
       this.isSearch = true;
-      // this.allType = await this.Project.AllType();
-      this.allType = [{ ProjectType_ID: 1, ProjectType_Name: "ทั้งหมด" }];
+      // this.allType = [{ ProjectType_ID: 1, ProjectType_Name: "ทั้งหมด" }];
+      this.allType = await this.Project.AllType();
+      this.allType.splice(0, 0, {
+        ProjectTypeID: 0,
+        ProjectTypeNameTH: "ทั้งหมด"
+      });
+      // console.log("alltype", await this.Project.AllType());
       this.searchResult = await this.Project.GetAll(this.searchText.trim());
       console.log(this.searchResult);
       console.log(this.allType);
@@ -111,17 +131,17 @@ export default {
       switch (val.id) {
         case 1:
           this.searchResult.sort((a, b) => {
-            return a.Project_ID - b.Project_ID;
+            return a.ProjectID - b.ProjectID;
           });
           break;
         case 2:
           this.searchResult.sort((a, b) => {
-            return a.Project_ID - b.Project_ID;
+            return a.ProjectID - b.ProjectID;
           });
           break;
         case 3:
           this.searchResult.sort((a, b) => {
-            return b.Project_ID - a.Project_ID;
+            return b.ProjectID - a.ProjectID;
           });
           break;
 

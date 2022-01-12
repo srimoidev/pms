@@ -1,4 +1,5 @@
 ﻿UserTypeID,MenuID,Route
+0,300,/project/
 1,1,/student/overview
 1,2,/student/project
 1,3,/student/documents

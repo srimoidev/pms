@@ -6,6 +6,7 @@ import store from "../store/";
 // import Login from "../views/Login/Login.vue";
 import MainLogin from "../views/Login/MainLogin.vue";
 import Home from "../views/HomePage/Home.vue";
+import HomeProject from "../views/HomePage/Project.vue";
 import SearchProject from "../components/SearchProject.vue";
 
 //non-public, co-using pages
@@ -88,6 +89,12 @@ const routes = [
         meta: { title: "Login | PMS" }
       }
     ]
+  },
+  {
+    path: "/project/:id",
+    name: "Login",
+    component: HomeProject,
+    meta: { title: "Project | PMS" }
   },
   //Student
   {
