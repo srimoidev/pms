@@ -24,6 +24,10 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.STRING,
         field: "Message"
       },
+      ActionPage: {
+        type: Sequelize.STRING,
+        field: "ActionPage"
+      },
       IsRead: {
         type: Sequelize.BOOLEAN,
         field: "IsRead"

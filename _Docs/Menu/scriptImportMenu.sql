@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS `app_menus` (
 -- Dumping data for table `app_menus`
 --
 
-LOAD DATA INFILE 'C:/Users/Pete Ponlachet/Desktop/pms/_Docs/Menu/App_Menus.csv' 
+LOAD DATA INFILE 'C:/Users/PetePonlachet/Desktop/pms/_Docs/Menu/App_Menus.csv' 
 INTO TABLE `app_menus` 
 CHARACTER SET 'utf8'
 FIELDS TERMINATED BY ','
@@ -91,7 +91,7 @@ CREATE TABLE `app_privileges` (
   PRIMARY KEY(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-LOAD DATA INFILE 'C:/Users/Pete Ponlachet/Desktop/pms/_Docs/Menu/App_Privileges.csv' 
+LOAD DATA INFILE 'C:/Users/PetePonlachet/Desktop/pms/_Docs/Menu/App_Privileges.csv' 
 INTO TABLE `app_privileges` 
 CHARACTER SET 'utf8'
 FIELDS TERMINATED BY ','

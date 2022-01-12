@@ -11,9 +11,7 @@
     >
       <template v-slot:top>
         <v-toolbar flat color="white">
-          <v-toolbar-title>
-            จัดการกลุ่ม
-          </v-toolbar-title>
+          <v-toolbar-title> จัดการกลุ่ม </v-toolbar-title>
           <v-divider class="mx-4" inset vertical></v-divider>
           <v-text-field v-model="searchText" append-icon="mdi-magnify" label="Search" single-line hide-details class="mr-10"></v-text-field>
           <v-select
@@ -26,7 +24,7 @@
             dense
             label="Type"
             class="mr-2"
-            style="width:1%"
+            style="width: 1%"
           ></v-select>
           <v-select
             v-model="statusFilter"
@@ -37,7 +35,7 @@
             outlined
             dense
             label="Status"
-            style="width:2%"
+            style="width: 2%"
           ></v-select>
           <v-spacer></v-spacer>
           <v-btn class="primary white--text" @click="showProposalModal">
@@ -50,7 +48,7 @@
         {{ item.Project_Members.length + " / " + item.MaxMember }}
       </template>
       <template v-slot:[`item.Project_Type`]="{ item }">
-        <v-chip class=" white--text" :class="`type-${item.Project_Type.ProjectTypeID}`" small label>
+        <v-chip class="white--text" :class="`type-${item.Project_Type.ProjectTypeID}`" small label>
           {{ item.Project_Type.ProjectTypeNameTH }}
         </v-chip>
       </template>
@@ -66,9 +64,7 @@
       <template v-slot:[`item.actions`]="{ item }">
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
-            <v-icon v-bind="attrs" v-on="on" class="mr-2" @click="projectModal(item)" size="20">
-              mdi-open-in-new
-            </v-icon>
+            <v-icon v-bind="attrs" v-on="on" class="mr-2" @click="projectModal(item)" size="20"> mdi-open-in-new </v-icon>
           </template>
           <span>ดูรายละเอียด</span>
         </v-tooltip>
@@ -156,10 +152,10 @@ export default {
     }),
     filteredItems() {
       return this.allProject
-        .filter(item => {
+        .filter((item) => {
           return !this.typeFilter || item.ProjectTypeID == this.typeFilter;
         })
-        .filter(item => {
+        .filter((item) => {
           return !this.statusFilter || item.ProjectStatusID == this.statusFilter;
         });
     }
@@ -198,9 +194,23 @@ export default {
         this.loadData();
       });
     },
-    projectModal(pProject) {
+    async projectModal(pProject) {
       this.selectedProject = pProject;
-      this.detailModal = true;
+      await Promise.all(
+        this.selectedProject.Project_Members.map(async (item) => {
+          item.ProfileImage = await this.User.ProfileImage(item.UserID);
+        })
+      )
+        .then(async () => {
+          await Promise.all(
+            this.selectedProject.Project_Advisors.map(async (item) => {
+              item.ProfileImage = await this.User.ProfileImage(item.UserID);
+            })
+          );
+        })
+        .then(() => {
+          this.detailModal = true;
+        });
     },
     hideModal() {
       this.proposal_modal = false;

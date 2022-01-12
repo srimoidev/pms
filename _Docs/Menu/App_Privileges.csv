@@ -12,8 +12,9 @@
 2,101,/teacher/advisor_req
 2,102,/teacher/approvement_req
 2,103,/teacher/test_req
+2,104,/teacher/project_lists
 2,7,/teacher/meeting
-2,9,/teacher/project
+2,4,/teacher/project_manual
 2,10,/teacher/exam
 3,1,/teacher/overview
 3,6,/teacher/all_project
@@ -21,6 +22,7 @@
 3,101,/teacher/advisor_req
 3,102,/teacher/approvement_req
 3,103,/teacher/test_req
+3,104,/teacher/project_lists
 3,200,
 3,201,/teacher/approvement_req
 3,202,/teacher/new_projects
@@ -28,7 +30,7 @@
 3,10,/teacher/exam
 3,4,/teacher/project_manual
 3,5,/teacher/app_configs
-3,13,/teacher/manage_users
+3,11,/teacher/manage_users
 4,1,/admin/dashboard
 4,4,/admin/project_manual
 4,5,/admin/app_configs
@@ -39,6 +41,7 @@
 5,101,/teacher/advisor_req
 5,102,/teacher/approvement_req
 5,103,/teacher/test_req
+5,104,/teacher/project_lists
 5,200,
 5,201,/teacher/approvement_req
 5,202,/teacher/new_projects
@@ -46,4 +49,4 @@
 5,10,/teacher/exam
 5,4,/teacher/project_manual
 5,5,/teacher/app_configs
-5,13,/teacher/manage_users
+5,11,/teacher/manage_users

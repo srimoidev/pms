@@ -290,7 +290,7 @@ router.post("/create", async (req, res) => {
   let initStatus;
   const createBy = await db.user_profile.findOne({ where: { UserID: req.body.project.CreatedBy } });
   //กรณีนักศึกษาเป็นผู้สร้าง
-  initStatus = 1; //Draft
+  initStatus = 2; //Wait advisor
   // if (createBy.UserTypeID == 1) {
   //   if (req.body.project.MaxMember == req.body.members?.length) {
   //     initStatus = 2; //Wait Advisor ถ้า Add member มาเต็มจำนวน
@@ -304,7 +304,6 @@ router.post("/create", async (req, res) => {
   //     initStatus = 1; //Draft ถ้า Add มาไม่เต็ม
   //   }
   // }
-  console.log(req.body);
   req.body.project.ProjectStatusID = initStatus;
   const transaction = await db.sequelize.transaction();
   try {
@@ -338,52 +337,63 @@ router.post("/create", async (req, res) => {
       );
     }
 
-    const notiTemplate = await db.notification_types.findAll({
-      where: { NotiTypeID: 1, UserTypeID: [1, 2] }, //นักศึกษาและที่ปรึกษา
-      raw: true
-    });
-    let template;
-    req.body.members.forEach(async userid => {
-      if (userid != req.body.project.CreatedBy) {
-        template = notiTemplate.find(item => item.UserTypeID == 1);
+    await db.notification_types
+      .findAll({
+        where: { NotiTypeID: 1, UserTypeID: [1, 2] }, //นักศึกษาและที่ปรึกษา
+        raw: true
+      })
+      .then(notiTemplate => {
+        let template;
+        req.body.members.forEach(async userid => {
+          if (userid != req.body.project.CreatedBy) {
+            template = notiTemplate.find(item => item.UserTypeID == 1);
 
-        template.TitleTemplate = template.TitleTemplate.replace("{ProjectName}", project.ProjectNameTH);
-        template.MessageTemplate = template.MessageTemplate.replace("{ProjectName}", project.ProjectNameTH);
-        req.io.to(`room_${userid}`).emit("notifications", { msg: createBy.Firstname + " " + createBy.Lastname + template.MessageTemplate });
-        await db.notifications.create({
-          NotiTypeID: 1,
-          UserID: userid,
-          Title: template.TitleTemplate,
-          Message: template.MessageTemplate,
-          CreatedBy: req.body.project.CreatedBy,
-          UpdatedBy: req.body.project.UpdatedBy
+            template.TitleTemplate = template.TitleTemplate.replace("{ProjectName}", project.ProjectNameTH);
+            template.MessageTemplate = template.MessageTemplate.replace("{ProjectName}", project.ProjectNameTH);
+            
+            await db.notifications.create({
+              NotiTypeID: 1,
+              UserID: userid,
+              Title: template.TitleTemplate,
+              Message: template.MessageTemplate,
+              ActionPage: template.ActionTemplate,
+              CreatedBy: req.body.project.CreatedBy,
+              UpdatedBy: req.body.project.UpdatedBy
+            }).then(()=>{
+              req.io.to(`room_${userid}`).emit("notifications", { msg: "มีการแจ้งเตือนใหม่" });
+            });
+          }
         });
-      }
-    });
-    req.body.advisors.forEach(async userid => {
-      console.log(userid);
-      if (userid != req.body.project.CreatedBy) {
-        template = notiTemplate.find(item => item.UserTypeID == 2);
+        req.body.advisors.forEach(async userid => {
+          if (userid != req.body.project.CreatedBy) {
+            template = notiTemplate.find(item => item.UserTypeID == 2);
 
-        template.TitleTemplate = template.TitleTemplate.replace("{ProjectName}", project.ProjectNameTH);
-        template.MessageTemplate = template.MessageTemplate.replace("{ProjectName}", project.ProjectNameTH);
-        req.io.to(`room_${userid}`).emit("notifications", { msg: createBy.Firstname + " " + createBy.Lastname + template.MessageTemplate });
-        await db.notifications.create({
-          NotiTypeID: 1,
-          UserID: userid,
-          Title: template.TitleTemplate,
-          Message: template.MessageTemplate,
-          CreatedBy: req.body.project.CreatedBy,
-          UpdatedBy: req.body.project.UpdatedBy
+            template.TitleTemplate = template.TitleTemplate.replace("{ProjectName}", project.ProjectNameTH);
+            template.MessageTemplate = template.MessageTemplate.replace("{ProjectName}", project.ProjectNameTH);
+            
+            await db.notifications.create({
+              NotiTypeID: 1,
+              UserID: userid,
+              Title: template.TitleTemplate,
+              Message: template.MessageTemplate,
+              ActionPage: template.ActionTemplate,
+              CreatedBy: req.body.project.CreatedBy,
+              UpdatedBy: req.body.project.UpdatedBy
+            }).then(()=>{
+              req.io.to(`room_${userid}`).emit("notifications", { msg: "มีการแจ้งเตือนใหม่"});
+            });
+          }
         });
-      }
-    });
+      })
+      .then(async () => {
+        await transaction.commit().then(() => {
+          return res.status(200).send();
+        });
+      });
 
-    await transaction.commit().then(() => {
-      return res.status(200).send();
-    });
-    res.send(project);
+    // await res.send(project);
   } catch (err) {
+    console.log(err);
     await transaction.rollback();
     res.status(500).send({
       message: err.message || "Some error occurred while creating!"

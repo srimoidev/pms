@@ -42,13 +42,12 @@
       <v-toolbar-title style="width: 300px" class="ml-0 pl-4">
         <router-link to="/" class="text-none white--text"><span class="hidden-sm-and-down" v-t="{ path: 'APP.APP_NAME' }"></span></router-link>
       </v-toolbar-title>
-      <v-btn @click="asd">asdasd</v-btn>
       <v-spacer />
       <!-- <div class="select-lang">
         <v-select v-model="$i18n.locale" :items="langs" single-line @input="changeLang" item-text="title"></v-select>
       </div> -->
       <div class="text-center">
-        <dashboard-notification :noti.sync="notiData"></dashboard-notification>
+        <dashboard-notification :noti.sync="notiData" @itemClicked="itemClicked"></dashboard-notification>
       </div>
       <div>
         <dashboard-profile :data="user" @logout="logout"></dashboard-profile>
@@ -82,34 +81,6 @@ export default {
       { title: "ไทย", value: "th" },
       { title: "English", value: "en" }
     ],
-    // notifications: [
-    //   {
-    //     avatar: "https://cdn.vuetifyjs.com/images/lists/1.jpg",
-    //     title: "Brunch this weekend?",
-    //     subtitle:
-    //       "<span class='text--primary'>Ali Connors</span> &mdash; I'll be in your neighborhood doing errands this weekend. Do you want to hang out?"
-    //   },
-    //   {
-    //     avatar: "https://cdn.vuetifyjs.com/images/lists/2.jpg",
-    //     title: 'Summer BBQ <span class="grey--text text--lighten-1">4</span>',
-    //     subtitle: "<span class='text--primary'>to Alex, Scott, Jennifer</span> &mdash; Wish I could come, but I'm out of town this weekend."
-    //   },
-    //   {
-    //     avatar: "https://cdn.vuetifyjs.com/images/lists/3.jpg",
-    //     title: "Oui oui",
-    //     subtitle: "<span class='text--primary'>Sandra Adams</span> &mdash; Do you have Paris recommendations? Have you ever been?"
-    //   },
-    //   {
-    //     avatar: "https://cdn.vuetifyjs.com/images/lists/4.jpg",
-    //     title: "Birthday gift",
-    //     subtitle: "<span class='text--primary'>Trevor Hansen</span> &mdash; Have any ideas about what we should get Heidi for her birthday?"
-    //   },
-    //   {
-    //     avatar: "https://cdn.vuetifyjs.com/images/lists/5.jpg",
-    //     title: "Recipe to try",
-    //     subtitle: "<span class='text--primary'>Britta Holt</span> &mdash; We should eat this: Grate, Squash, Corn, and tomatillo Tacos."
-    //   }
-    // ],
     notiData: [],
     twoLine: true,
     avatar: true,
@@ -162,7 +133,7 @@ export default {
           toast.addEventListener("mouseleave", this.$swal.resumeTimer);
         }
       });
-      this.notiData = await this.User.Notifications(this.user.UserID);
+      this.notiData = await this.Notification.Notifications(this.user.UserID);
       this.notiData.map(async item => {
         item.ProfileImage = await this.User.ProfileImage(item.CreatedBy);
         item.TimeInterval = this.Utils.timeInterval(item.CreatedTime);
@@ -178,20 +149,16 @@ export default {
   //   }
   // }
   methods: {
-    asd() {
-      this.$socket.emit("test", { msg: "asdas asdasd asdasd", UserID: 15 });
-      this.User.TestNoti(this.user.UserID, 1, "Title 1", "ทดสอบ noti");
-    },
     async loadData() {
       this.$store.dispatch("user/getLoggedInUserData").then(async () => {
         this.$socket.emit("create", this.user.UserID);
         this.menu = this.initMenu(await this.App.Menus(this.typeID));
-        this.notiData = await this.User.Notifications(this.user.UserID);
+        this.notiData = await this.Notification.Notifications(this.user.UserID);
         this.notiData.map(async item => {
           item.ProfileImage = await this.User.ProfileImage(item.CreatedBy);
           item.TimeInterval = this.Utils.timeInterval(item.CreatedTime);
         });
-        console.log(this.notiData);
+        console.log(this.menu);
         //เป็นอาจารย์
         // if (this.typeID == 2) {
         //   this.waitAdvisorsConfirmProject = await this.Project.WaitAdviserConfirmProject(this.user.UserID);
@@ -209,12 +176,13 @@ export default {
     initMenu(data) {
       var temp = [];
       //parent
+      console.log(data)
       data
         .filter(item => item.app_menu.ParentID == 0)
         .forEach(element => {
           var menuObj = {};
           menuObj.id = element.app_menu.MenuID;
-          menuObj.route = element.Route;
+          menuObj.route = element.Route + "?MenuID="+ element.app_menu.MenuID;
           menuObj.icon = element.app_menu.Icon;
           menuObj.name = element.app_menu.MenuName;
           menuObj["icon-alt"] = element.app_menu.IconAlt;
@@ -231,7 +199,7 @@ export default {
           .forEach(element => {
             var menuObj = {};
             menuObj.id = element.app_menu.MenuID;
-            menuObj.route = element.Route;
+            menuObj.route = element.Route + "?MenuID=" +element.app_menu.MenuID;
             menuObj.icon = element.app_menu.Icon;
             menuObj.name = element.app_menu.MenuName;
             // switch (menuObj.id) {
@@ -259,6 +227,13 @@ export default {
       window.URL.revokeObjectURL(this.user.ImgProfile);
       this.$store.dispatch("authentication/logout");
       this.$store.dispatch("user/clearUserDate");
+    },
+    itemClicked(v) {
+      this.Notification.Read(v.NotiID).then(() => {
+        this.loadData().then(() => {
+          this.$router.push(v.ActionPage);
+        });
+      });
     }
   }
 };

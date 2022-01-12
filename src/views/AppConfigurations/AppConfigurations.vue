@@ -655,6 +655,7 @@ export default {
 
       form.forEach(element => {
         this.formTemp.push({ FormTypeID: element.FormTypeID, FormTypeName: element.FormTypeName });
+        
         var typeTemp = [];
         element.RequireForms.forEach(element => {
           typeTemp.push(element.FormTypeID);

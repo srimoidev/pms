@@ -18,7 +18,7 @@
           </v-toolbar-title>
           <v-divider class="mx-4" inset vertical></v-divider>
           <v-spacer></v-spacer>
-          <v-btn @click="upNewDoc = !upNewDoc">Upload new document</v-btn>
+          <!-- <v-btn @click="upNewDoc = !upNewDoc">Upload new document</v-btn> -->
           <template>
             <modal-container :active="upNewDoc" :cancellable="1">
               <template>
@@ -51,7 +51,9 @@
         </v-toolbar>
       </template>
       <template v-slot:[`item.index`]="{ item }">
-        {{ data.indexOf(item) + 1 }}
+        <router-link class="text-none" :to="{ path: 'form_preview', query: { pid: ProjectID, fid: item.FormID } }">
+          {{ form.FormTypeName + " Rev." + (data.length - data.indexOf(item)) }}
+        </router-link>
       </template>
       <template v-slot:[`item.actions`]="">
         <v-tooltip bottom>
@@ -63,10 +65,8 @@
           <span>ส่งเอกสารใหม่</span>
         </v-tooltip>
       </template>
-      <template v-slot:[`item.UpdatedTime`]="{ item }">
-        <router-link class="text-none" :to="{ path: 'form_preview', query: { pid: ProjectID, fid: item.FormID } }">{{
-          new Date(item.UpdatedTime).toLocaleDateString()
-        }}</router-link>
+      <template v-slot:[`item.UpdatedTime`]="{ item }"
+        >{{ new Date(item.UpdatedTime).toLocaleDateString() }}
         <!-- <v-badge color="red" inline content="5"></v-badge> -->
       </template>
       <template v-slot:[`item.FormStatusID`]="{ item }">
@@ -100,14 +100,13 @@ export default {
       project: {},
       comment: [],
       headers: [
-        { text: "#", value: "index" },
+        { text: "ชื่อเอกสาร", value: "index" },
         {
-          text: "อัปเดตล่าสุด",
-          align: "start",
-          sortable: false,
+          text: "วันที่ส่ง",
           value: "UpdatedTime"
         },
-        { text: "อัปเดตโดย", value: "UpdatedUser.Fullname", sortable: false },
+        { text: "ผู้ส่ง", value: "CreatedUser.Fullname" },
+        // { text: "อัปเดตโดย", value: "UpdatedUser.Fullname", sortable: false },
         { text: "สถานะ", value: "FormStatusID" }
       ]
     };
@@ -129,7 +128,7 @@ export default {
         {
           text: "ที่ปรึกษาโครงงาน",
           disabled: false,
-          url: "/teacher/project"
+          url: "/teacher/project_lists"
         },
         {
           text: "จัดการโปรเจ็ค",
@@ -157,19 +156,6 @@ export default {
       this.form = await this.Form.Type(this.FormTypeID);
       this.project = await this.Project.Project(this.ProjectID);
       this.data = await this.Form.AllFormEachType(this.ProjectID, this.FormTypeID, this.project.Project_Section.SectionID);
-      console.log(this.project, this.data);
-      // if (temp) {
-      //   temp.map(async item => {
-      //     // item.Comments = await DB.Project.form_comment(item.Form_ID);
-      //     const comment = await DB.Project.form_comment(item.Form_ID);
-      //     item.Comments = await comment ? comment : [];
-      //   });
-      //   // console.log(temp);
-      //   // this.data = temp;
-      //   this.loading = false;
-      //   return await temp
-      // }
-      // console.log(this.data,this.loading);
       this.loading = false;
     },
     onResize() {

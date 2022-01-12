@@ -16,9 +16,9 @@
       </v-toolbar-title>
       <v-divider class="mx-4" inset vertical></v-divider>
       <v-spacer></v-spacer>
-      <v-btn icon tile @click="$refs.pdfComponent.print()">
+      <!-- <v-btn icon tile @click="$refs.pdfComponent.print()">
         <v-icon>mdi-printer</v-icon>
-      </v-btn>
+      </v-btn> -->
       <v-btn
         class="cyan lighten-1 white--text"
         small

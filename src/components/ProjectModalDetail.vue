@@ -19,7 +19,10 @@
               <template v-for="i in data[item.name]">
                 <div :key="i.UserID">
                   <v-chip label class="mb-2">
-                    <v-avatar left class="d-flex justify-center" color="blue">
+                    <v-avatar v-if="i.ProfileImage" left class="d-flex justify-center" color="blue">
+                      <v-img :src="i.ProfileImage" max-width="25"></v-img>
+                    </v-avatar>
+                    <v-avatar v-else left class="d-flex justify-center" color="blue">
                       <v-icon color="white" small>mdi-account</v-icon>
                     </v-avatar>
                     <span class="grey--text text--darken-1">{{ i.Firstname + " " + i.Lastname }}</span>

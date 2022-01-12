@@ -66,7 +66,21 @@ router.post("/", async (req, res) => {
 router.put("/:id", async (req, res) => {
   const transaction = await db.sequelize.transaction();
   try {
-    await db.notification.update(req.body, { where: { Notification_ID: req.params.id } }, { transaction: transaction });
+    await db.notification.update(req.body, { where: { NotificationID: req.params.id } }, { transaction: transaction });
+    await transaction.commit().then(() => {
+      return res.status(200).send();
+    });
+  } catch (error) {
+    await transaction.rollback();
+    res.send({ message: error.message });
+  }
+});
+// update
+router.put("/read/:id", async (req, res) => {
+  const transaction = await db.sequelize.transaction();
+  try {
+    console.log(req.params.id)
+    await db.notifications.update({ IsRead: 1 }, { where: { NotiID: req.params.id } }, { transaction: transaction });
     await transaction.commit().then(() => {
       return res.status(200).send();
     });

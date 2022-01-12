@@ -32,7 +32,7 @@
         </v-toolbar>
       </template>
       <template v-slot:[`item.ProjectNameTH`]="{ item }">
-        <router-link :to="'/teacher/documents?pid=' + item.ProjectID" class="text-none">{{
+        <router-link :to="'/teacher/project?pid=' + item.ProjectID" class="text-none">{{
           item.ProjectNameTH + "(" + item.ProjectNameEN + ")"
         }}</router-link>
       </template>
@@ -59,6 +59,16 @@
           </template>
           <span>ดูรายละเอียด</span>
         </v-tooltip>
+        <router-link :to="'/teacher/documents?pid=' + item.ProjectID" class="text-none">
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on, attrs }">
+              <v-icon v-bind="attrs" v-on="on" class="mr-2" size="20">
+                mdi-pencil
+              </v-icon>
+            </template>
+            <span>ตรวจสอบเอกสาร</span>
+          </v-tooltip>
+        </router-link>
       </template>
       <template v-slot:[`item.Project_StatusID`]="{ item }">
         <group-status :status="item.Project_StatusID"></group-status>
