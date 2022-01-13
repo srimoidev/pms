@@ -17,7 +17,7 @@ import VueSocketIO from "vue-socket.io";
 require("sweetalert2/dist/sweetalert2.min.css");
 require("../node_modules/nprogress/nprogress.css");
 
-const SocketInstance = socketio(`http://${process.env.VUE_APP_API_HOST}`);
+const SocketInstance = socketio(`${process.env.VUE_APP_API_HOST}`);
 
 Vue.use(CKEditor);
 Vue.use(Database);
