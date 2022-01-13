@@ -7,7 +7,7 @@ const cors = require("cors");
 const app = express();
 const uuid = require("uuid").v4;
 const path = require("path");
-const PORT = 3000;
+const PORT = 3333;
 const server = require("http").createServer(app);
 const io = require("socket.io")(server, {
   cors: {
@@ -104,7 +104,7 @@ io.on("connection", socket => {
   // });
 });
 
-server.listen(3000);
+server.listen(PORT);
 
 // app.listen(PORT, () => {
 //   console.log(`server is listening on port ${PORT} | http://localhost:${PORT}`);

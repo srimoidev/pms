@@ -30,7 +30,7 @@ import Student_ProgressionRecord from "../views/Student/ProgressionRecord/Progre
 import Student_FormCE from "../views/Student/Documents/FormCE.vue";
 import Student_FormPreview from "../views/Student/Documents/FormPreview.vue";
 import Student_AllProject from "../views/Student/AllProject/AllProject.vue";
-
+import Student_Exam from "../views/Student/Project/Exam.vue";
 //teacher pages
 import Teacher_Meeting from "../views/Teacher/Meeting/Meeting.vue";
 import Teacher_MeetingDetail from "../views/Teacher/Meeting/MeetingDetail.vue";
@@ -200,6 +200,12 @@ const routes = [
         name: "All Project",
         component: Student_AllProject,
         meta: { title: "All Project | PMS" }
+      },
+      {
+        path: "exam",
+        name: "Exam",
+        component: Student_Exam,
+        meta: { title: "Exam | PMS" }
       }
     ]
   },

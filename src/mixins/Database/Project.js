@@ -13,7 +13,7 @@ export async function GetAll(pName = null, pTypeID = null, pSectionID = null) {
       return res.data;
     })
     .catch(() => {
-      console.error("Can't fetch group.");
+      console.error("Can't fetch all projects.");
     });
 }
 

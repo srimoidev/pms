@@ -5,7 +5,7 @@
     </v-toolbar>
     <v-divider class="ma-2"></v-divider>
     <div class="overflow-y-auto px-6" :style="{ 'max-height': windowHeight - 82 + 'px' }">
-      <v-container>
+      <v-container class="pb-10">
         <v-expansion-panels v-model="panels" multiple accordion flat>
           <!-- Panel Section -->
           <v-expansion-panel v-model="panels">
@@ -524,6 +524,21 @@
               </v-data-table>
             </v-expansion-panel-content>
           </v-expansion-panel>
+          <v-expansion-panel v-model="panels">
+            <v-expansion-panel-header>การสอบ</v-expansion-panel-header>
+            <v-divider class="mb-2"></v-divider>
+            <v-expansion-panel-content>
+              <v-row>
+                <v-col cols="3" class="align-self-end"><label for="" class="">ช่วงเวลาที่ขอสอบได้</label></v-col>
+                <v-col cols="8" class="d-flex">
+                  <span class="mr-2 align-self-end">ตั้งแต่ :</span>
+                  <v-text-field type="datetime-local" class="" name="datetime" hide-details></v-text-field>
+                  <span class="ml-4 mr-2 align-self-end">ถึง :</span>
+                  <v-text-field type="datetime-local" class="" name="datetime" hide-details></v-text-field>
+                </v-col>
+              </v-row>
+            </v-expansion-panel-content>
+          </v-expansion-panel>
         </v-expansion-panels>
       </v-container>
     </div>
@@ -550,7 +565,7 @@ export default {
     ValidationProvider
   },
   data: () => ({
-    panels: [0, 1],
+    panels: [0, 1, 2],
     documents_header: [
       { text: "ชื่อ", value: "FormTypeName" },
       // { text: "รายละเอียด", value: "FormTypeDetail", width: 200 },
@@ -655,7 +670,7 @@ export default {
 
       form.forEach(element => {
         this.formTemp.push({ FormTypeID: element.FormTypeID, FormTypeName: element.FormTypeName });
-        
+
         var typeTemp = [];
         element.RequireForms.forEach(element => {
           typeTemp.push(element.FormTypeID);

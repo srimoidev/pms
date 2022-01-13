@@ -8,5 +8,9 @@ module.exports = {
       localeDir: "locales",
       enableInSFC: true
     }
+  },
+  devServer: {
+    port: '3000'
   }
+  
 };

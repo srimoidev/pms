@@ -11,5 +11,18 @@
       "typeCast": true
     },
     "timezone": "+07:00" 
+  },
+  "production": {
+    "username": "root",
+    "password": "@Project1234",
+    "database": "project",
+    "host": "127.0.0.1",
+    "port":"3306",
+    "dialect": "mysql",
+    "OperatorsAliases": false,
+    "dialectOptions": { 
+      "typeCast": true
+    },
+    "timezone": "+07:00" 
   }
 }
