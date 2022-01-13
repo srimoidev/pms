@@ -13,7 +13,7 @@
     "timezone": "+07:00" 
   },
   "production": {
-    "username": "root",
+    "username": "projectadmin",
     "password": "@Project1234",
     "database": "project",
     "host": "127.0.0.1",
