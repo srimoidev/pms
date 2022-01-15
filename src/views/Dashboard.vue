@@ -12,7 +12,7 @@
           >
             <template v-slot:activator>
               <v-list-item-content>
-                <v-list-item-title>{{item.name}}</v-list-item-title>
+                <v-list-item-title>{{ item.name }}</v-list-item-title>
                 <v-badge v-if="index == 3 && allRequest" :content="allRequest" color="red" style="right:20px;top:-3px"></v-badge>
               </v-list-item-content>
             </template>
@@ -21,7 +21,7 @@
                 <v-icon>{{ child.icon }}</v-icon>
               </v-list-item-action>
               <v-list-item-content>
-                <v-list-item-title>{{child.name}}</v-list-item-title>
+                <v-list-item-title>{{ child.name }}</v-list-item-title>
                 <v-badge v-if="child.req" :content="child.req" color="red" style="right:20px;top:-3px"></v-badge>
               </v-list-item-content>
             </v-list-item>
@@ -31,7 +31,7 @@
               <v-icon>{{ item.icon }}</v-icon>
             </v-list-item-action>
             <v-list-item-content>
-              <v-list-item-title>{{item.name}}</v-list-item-title>
+              <v-list-item-title>{{ item.name }}</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
         </template>
@@ -177,7 +177,7 @@ export default {
         .forEach(element => {
           var menuObj = {};
           menuObj.id = element.app_menu.MenuID;
-          menuObj.route = element.Route + "?MenuID="+ element.app_menu.MenuID;
+          menuObj.route = element.Route + "?MenuID=" + element.app_menu.MenuID;
           menuObj.icon = element.app_menu.Icon;
           menuObj.name = element.app_menu.MenuName;
           menuObj["icon-alt"] = element.app_menu.IconAlt;
@@ -194,7 +194,7 @@ export default {
           .forEach(element => {
             var menuObj = {};
             menuObj.id = element.app_menu.MenuID;
-            menuObj.route = element.Route + "?MenuID=" +element.app_menu.MenuID;
+            menuObj.route = element.Route + "?MenuID=" + element.app_menu.MenuID;
             menuObj.icon = element.app_menu.Icon;
             menuObj.name = element.app_menu.MenuName;
             // switch (menuObj.id) {
