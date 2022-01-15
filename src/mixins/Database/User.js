@@ -34,7 +34,6 @@ export async function Profile(uID) {
 export async function GetAllStudentByGroupID(gID) {
   return await HTTP.post("/userstudent", { Student_GroupID: gID })
     .then(res => {
-      console.log(res.data);
       return res.data;
     })
     .catch(() => {
@@ -112,7 +111,6 @@ export async function Update(
   pIsActive,
   pProfileImg
 ) {
-  console.log(pIsActive);
   var formData = new FormData();
   formData.append("Password", pPassword);
   formData.append("Prefix", pPrefix);
@@ -123,7 +121,6 @@ export async function Update(
   formData.append("TelephoneNo", pTelephoneNo);
   formData.append("IsActive", pIsActive);
   formData.append("UpdatedBy", pUserID);
-  console.log(pProfileImg);
   if (pProfileImg) {
     formData.append("file", pProfileImg);
   }
@@ -139,7 +136,6 @@ export async function Update(
 }
 export async function ImportUser(pUserID, pImportedUser) {
   return HTTP.post("/user/import", { importedUser: pImportedUser, user: pUserID }).then(res => {
-    console.log(res.data);
     if (res.data?.msg) {
       return res.data;
     }

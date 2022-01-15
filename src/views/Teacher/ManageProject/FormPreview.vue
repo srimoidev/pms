@@ -204,8 +204,6 @@ export default {
       this.form = await this.Form.Form(this.FormID);
       this.fileUrl = await this.Form.FormPDF(this.FormID);
       this.commentData = await this.Form.Comment(this.FormID);
-      console.log(this.form);
-      console.log(this.commentData);
     },
     async saveNewComment() {
       await this.Form.NewComment(this.FormID, this.user.UserID, this.newCommentData);
@@ -264,7 +262,6 @@ export default {
         })
         .then(async result => {
           if (result.isConfirmed) {
-            console.log(this.user.UserID, this.ProjectID, this.FormID, status);
             await this.Form.ApproveOrReject(this.user.UserID, this.ProjectID, this.FormID, status).then(() => {
               this.$swal.fire({
                 toast: true,

@@ -144,7 +144,6 @@ export default {
         this.allType = await this.Project.AllType();
         //โปรเจ็ครอรับเป็นที่ปรึกษา
         this.data = await this.Project.WaitConfirmProject(this.user.UserID, 2);
-        console.log(this.data);
         this.data.map(async item => {
           await this.Project.Advisor(item.ProjectID).then(res => {
             if (res?.length == 1) {

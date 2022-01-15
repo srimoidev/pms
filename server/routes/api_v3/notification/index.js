@@ -54,7 +54,6 @@ router.post("/", async (req, res) => {
     await transaction.commit().then(() => {
       return res.status(200).send();
     });
-    console.log(req.body);
     req.io.to(`room_${req.body.UserID}`).emit("notifications", { msg: "add new Project" });
   } catch (error) {
     await transaction.rollback();
@@ -79,7 +78,6 @@ router.put("/:id", async (req, res) => {
 router.put("/read/:id", async (req, res) => {
   const transaction = await db.sequelize.transaction();
   try {
-    console.log(req.params.id)
     await db.notifications.update({ IsRead: 1 }, { where: { NotiID: req.params.id } }, { transaction: transaction });
     await transaction.commit().then(() => {
       return res.status(200).send();

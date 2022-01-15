@@ -136,7 +136,6 @@ export default {
         })
         .then(result => {
           if (result.isConfirmed) {
-            console.log("delete");
             this.Meeting.Delete(pID).then(() => {
               this.$swal.fire({
                 timer: 3000,

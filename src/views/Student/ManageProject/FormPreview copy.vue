@@ -122,7 +122,6 @@ export default {
   methods: {
     async loadData() {
       this.form = await this.Form.Form(this.form_id);
-      console.log(this.form);
       this.commentData = await this.Form.Comment(this.form_id);
     },
     async saveNewComment() {

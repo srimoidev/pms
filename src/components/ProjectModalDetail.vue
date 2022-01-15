@@ -166,7 +166,6 @@ export default {
     async advisorSubmit() {
       if (await this.$refs.observer.validate()) {
         //bypass กรณีเป็นที่ปรึกษารออนุมัติคนสุดท้ายและเป็นที่ปรึกษาด้วย
-        console.log(this.comfirmOrReject);
         if (this.bypass) {
           if (this.comfirmOrReject == 1) {
             this.$emit("submit", this.data.ProjectID, 1, this.txtRemark, this.isBypass); //1 Confirm

@@ -6,6 +6,7 @@
     "host": "127.0.0.1",
     "port":"3306",
     "dialect": "mysql",
+    "logging":false,
     "OperatorsAliases": false,
     "dialectOptions": { 
       "typeCast": true
@@ -19,6 +20,7 @@
     "host": "127.0.0.1",
     "port":"3306",
     "dialect": "mysql",
+    "logging":false,
     "OperatorsAliases": false,
     "dialectOptions": { 
       "typeCast": true

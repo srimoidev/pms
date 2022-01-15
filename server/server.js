@@ -86,22 +86,15 @@ app.use((req, res, next) => {
 });
 app.use(
   "/v3",
-  // passport.authenticate("jwt", { session: false }),
+  passport.authenticate("jwt", { session: false }),
   require("./routes/api_v3")
 );
 app.use("/login", require("./routes/login"));
 
-io.on("connection", socket => {
-  console.log("a user connected/n/n");
+io.on("connect", socket => {
   socket.on("create", function(id) {
-    console.log(`room_${id}`);
     socket.join(`room_${id}`);
   });
-  // socket.on("notifications", function(msg) {
-  //   console.log("socket by : ", socket.id, " message: " + msg);
-  //   // trick function client
-  //   io.emit("notifications", msg);
-  // });
 });
 
 server.listen(PORT);

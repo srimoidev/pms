@@ -88,7 +88,6 @@ router.post("/", async (req, res) => {
     await db.form_comment
       .create(req.body, { transaction: transaction })
       .then(async () => {
-        console.log(req.body);
         const user = await db.user_profile.findOne({ where: { UserID: req.body.CreatedBy } });
         let project = await sequelize.query(
           "SELECT * FROM project_info as PI where EXISTS (SELECT * From project_advisor AS PM where PI.ProjectID=PM.ProjectID AND PM.UserID=" +
@@ -97,7 +96,6 @@ router.post("/", async (req, res) => {
           { raw: false, type: QueryTypes.SELECT }
         );
         project = project.length > 0 ? project[0] : {};
-        console.log(project);
         const formSent = await db.form_sent.findOne({
           where: { FormID: req.body.FormID },
           raw: true
@@ -145,7 +143,6 @@ router.post("/", async (req, res) => {
         });
       });
   } catch (error) {
-    console.log(error);
     await transaction.rollback();
     res.send({ message: error.message });
   }

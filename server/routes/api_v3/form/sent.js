@@ -295,9 +295,7 @@ router.post("/", async (req, res) => {
 
 // update
 router.put("/:id", async (req, res) => {
-  console.log(req.body);
   var isAdvisor = await db.project_advisor.findOne({ where: { ProjectID: req.body.ProjectID, UserID: req.body.UpdatedBy }, raw: true });
-  console.log(isAdvisor);
   var status, notiTypeID;
   if (isAdvisor) {
     status = req.body.FormStatusID ? 2 : 3; //ถ้าอนุมัติโดยที่ปรึกษาเปลี่ยนสถานะเป็น 2(Wait Instructor) ถ้าไม่อนุมัติเป็น 3(Advisor Rejected)
@@ -306,7 +304,6 @@ router.put("/:id", async (req, res) => {
     status = req.body.FormStatusID ? 5 : 4; //ถ้าอนุมัติโดยประจำวิชาเปลี่ยนสถานะเป็น 5(Approved) ถ้าไม่อนุมัติเป็น 4(Instructor Rejected)
     notiTypeID = req.body.FormStatusID ? 12 : 13;
   }
-  console.log(status);
   const transaction = await db.sequelize.transaction();
   try {
     await db.form_sent
@@ -451,7 +448,6 @@ router.put("/:id", async (req, res) => {
     //   return res.status(200).send();
     // });
   } catch (error) {
-    console.log(err);
     await transaction.rollback();
     res.send({ message: error.message });
   }

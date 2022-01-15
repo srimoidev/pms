@@ -80,7 +80,6 @@ export async function Advisor(pProjectID, pUserID) {
   if (pUserID) {
     paramsStr += `&userid=${pUserID}&all=true`;
   }
-  console.log(`project/advisor?${paramsStr}`);
   return HTTP.get(`project/advisor?${paramsStr}`).then(res => {
     return res.data;
   });
@@ -89,7 +88,6 @@ export async function Advisor(pProjectID, pUserID) {
 //project ของ แต่ละ advisor
 export async function GetProjectByAdvisor(uID) {
   return await HTTP.get(`/project?advisorid=${uID}&reqStatus=1`).then(res => {
-    console.log(res.data);
     return res.data;
   });
 }
@@ -120,7 +118,6 @@ export async function ExampleFiles() {
 //blob pdf file
 export async function ExampleFile(pExampleFileID) {
   return await HTTP.get(`project/example_files/file/${pExampleFileID}`, { responseType: "blob" }).then(res => {
-    console.log(res.data.type);
     const file = new Blob([res.data], {
       type: res.data.type
     });
@@ -182,8 +179,6 @@ export async function UploadExampleFile(pUserID, pFile, onUploadProgress) {
       "Content-Type": "multipart/form-data"
     },
     onUploadProgress
-  }).then(res => {
-    console.log(res.data);
   });
 }
 export async function DeleteExampleFile(pExampleFileID) {
@@ -213,7 +208,6 @@ export async function FormCE(pID, fID) {
 
 export async function form_ce(pID, fID) {
   return await HTTP.get("/form/group/" + pID + "/type/" + fID).then(res => {
-    console.log(res);
     return res.data;
   });
 }

@@ -696,7 +696,6 @@ export default {
       });
       this.edited_section = JSON.parse(JSON.stringify(this.sections));
       this.sec_loading = false;
-      console.log(this.edited_section);
     },
     resetDateTime(pItem, pDeadline) {
       const item_idx = this.edited_form.findIndex(item => item.FormTypeID == pItem.FormTypeID);
@@ -812,7 +811,6 @@ export default {
         EndTime: this.newEndTime,
         Instructor: this.newInstructor
       };
-      console.log(newSection);
       if (await this.$refs.sectionAdd_observer.validate()) {
         this.Section.Add(this.user.UserID, newSection).then(() => {
           this.$swal.fire({
@@ -840,7 +838,6 @@ export default {
         Subject: section_obj.Subject,
         Term: section_obj.Term
       };
-      console.log(section_obj);
       if (await this.$refs.sectionEdit_observer.validate()) {
         this.Section.Update(this.user.UserID, item.SectionID, section_obj).then(() => {
           this.$swal.fire({

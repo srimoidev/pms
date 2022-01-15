@@ -56,7 +56,6 @@ router.get("/:id", async (req, res) => {
 router.post("/", async (req, res) => {
   const transaction = await db.sequelize.transaction();
   try {
-    console.log(req.body.section);
     await db.section
       .findAndCountAll({ where: [{ Subject: req.body.section.Subject }] })
       .then(async res => {

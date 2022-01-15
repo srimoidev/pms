@@ -148,19 +148,16 @@ export default {
       this.form = await this.Form.Type(this.FormTypeID);
       this.project = await this.Project.Project(this.user.ProjectID);
       this.data = await this.Form.AllFormEachType(this.user.ProjectID, this.FormTypeID, this.project.Project_Section.SectionID);
-      console.log(this.project, this.data);
       // if (temp) {
       //   temp.map(async item => {
       //     // item.Comments = await DB.Project.form_comment(item.Form_ID);
       //     const comment = await DB.Project.form_comment(item.Form_ID);
       //     item.Comments = await comment ? comment : [];
       //   });
-      //   // console.log(temp);
       //   // this.data = temp;
       //   this.loading = false;
       //   return await temp
       // }
-      // console.log(this.data,this.loading);
       this.loading = false;
     },
     onResize() {
@@ -171,7 +168,6 @@ export default {
       this.windowHeight = window.innerHeight - 64 - 64 - 16 - 59;
     },
     selectFile(file) {
-      console.log(file);
       this.progress = 0;
       this.currentFile = file;
     },

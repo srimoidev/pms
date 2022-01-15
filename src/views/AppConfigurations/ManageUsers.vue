@@ -385,7 +385,6 @@ export default {
     },
     importUser() {
       let validation = true;
-      console.log(this.importedData);
       for (const item of this.importedData) {
         /**
          * ===== Username Validation Rules =====
@@ -407,7 +406,7 @@ export default {
         const username_validate = new RegExp("^[a-zA-Z0-9_][a-zA-Z]+[0-9]*$");
         const email_validate = new RegExp("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$");
         const tel_validate = new RegExp("^[0-9]*$");
-        console.log(!item.Username, !username_validate.test(item.Username), !!(!item.Username && !username_validate.test(item.Username)));
+        // console.log(!item.Username, !username_validate.test(item.Username), !!(!item.Username && !username_validate.test(item.Username)));
         if (
           !item.Username ||
           !username_validate.test(item.Username) ||

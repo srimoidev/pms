@@ -8,7 +8,7 @@ export async function Prerequisite() {
       return res.data;
     })
     .catch(ex => {
-      console.log(ex);
+      console.error(ex);
     });
 }
 
@@ -19,7 +19,7 @@ export async function AllFormEachType(pProjectID, pFormID, pSectionID) {
       return res.data;
     })
     .catch(ex => {
-      console.log(ex);
+      console.error(ex);
     });
 }
 
@@ -44,7 +44,7 @@ export async function Comment(pFormID) {
       return res.data;
     })
     .catch(ex => {
-      console.log(ex);
+      console.error(ex);
     });
 }
 //Form type
@@ -54,7 +54,7 @@ export async function Types(pSubject) {
       return res.data;
     })
     .catch(ex => {
-      console.log(ex);
+      console.error(ex);
     });
 }
 export async function Type(pFormTypeID) {
@@ -63,7 +63,7 @@ export async function Type(pFormTypeID) {
       return res.data;
     })
     .catch(ex => {
-      console.log(ex);
+      console.error(ex);
     });
 }
 //All Type
@@ -73,7 +73,7 @@ export async function AllType() {
       return res.data;
     })
     .catch(ex => {
-      console.log(ex);
+      console.error(ex);
     });
 }
 //Form Status
@@ -111,7 +111,7 @@ export async function NewComment(pFormID, pUserID, pText) {
     CreatedBy: pUserID,
     UpdatedBy: pUserID
   }).catch(ex => {
-    console.log(ex);
+    console.error(ex);
   });
 }
 export async function Upload(pUserID, pProjectID, pFormTypeID, pFile) {
@@ -125,8 +125,6 @@ export async function Upload(pUserID, pProjectID, pFormTypeID, pFile) {
     headers: {
       "Content-Type": "multipart/form-data"
     }
-  }).then(res => {
-    console.log(res.data);
   });
 }
 export async function ApproveOrReject(pUserID, pProjectID, pFormID, pStatusID) {

@@ -71,7 +71,6 @@ export default {
         temp.Members = await this.Project.ProjectMember(this.user.pID);
         // temp.Advisor = await this.Group.GetAdvisor(this.user.pID);
         this.selfGroup = temp;
-        console.log(temp)
     },
     leaveProject() {
       this.Project.Leave(this.user.User_ID).then(() => {

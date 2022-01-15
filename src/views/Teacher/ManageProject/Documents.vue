@@ -157,9 +157,7 @@ export default {
     async loadData() {
       if (this.pid) {
         await this.Project.Project(this.pid).then(async res => {
-          // console.log(res);
           let initData;
-          console.log(res.IsProject);
           if (res.IsProject) {
             initData = await this.Form.Types(1); //Project
           } else {
@@ -181,7 +179,6 @@ export default {
               // element.PassPreRequisite = element.Prerequisite.filter(item => item.Status == 5).length == element.Prerequisite.length;
             });
           }
-          console.log(initData);
           this.data = initData;
           this.loading = false;
         });

@@ -128,7 +128,6 @@ export default {
       }
       if (sel.type === "file" || sel.type === "blob") {
         await Axios.get(sel.git_url).then(res => {
-          // console.log(sel.file)
           if (sel.file === "ico" || sel.file === "png") {
             this.isCode = false;
             this.code = "data:image/" + sel.file + ";base64," + res.data.content.split("\n").join("");
@@ -143,7 +142,6 @@ export default {
     async fetch_children(url) {
       let temp = [];
       temp = await Axios.get(url).then(async res => {
-        // console.log(res.data.tree[0])
         for (const i in res.data.tree) {
           if (res.data.tree[i].type === "tree") {
             res.data.tree[i].id = id++;

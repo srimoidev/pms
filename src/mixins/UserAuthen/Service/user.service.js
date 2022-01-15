@@ -9,7 +9,6 @@ function login(username, password) {
       const ttl = 1 * 60 * 60 * 1000; //ล็อกอินหมดอายุทุกๆ 1 ชม.
       const expiry = new Date().getTime() + ttl;
       localStorage.setItem("user", JSON.stringify({ token: res.data.token, expiry: expiry }));
-      console.log(user);
       return [2, 3, 5].includes(user.UserTypeID) ? "teacher" : user.UserTypeName.toLowerCase();
     } else {
       return Promise.reject(res.data.msg);

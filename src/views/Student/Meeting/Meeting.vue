@@ -230,7 +230,6 @@ export default {
           id: item.MeetingID
         });
       });
-      console.log(events);
       this.events = events;
     },
     async submit(pData) {

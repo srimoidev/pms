@@ -158,25 +158,20 @@ export default {
           item.ProfileImage = await this.User.ProfileImage(item.CreatedBy);
           item.TimeInterval = this.Utils.timeInterval(item.CreatedTime);
         });
-        console.log(this.menu);
         //เป็นอาจารย์
         // if (this.typeID == 2) {
         //   this.waitAdvisorsConfirmProject = await this.Project.WaitAdviserConfirmProject(this.user.UserID);
         // }
-        // console.log(this.waitAdvisorsConfirmProject);
       });
 
-      // console.log(this.menu, this.user);
       // if (this.user.User_ID) {
       //   this.menu = await this.App.Menus(this.user.UserType_ID);
 
-      //   console.log(this.waitAdvisorsConfirmProject);
       // }
     },
     initMenu(data) {
       var temp = [];
       //parent
-      console.log(data)
       data
         .filter(item => item.app_menu.ParentID == 0)
         .forEach(element => {

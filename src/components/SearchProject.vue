@@ -121,13 +121,9 @@ export default {
         ProjectTypeID: 0,
         ProjectTypeNameTH: "ทั้งหมด"
       });
-      // console.log("alltype", await this.Project.AllType());
       this.searchResult = await this.Project.GetAll(this.searchText.trim());
-      console.log(this.searchResult);
-      console.log(this.allType);
     },
     sort(val) {
-      console.log(val);
       switch (val.id) {
         case 1:
           this.searchResult.sort((a, b) => {

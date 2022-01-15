@@ -112,7 +112,6 @@ router.get("/:id", async (req, res) => {
 
 // create
 router.post("/", async (req, res) => {
-  console.log(req.body);
   const transaction = await db.sequelize.transaction();
   try {
     await db.meeting.create(req.body, { transaction: transaction }).then();
@@ -121,14 +120,12 @@ router.post("/", async (req, res) => {
     });
   } catch (error) {
     res.send({ message: error.message });
-    console.log(error.message);
     // await transaction.rollback();
   }
 });
 
 // update
 router.put("/:id", async (req, res) => {
-  console.log(req.body);
   const transaction = await db.sequelize.transaction();
   try {
     await db.meeting.update(req.body, { where: { MeetingID: req.params.id } }, { transaction: transaction });

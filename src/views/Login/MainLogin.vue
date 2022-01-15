@@ -84,7 +84,6 @@ export default {
           const { username, password } = this;
           this.$store.dispatch("authentication/login", { username, password });
         } catch (ex) {
-          console.log(ex);
           this.loginFail = true;
         }
       }

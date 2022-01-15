@@ -128,7 +128,6 @@ export default {
       // this.data = await DB.fetchCE(val);
       this.data = await DB.ManageProject.fetchCE(val);
       this.loaded = true;
-      console.log(this.tabs);
     },
     submit({ val, field }) {
       this.data[field] = val;

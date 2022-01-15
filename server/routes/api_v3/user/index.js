@@ -165,7 +165,6 @@ router.post("/import", async (req, res) => {
       where: { Username: importUserName },
       attributes: ["Username"]
     });
-    console.log(req.body);
     if (checkDuplicated?.length == 0) {
       const hashedUser = req.body.importedUser.map(async item => {
         item.Password = await bcrypt.hash(String(item.Password), saltRounds);
@@ -204,7 +203,6 @@ router.post("/import", async (req, res) => {
 // update
 router.put("/:id", async (req, res) => {
   const transaction = await db.sequelize.transaction();
-  console.log(req.files[0]);
   const user = {
     Prefix: req.body.Prefix,
     Firstname: req.body.Firstname,

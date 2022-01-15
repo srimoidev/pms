@@ -166,7 +166,6 @@ export default {
       this.windowHeight = window.innerHeight - 64 - 64 - 16 - 59;
     },
     selectFile(file) {
-      console.log(file);
       this.progress = 0;
       this.currentFile = file;
     },

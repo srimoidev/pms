@@ -108,7 +108,6 @@ export default {
   },
   methods: {
     async loadData() {
-      console.log(this.user.UserTypeID);
       if (this.$route.query.MenuID == 102) {
         this.data = await this.Form.WaitforAdvisorApprove(this.user.UserID);
       } else if (this.$route.query.MenuID == 201) {
@@ -116,7 +115,6 @@ export default {
       }
 
       this.formStatus = await this.Form.Status();
-      console.log(this.data);
       // const role = "Advisor";
       // switch (role) {
       //   case "Advisor":
@@ -135,7 +133,6 @@ export default {
       this.windowHeight = window.innerHeight - 64 - 64 - 16 - 59;
     },
     showDetail(val) {
-      console.log(val);
       this.$router.push(`/teacher/form_preview?pid=${val.ProjectID}&fid=${val.FormID}`);
     },
     approveSelectedList() {

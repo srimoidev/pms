@@ -187,7 +187,6 @@ export default {
     },
     async loadData() {
       this.item = await this.Project.Project(this.projectId);
-      console.log(this.item);
     }
   }
 };

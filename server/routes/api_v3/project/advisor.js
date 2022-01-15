@@ -326,31 +326,6 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-// .then(num => {
-//   console.log(num);
-//   await db.project_advisor.findAll({
-//     where: {
-//       Advisor_ProjectID: req.params.id
-//     }
-//   }
-
-//   )
-// if (num == 1) {
-//   res.send({
-//     message: "Updated successfully!"
-//   });
-// } else {
-//   res.send({
-//     message: `Cann't update, Maybe not found or req.body is empty!`
-//   });
-// }
-// })
-//     catch(err => {
-//       res.status(500).send({
-//         message: "Error updating!"
-//       });
-// });
-
 // delete
 router.delete("/:id", async (req, res) => {
   const transaction = await db.sequelize.transaction();

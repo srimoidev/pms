@@ -25,7 +25,6 @@ var Trello = {
       }
       this.getCards(url);
       sessionStorage.setItem("TrelloBoardDetail", JSON.stringify(temp));
-      // console.log(JSON.parse(sessionStorage.getItem("TrelloBoardDetail")))
     } catch (error) {
       console.error(error + "Can't get trello board detail");
     }

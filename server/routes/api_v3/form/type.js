@@ -15,7 +15,6 @@ router.get("/", async (req, res) => {
       });
     }
     whereStr.push({ isActive: true });
-    console.log(whereStr);
     const data = await db.form_type.findAll({
       where: whereStr
     });
@@ -73,10 +72,8 @@ router.get("/:id", async (req, res) => {
 
 // create
 router.post("/", async (req, res) => {
-  // console.log(req.body);
   req.body.formtype.CreatedBy = req.body.userid;
   req.body.formtype.UpdatedBy = req.body.userid;
-  console.log(req.body.formtype);
   const transaction = await db.sequelize.transaction();
   try {
     const formType = await db.form_type.create(req.body.formtype, { transaction: transaction });

@@ -195,7 +195,6 @@ export default {
       this.form = await this.Form.Form(this.form_id);
       this.fileUrl = await this.Form.FormPDF(this.form_id);
       this.commentData = await this.Form.Comment(this.form_id);
-      console.log(this.commentData, this.fileUrl);
     },
     async saveNewComment() {
       await this.Form.NewComment(this.form_id, this.user.UserID, this.newCommentData);

@@ -286,7 +286,6 @@ router.post("/", async (req, res) => {
 
 //สร้างกลุ่ม เพิ่่มอาจารย์ที่ปรึกษา เพิ่มสมาชิก
 router.post("/create", async (req, res) => {
-  // console.log(req.io)
   let initStatus;
   const createBy = await db.user_profile.findOne({ where: { UserID: req.body.project.CreatedBy } });
   //กรณีนักศึกษาเป็นผู้สร้าง
@@ -393,7 +392,6 @@ router.post("/create", async (req, res) => {
 
     // await res.send(project);
   } catch (err) {
-    console.log(err);
     await transaction.rollback();
     res.status(500).send({
       message: err.message || "Some error occurred while creating!"

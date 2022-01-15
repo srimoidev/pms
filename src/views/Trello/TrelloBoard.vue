@@ -118,13 +118,10 @@ export default {
     // async fetchBoardData() {
     //   if (this.board == null) {
     //     this.board = JSON.parse(sessionStorage.getItem("TrelloBoardDetail"));
-    //     console.log(this.board);
     //   } else {
-    //     console.log(this.board);
     //   }
     //   // else {
     //   //   this.board = sessionStorage.getItem("TrelloBoardDetail");
-    //   //   console.log(JSON.parse(sessionStorage.getItem("TrelloBoardDetail")));
     //   // }
     //   // this.board.prefs.backgroundImage
     //   //   ? (this.$refs.bg.style.backgroundImage =

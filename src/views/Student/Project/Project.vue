@@ -349,7 +349,6 @@ export default {
         ).then(() => {
           this.LoadAdvisorsImg = true;
         });
-        console.log(this.newMembers);
         this.loading = true;
       });
       this.allTeacher = await this.User.UserTeacher();
@@ -431,13 +430,11 @@ export default {
         ProjectNameEN: this.data.ProjectNameEN,
         ProjectDetail: this.data.ProjectDetail
       };
-      console.log(this.user.UserID, this.data.ProjectID, updateObj, this.selectedAdvisors);
       this.Project.Resend(this.user.UserID, this.data.ProjectID, updateObj, this.selectedAdvisors).then(() => {
         this.loadData();
       });
     },
     async imgUrl(pUserID) {
-      console.log(await this.User.ProfileImage(pUserID));
       return await this.User.ProfileImage(pUserID);
     },
     editForm() {

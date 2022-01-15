@@ -137,7 +137,6 @@ export default {
     },
     async download(item) {
       this.fileUrl = await this.Project.ExampleFile(item.ExampleFileID);
-      console.log(this.fileUrl);
       const link = document.createElement("a");
       link.href = this.fileUrl;
       link.setAttribute("download", item.OriginalFileName);
@@ -182,7 +181,6 @@ export default {
     },
     async upload() {
       await this.Project.UploadExampleFile(this.user.UserID, this.file, event => {
-        console.log(event);
         this.progress = Math.round((100 * event.loaded) / event.total);
       }).then(() => {
         this.loadData();
