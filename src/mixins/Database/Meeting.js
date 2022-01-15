@@ -31,29 +31,25 @@ export async function New(pData) {
 }
 
 export async function Approve(pID) {
-  await HTTP.put("/meeting/" + pID, { RequestStatus: "2" })
-    .catch(() => {
-      console.error("Can't add new meeting.");
-    });
+  await HTTP.put("/meeting/" + pID, { RequestStatus: "2" }).catch(() => {
+    console.error("Can't add new meeting.");
+  });
 }
 export async function Decline(pID) {
-  await HTTP.put("/meeting/" + pID, { RequestStatus: "3" })
-    .catch(() => {
-      console.error("Can't add new meeting.");
-    });
+  await HTTP.put("/meeting/" + pID, { RequestStatus: "3" }).catch(() => {
+    console.error("Can't add new meeting.");
+  });
 }
 
 export async function Delete(pID) {
-  await HTTP.put("/meeting/" + pID, { RequestStatus: "4" })
-    .catch(() => {
-      console.error("Can't add new meeting.");
-    });
+  await HTTP.put("/meeting/" + pID, { RequestStatus: "4" }).catch(() => {
+    console.error("Can't add new meeting.");
+  });
 }
 
 export async function UpdateNote(pID, pNote) {
-  await HTTP.put("/meeting/" + pID, { Note: pNote })
-    .catch(() => {
-      console.error("Can't update meeting.");
-    });
+  await HTTP.put("/meeting/" + pID, { Note: pNote }).catch(() => {
+    console.error("Can't update meeting.");
+  });
 }
 //#endregion inbound

@@ -12,7 +12,7 @@
           >
             <template v-slot:activator>
               <v-list-item-content>
-                <v-list-item-title v-t="{ path: item.name }"> </v-list-item-title>
+                <v-list-item-title>{{item.name}}</v-list-item-title>
                 <v-badge v-if="index == 3 && allRequest" :content="allRequest" color="red" style="right:20px;top:-3px"></v-badge>
               </v-list-item-content>
             </template>
@@ -21,7 +21,7 @@
                 <v-icon>{{ child.icon }}</v-icon>
               </v-list-item-action>
               <v-list-item-content>
-                <v-list-item-title v-t="{ path: child.name }"></v-list-item-title>
+                <v-list-item-title>{{child.name}}</v-list-item-title>
                 <v-badge v-if="child.req" :content="child.req" color="red" style="right:20px;top:-3px"></v-badge>
               </v-list-item-content>
             </v-list-item>
@@ -31,7 +31,7 @@
               <v-icon>{{ item.icon }}</v-icon>
             </v-list-item-action>
             <v-list-item-content>
-              <v-list-item-title v-t="{ path: item.name }"></v-list-item-title>
+              <v-list-item-title>{{item.name}}</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
         </template>
@@ -40,7 +40,7 @@
     <v-app-bar :clipped-left="$vuetify.breakpoint.lgAndUp" app color="blue darken-1" dark>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       <v-toolbar-title style="width: 300px" class="ml-0 pl-4">
-        <router-link to="/" class="text-none white--text"><span class="hidden-sm-and-down" v-t="{ path: 'APP.APP_NAME' }"></span></router-link>
+        <router-link to="/" class="text-none white--text"><span class="hidden-sm-and-down">ระบบบริหารและจัดการโครงงาน</span></router-link>
       </v-toolbar-title>
       <v-spacer />
       <!-- <div class="select-lang">

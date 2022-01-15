@@ -135,7 +135,13 @@
                   dense
                 >
                   <template v-slot:selection="teacher">
-                    <v-chip v-bind="teacher.attrs" :input-value="teacher.selected" @click="teacher.select" @click:close="remove(teacher.item)" class="mt-2">
+                    <v-chip
+                      v-bind="teacher.attrs"
+                      :input-value="teacher.selected"
+                      @click="teacher.select"
+                      @click:close="remove(teacher.item)"
+                      class="mt-2"
+                    >
                       <v-avatar v-if="teacher.item.ProfileImage" left class="d-flex justify-center">
                         <v-img :src="teacher.item.ProfileImage"></v-img>
                       </v-avatar>
@@ -328,5 +334,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>

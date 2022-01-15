@@ -3,7 +3,7 @@ import App from "./App.vue";
 import router from "./router";
 import store from "./store";
 import vuetify from "./plugins/vuetify";
-import i18n from "./i18n";
+// import i18n from "./i18n";
 import VueAxios from "vue-axios";
 import axios from "axios";
 import "./plugins/codemirror";
@@ -24,7 +24,7 @@ Vue.use(VueSweetalert2);
 Vue.use(Utils);
 Vue.use(
   new VueSocketIO({
-    debug: true,
+    debug: false,
     connection: SocketInstance,
     vuex: {
       store,
@@ -47,7 +47,7 @@ new Vue({
   router,
   store,
   vuetify,
-  i18n,
+  // i18n,
   VueAxios,
   axios,
   render: h => h(App)
