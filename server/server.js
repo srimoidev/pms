@@ -89,7 +89,7 @@ app.use(
   // passport.authenticate("jwt", { session: false }),
   require("./routes/api_v3")
 );
-app.use("/v3/login", require("./routes/login"));
+app.use("/login", require("./routes/login"));
 
 io.on("connection", socket => {
   console.log("a user connected/n/n");

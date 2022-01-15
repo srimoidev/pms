@@ -253,19 +253,19 @@ export default {
         });
     },
     hideModalProposal() {
-      this.allStudent.map(async item => {
+      this.allStudent?.map(async item => {
         URL.revokeObjectURL(item.ProfileImage);
       });
-      this.allteacher.map(async item => {
+      this.allteacher?.map(async item => {
         URL.revokeObjectURL(item.ProfileImage);
       });
       this.proposal_modal = false;
     },
     hideModalDetail() {
-      this.selectedProject.Project_Members.map(async item => {
+      this.selectedProject?.Project_Members.map(async item => {
         URL.revokeObjectURL(item.ProfileImage);
       });
-      this.selectedProject.Project_Advisors.map(async item => {
+      this.selectedProject?.Project_Advisors.map(async item => {
         URL.revokeObjectURL(item.ProfileImage);
       });
       this.joinProjectModal = false;
