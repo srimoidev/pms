@@ -43,19 +43,19 @@ var example_files_storage = multer.diskStorage({
   }
 });
 app.use(
-  "/api/v3/form/sent",
+  "/v3/form/sent",
   multer({
     storage: forms_storage
   }).any()
 );
 app.use(
-  "/api/v3/user",
+  "/v3/user",
   multer({
     storage: img_storage
   }).any()
 );
 app.use(
-  "/api/v3/project/example_files",
+  "/v3/project/example_files",
   multer({
     storage: example_files_storage
   }).any()
@@ -85,11 +85,11 @@ app.use((req, res, next) => {
   return next();
 });
 app.use(
-  "/api/v3",
+  "/v3",
   // passport.authenticate("jwt", { session: false }),
   require("./routes/api_v3")
 );
-app.use("/login", require("./routes/login"));
+app.use("/v3/login", require("./routes/login"));
 
 io.on("connection", socket => {
   console.log("a user connected/n/n");
