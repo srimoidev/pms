@@ -7,33 +7,25 @@ module.exports = (sequelize, Sequelize) => {
         field: "CommitteeID",
         primaryKey: true
       },
-      ProjectID: {
+      ExamID: {
         type: Sequelize.INTEGER,
-        field: "ProjectID"
+        field: "ExamID"
       },
       UserID: {
         type: Sequelize.INTEGER,
         field: "UserID"
       },
-      CommitteeRoleID: {
-        type: Sequelize.INTEGER,
-        field: "CommitteeRoleID"
-      },
       PresentScore: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.FLOAT,
         field: "PresentScore"
       },
       DocumentScore: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.FLOAT,
         field: "DocumentScore"
       },
       AdvisorScore: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.FLOAT,
         field: "AdvisorScore"
-      },
-      RequestStatusID: {
-        type: Sequelize.INTEGER,
-        field: "RequestStatusID"
       },
       CreatedBy: {
         type: Sequelize.INTEGER,

@@ -118,6 +118,31 @@
   background-color: #2dce89 !important;
 }
 
+/**
+*   Request Exam Status
+*/
+/* None */
+.e-status-0 {
+  background-color: #adadad !important;
+}
+/* Wait Adviser */
+.e-status-1 {
+  background-color: #ffea00 !important;
+}
+/* Wait Instructor */
+.e-status-2 {
+  background-color: #29b6f6 !important;
+}
+/* Wait For Exam */
+.e-status-3 {
+  background-color: #2dce89 !important;
+}
+.e-status-4 {
+  background-color: #f5365c !important;
+}
+.e-status-5 {
+  background-color: #f5365c !important;
+}
 .swal2-popup {
   font-family: "Mitr", serif !important;
 }

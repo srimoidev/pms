@@ -5,18 +5,42 @@
     </v-toolbar>
     <v-divider class="mx-2"></v-divider>
     <v-container>
-      <v-row dense>
-        <v-col cols="3" class="align-self-end text-right"><label>วัน-เวลา สอบ : </label></v-col>
-        <v-col cols="4"><v-text-field type="datetime-local" class="" name="datetime" hide-details></v-text-field></v-col>
-      </v-row>
-      <v-row dense class="mt-2">
-        <v-col cols="3" class="align-self-center text-right"><label>เอกสารแนบ (ถ้ามี) : </label></v-col>
+      <div v-if="isExamRequest" class="text-center">
+        <v-icon size="128" color="light-green accent-4">mdi-check-circle-outline</v-icon>
+        <h1>ทำการขอสอบเรียบร้อยแล้ว</h1>
+        <h3>โปรดรอการพิจารณาจากอาจารย์ที่ปรึกษาและอาจารย์ประจำวิชา</h3>
+      </div>
+      <div v-else>
+        <v-row dense>
+          <v-col cols="4" class="align-self-end text-right"><label>วิชา : </label></v-col>
+          <v-col cols="4"
+            ><v-autocomplete
+              v-model="isProject"
+              :items="ProjectType"
+              color="blue-grey lighten-2"
+              item-value="value"
+              item-text="text"
+              hide-details
+              outlined
+              dense
+              disabled
+            >
+            </v-autocomplete
+          ></v-col>
+        </v-row>
+        <v-row dense>
+          <v-col cols="4" class="align-self-end text-right"><label>วัน-เวลา สอบ : </label></v-col>
+          <v-col cols="4"><v-text-field v-model="selectedTime" type="datetime-local" class="" name="datetime" hide-details></v-text-field></v-col>
+        </v-row>
+        <!-- <v-row dense class="mt-2">
+        <v-col cols="4" class="align-self-center text-right"><label>เอกสารแนบ (ถ้ามี) : </label></v-col>
         <v-col cols="4"><v-file-input class="" outlined dense></v-file-input></v-col>
-      </v-row>
-      <v-row dense class="mt-2 justify-end">
-        <v-btn class="success mr-2" small>ส่ง</v-btn>
-        <v-btn class="" small>ยกเลิก</v-btn>
-      </v-row>
+      </v-row> -->
+        <v-row dense class="mt-2 justify-center">
+          <v-btn class="success mr-2" small @click="submit()">ส่ง</v-btn>
+          <v-btn class="" small>ยกเลิก</v-btn>
+        </v-row>
+      </div>
     </v-container>
   </v-card>
 </template>
@@ -28,6 +52,14 @@ import { mapGetters } from "vuex";
 export default {
   data() {
     return {
+      data: null,
+      selectedTime: null,
+      isExamRequest: false,
+      isProject: null,
+      ProjectType: [
+        { value: "1", text: "Pre-Project" },
+        { value: "2", text: "Project" }
+      ],
       windowHeight: 0
     };
   },
@@ -37,17 +69,49 @@ export default {
       typeID: "user/TypeID",
       isLoggedIn: "authentication/isLoggedIn"
     })
+    // isProject() {
+    //   return this.data.IsProject != true ? this.ProjectType.find(i => i.value == 1) : this.ProjectType.find(i => i.value == 2);
+    // }
   },
   beforeMount() {
     this.loadData(); //จับตอน เปลี่ยน route
   },
-  watch: {
-    // user() {
-    //   this.loadData(); //จับตอน reload
-    // }
-  },
+  // watch: {
+  //   // user() {
+  //   //   this.loadData(); //จับตอน reload
+  //   // }
+  //   data: function() {
+  //     console.log(this.data)
+  //     this.isProject = this.data.IsProject != true ? this.ProjectType.find(i => i.value == 1) : this.ProjectType.find(i => i.value == 2);
+  //   }
+  // },
   methods: {
-    async loadData() {},
+    async loadData() {
+      await this.Project.Project(this.user.ProjectID).then(res => {
+        this.data = res;
+        this.isProject = this.data?.IsProject != true ? this.ProjectType.find(i => i.value == 1) : this.ProjectType.find(i => i.value == 2);
+      });
+      this.isExamRequest = await this.Project.IsExamRequest(this.user.ProjectID);
+      // console.log(this.isExamRequest)
+    },
+    submit() {
+      this.$swal
+        .fire({
+          title: "ยืนยันขอสอบหรือไม่?",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          cancelButtonText: "ยกเลิก",
+          confirmButtonText: "ยืนยัน!"
+        })
+        .then(result => {
+          if (result.isConfirmed) {
+            this.Project.SubmitExamRequest(this.user.ProjectID, this.selectedTime, this.data.IsProject, this.user.UserID);
+            this.isExamRequest = true;
+          }
+        });
+    },
     onResize() {
       //page header 64px
       //table header 64px

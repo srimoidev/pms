@@ -71,3 +71,7 @@ INSERT INTO `notification_types` (`id`, `NotiTypeID`, `UserTypeID`, `NotiTypeNam
 (NULL, 19, 1, 'ยกเลิกการนัดหมาย', 'ยกเลิกการนัดหมาย', 'ยกเลิกการนัดหมาย วันที่ {Date} เวลา {Time}', '/student/form_preview?d={FormID}', NULL, NULL, NULL, NULL),
 -- อาจารย์ comment เอกสาร
 (NULL, 20, 1, 'คอมเมนต์จากอาจารย์', 'คอมเมนต์จากอาจารย์', 'คอมเมนต์เอกสาร {FormName}', '/student/form_preview?d={FormID}', NULL, NULL, NULL, NULL),
+-- นักศึกษาขอสอบ
+(NULL, 21, 2, 'นักศึกษาขอสอบ', 'นักศึกษาขอสอบ', 'กลุ่ม {ProjectName} ขอสอบในวันที่ {OnDate}', '/teacher/test_req', NULL, NULL, NULL, NULL),
+(NULL, 21, 3, 'นักศึกษาขอสอบ', 'นักศึกษาขอสอบ', 'กลุ่ม {ProjectName} ขอสอบในวันที่ {OnDate}', '/teacher/test_req', NULL, NULL, NULL, NULL),
+(NULL, 21, 5, 'นักศึกษาขอสอบ', 'นักศึกษาขอสอบ', 'กลุ่ม {ProjectName} ขอสอบในวันที่ {OnDate}', '/teacher/test_req', NULL, NULL, NULL, NULL),

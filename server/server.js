@@ -86,7 +86,7 @@ app.use((req, res, next) => {
 });
 app.use(
   "/v3",
-  passport.authenticate("jwt", { session: false }),
+  // passport.authenticate("jwt", { session: false }),
   require("./routes/api_v3")
 );
 app.use("/login", require("./routes/login"));

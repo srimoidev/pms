@@ -8,6 +8,8 @@ router.use("/progress", require("./progress"));
 router.use("/status", require("./status"));
 router.use("/type", require("./type"));
 router.use("/example_files", require("./example_files"));
+router.use("/exam",require("./exam"));
+
 router.get("/", async (req, res) => {
   try {
     var whereStr = [];
@@ -96,14 +98,6 @@ router.get("/", async (req, res) => {
             attributes: ["AdvisorID"]
           },
           attributes: { exclude: ["Username", "Password", "StudentID", "AcademicYear", "CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] }
-        },
-        {
-          model: db.user_profile,
-          as: "Project_Committees",
-          through: {
-            attributes: []
-          },
-          attributes: { exclude: ["User_UserName", "User_Password", "User_StudentID", "User_AcademicYear"] }
         },
         {
           model: db.project_status,
@@ -204,14 +198,14 @@ router.get("/:id", async (req, res) => {
             ]
           ]
         },
-        {
-          model: db.user_profile,
-          as: "Project_Committees",
-          through: {
-            attributes: []
-          },
-          attributes: { exclude: ["User_UserName", "User_Password", "User_StudentID", "User_AcademicYear"] }
-        },
+        // {
+        //   model: db.user_profile,
+        //   as: "Project_Committees",
+        //   through: {
+        //     attributes: []
+        //   },
+        //   attributes: { exclude: ["User_UserName", "User_Password", "User_StudentID", "User_AcademicYear"] }
+        // },
         {
           model: db.project_status,
           as: "Project_Status",
@@ -349,18 +343,20 @@ router.post("/create", async (req, res) => {
 
             template.TitleTemplate = template.TitleTemplate.replace("{ProjectName}", project.ProjectNameTH);
             template.MessageTemplate = template.MessageTemplate.replace("{ProjectName}", project.ProjectNameTH);
-            
-            await db.notifications.create({
-              NotiTypeID: 1,
-              UserID: userid,
-              Title: template.TitleTemplate,
-              Message: template.MessageTemplate,
-              ActionPage: template.ActionTemplate,
-              CreatedBy: req.body.project.CreatedBy,
-              UpdatedBy: req.body.project.UpdatedBy
-            }).then(()=>{
-              req.io.to(`room_${userid}`).emit("notifications", { msg: "มีการแจ้งเตือนใหม่" });
-            });
+
+            await db.notifications
+              .create({
+                NotiTypeID: 1,
+                UserID: userid,
+                Title: template.TitleTemplate,
+                Message: template.MessageTemplate,
+                ActionPage: template.ActionTemplate,
+                CreatedBy: req.body.project.CreatedBy,
+                UpdatedBy: req.body.project.UpdatedBy
+              })
+              .then(() => {
+                req.io.to(`room_${userid}`).emit("notifications", { msg: "มีการแจ้งเตือนใหม่" });
+              });
           }
         });
         req.body.advisors.forEach(async userid => {
@@ -369,18 +365,20 @@ router.post("/create", async (req, res) => {
 
             template.TitleTemplate = template.TitleTemplate.replace("{ProjectName}", project.ProjectNameTH);
             template.MessageTemplate = template.MessageTemplate.replace("{ProjectName}", project.ProjectNameTH);
-            
-            await db.notifications.create({
-              NotiTypeID: 1,
-              UserID: userid,
-              Title: template.TitleTemplate,
-              Message: template.MessageTemplate,
-              ActionPage: template.ActionTemplate,
-              CreatedBy: req.body.project.CreatedBy,
-              UpdatedBy: req.body.project.UpdatedBy
-            }).then(()=>{
-              req.io.to(`room_${userid}`).emit("notifications", { msg: "มีการแจ้งเตือนใหม่"});
-            });
+
+            await db.notifications
+              .create({
+                NotiTypeID: 1,
+                UserID: userid,
+                Title: template.TitleTemplate,
+                Message: template.MessageTemplate,
+                ActionPage: template.ActionTemplate,
+                CreatedBy: req.body.project.CreatedBy,
+                UpdatedBy: req.body.project.UpdatedBy
+              })
+              .then(() => {
+                req.io.to(`room_${userid}`).emit("notifications", { msg: "มีการแจ้งเตือนใหม่" });
+              });
           }
         });
       })

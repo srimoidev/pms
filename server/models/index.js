@@ -50,7 +50,7 @@ db.notifications = require("./notifications")(sequelize, Sequelize);
 db.notification_types = require("./notification_types")(sequelize, Sequelize);
 db.project_advisor = require("./project_advisor")(sequelize, Sequelize);
 db.project_committee = require("./project_committee")(sequelize, Sequelize);
-db.project_committee_role = require("./project_committee_role")(sequelize, Sequelize);
+// db.project_committee_role = require("./project_committee_role")(sequelize, Sequelize);
 db.project_info = require("./project_info")(sequelize, Sequelize);
 db.project_member = require("./project_member")(sequelize, Sequelize);
 db.project_progress = require("./project_progress")(sequelize, Sequelize);
@@ -61,7 +61,8 @@ db.user = require("./user")(sequelize, Sequelize);
 db.user_profile = require("./user_profile")(sequelize, Sequelize);
 db.user_type = require("./user_type")(sequelize, Sequelize);
 db.example_files = require("./example_files")(sequelize, Sequelize);
-
+db.exam = require("./exam")(sequelize, Sequelize);
+db.exam_status = require("./exam_status")(sequelize, Sequelize);
 // ALLRELATIONSHIP
 
 //#region App
@@ -136,21 +137,20 @@ db.project_advisor.belongsTo(db.project_info, {
   as: "Project",
   foreignKey: "ProjectID"
 });
-//ProjectCommittee
-db.project_info.belongsToMany(db.user_profile, {
-  through: db.project_committee,
-  as: "Project_Committees",
-  foreignKey: "ProjectID"
-});
+
+// db.user_profile.belongsToMany(db.project_info, {
+//   through: db.project_advisor,
+//   foreignKey: "UserID"
+// });
 //ProjectProgress
 db.project_info.hasMany(db.project_progress, {
   foreignKey: "Progress_ProjectID",
   as: "Project_Progresses"
 });
-db.user_profile.belongsToMany(db.project_info, {
-  through: db.project_committee,
-  foreignKey: "UserID"
-});
+// db.user_profile.belongsToMany(db.exam, {
+//   through: db.project_committee,
+//   foreignKey: "UserID"
+// });
 
 db.project_member.belongsTo(db.user_profile, {
   as: "Member_Info",
@@ -160,19 +160,36 @@ db.project_advisor.belongsTo(db.user_profile, {
   as: "Advisor_Info",
   foreignKey: "UserID"
 });
-db.project_committee.belongsTo(db.user_profile, {
-  as: "Committee_Info",
-  foreignKey: "UserID"
-});
-db.project_committee.belongsTo(db.project_committee_role, {
-  as: "Committee_Role",
-  foreignKey: "CommitteeRoleID"
-});
+
+// db.project_committee.belongsTo(db.user_profile, {
+//   as: "Committee_Info",
+//   foreignKey: "UserID"
+// });
+
 db.example_files.belongsTo(db.user_profile, {
   as: "CreatedUser",
   foreignKey: "CreatedBy"
 });
+db.project_info.hasOne(db.exam,{
+  as: "Exam",
+  foreignKey: "ProjectID"
+})
+db.exam.belongsTo(db.exam_status,{
+  as: "Exam_Status",
+  foreignKey: "ExamStatusID"
+})
+//ProjectCommittee
 
+db.exam.belongsToMany(db.user_profile, {
+  through: db.project_committee,
+  as: "Project_Committees",
+  foreignKey: "ExamID"
+});
+
+db.user_profile.belongsToMany(db.exam, {
+  through: db.project_committee,
+  foreignKey: "UserID"
+});
 //#endregion
 
 //#region Form

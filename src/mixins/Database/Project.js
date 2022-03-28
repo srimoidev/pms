@@ -124,6 +124,32 @@ export async function ExampleFile(pExampleFileID) {
     return URL.createObjectURL(file);
   });
 }
+export async function GetAllRequestPreProjectExam() {
+  return await HTTP.get("project/exam/preproject").then(res => {
+    return res.data;
+  });
+}
+export async function GetAllRequestExamByAdvisor(pAdvisorID) {
+  return await HTTP.get(`project/exam?advisorid=${pAdvisorID}`).then(res => {
+    return res.data;
+  });
+}
+export async function GetAllRequestExamByInstructor(pInstructoType) {
+  return await HTTP.get(`project/exam?instructortype=${pInstructoType}`).then(res => {
+    return res.data;
+  });
+}
+export async function GetAllRequestExam() {
+  return await HTTP.get(`project/exam?all=1`).then(res => {
+    return res.data;
+  });
+}
+export async function IsExamRequest(pProjectID) {
+  return await HTTP.get(`project/exam/request?projectid=${pProjectID}`).then(res => {
+    return res.data.IsExist;
+  });
+}
+
 //#endregion outbound
 
 //#region inbound
@@ -234,5 +260,29 @@ export async function upload_form(fID, file, onUploadProgress) {
       "Content-Type": "multipart/form-data"
     },
     onUploadProgress
+  });
+}
+export async function SubmitExamRequest(pProjectID, pOnDate, pIsProject, pAuthenID) {
+  return await HTTP.post(`/project/exam/request/preproject/`, {
+    ProjectID: pProjectID,
+    OnDate: pOnDate,
+    IsProjectExam: pIsProject,
+    CreatedBy: pAuthenID,
+    UpdatedBy: pAuthenID
+  });
+}
+export async function UpdateExam(pExamID, pAuthenID, pUpdateStatus) {
+  return await HTTP.post(`/project/exam/${pExamID}`, {
+    ExamStatusID: pUpdateStatus,
+    UpdatedBy: pAuthenID
+  });
+}
+export async function JoinCommittee(pExamID, pAuthenID) {
+  console.log(pExamID, pAuthenID);
+  return await HTTP.post("/project/exam/committee", {
+    ExamID: pExamID,
+    UserID: pAuthenID,
+    CreatedBy: pAuthenID,
+    UpdatedBy: pAuthenID
   });
 }

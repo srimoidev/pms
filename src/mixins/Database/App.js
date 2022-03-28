@@ -9,3 +9,13 @@ export async function Menus(pUSerTypeID) {
       //
     });
 }
+
+export async function Env(pEnvName) {
+  return HTTP.get(`/app_env?envname=${pEnvName}`)
+    .then(res => {
+      return res.data.EnvValue;
+    })
+    .catch(() => {
+      //
+    });
+}

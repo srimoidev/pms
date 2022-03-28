@@ -532,9 +532,9 @@
                 <v-col cols="3" class="align-self-end"><label for="" class="">ช่วงเวลาที่ขอสอบได้</label></v-col>
                 <v-col cols="8" class="d-flex">
                   <span class="mr-2 align-self-end">ตั้งแต่ :</span>
-                  <v-text-field type="datetime-local" class="" name="datetime" hide-details></v-text-field>
+                  <v-text-field v-model="ExamPeriodStartDate" type="datetime-local" class="" name="datetime" hide-details></v-text-field>
                   <span class="ml-4 mr-2 align-self-end">ถึง :</span>
-                  <v-text-field type="datetime-local" class="" name="datetime" hide-details></v-text-field>
+                  <v-text-field v-model="ExamPeriodEndDate" type="datetime-local" class="" name="datetime" hide-details></v-text-field>
                 </v-col>
               </v-row>
             </v-expansion-panel-content>
@@ -631,7 +631,9 @@ export default {
     newDayOfWeek: null,
     newStartTime: null,
     newEndTime: null,
-    newInstructor: null
+    newInstructor: null,
+    ExamPeriodStartDate:null,
+    ExamPeriodEndDate:null
   }),
   computed: {
     ...mapGetters({
@@ -695,6 +697,12 @@ export default {
         this.newDeadlines.push({ SectionID: item.SectionID, OnDate: null });
       });
       this.edited_section = JSON.parse(JSON.stringify(this.sections));
+      await this.App.Env("ExamPeriodStartDate").then((res)=>{
+        this.ExamPeriodStartDate = res ? this.Utils.ConvertISOtoLocaleDateTime(new Date(res)) : null;
+      })
+      await this.App.Env("ExamPeriodEndDate").then((res)=>{
+        this.ExamPeriodEndDate = res ? this.Utils.ConvertISOtoLocaleDateTime(new Date(res)) : null;
+      })
       this.sec_loading = false;
     },
     resetDateTime(pItem, pDeadline) {
