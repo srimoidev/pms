@@ -147,7 +147,7 @@ router.get("/committee", async (req, res) => {
           through: {
             as: "Committee",
             attributes: []
-          },
+          }
           // attributes: { exclude: ["Username", "Password", "StudentID", "AcademicYear", "CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] }
         }
       ],
@@ -172,9 +172,9 @@ router.get("/preprojectlist", async (req, res) => {
 });
 router.get("/request", async (req, res) => {
   try {
-    const exam = await db.exam.findOne({ where: { ProjectID: req.query.projectid } });
+    const exam = await db.exam.findOne({ where: { ProjectID: req.query.projectid, IsProjectExam: req.query.isproject } });
 
-    return res.json({ IsExist: exam != null ? true : false });
+    return res.json({ IsExist: exam != null ? true : false, IsRevise: exam?.ExamStatusID == 4 ? true : false, Exam: exam });
   } catch (error) {
     return res.status(500).json({
       msg: error
@@ -246,131 +246,274 @@ router.post("/committee", async (req, res) => {
     });
   }
 });
-router.post("/:id", async (req, res) => {
+//ขอสอบ
+router.post("/request_exam", async (req, res) => {
   const transaction = await db.sequelize.transaction();
   try {
-    // console.log(req.body,req.params.id)
-    await db.exam.update(req.body, { where: { ExamID: req.params.id } }, { transaction: transaction }).then(async res => {
-      // await db.notification_types
-      // .findAll({
-      //   where: { NotiTypeID: 1, UserTypeID: [1, 2] }, //นักศึกษาและที่ปรึกษา
-      //   raw: true
-      // })
-      // .then(notiTemplate => {
-      //   let template;
-      //   req.body.members.forEach(async userid => {
-      //     if (userid != req.body.project.CreatedBy) {
-      //       template = notiTemplate.find(item => item.UserTypeID == 1);
-      //       template.TitleTemplate = template.TitleTemplate.replace("{ProjectName}", project.ProjectNameTH);
-      //       template.MessageTemplate = template.MessageTemplate.replace("{ProjectName}", project.ProjectNameTH);
-      //       await db.notifications.create({
-      //         NotiTypeID: 1,
-      //         UserID: userid,
-      //         Title: template.TitleTemplate,
-      //         Message: template.MessageTemplate,
-      //         ActionPage: template.ActionTemplate,
-      //         CreatedBy: req.body.project.CreatedBy,
-      //         UpdatedBy: req.body.project.UpdatedBy
-      //       }).then(()=>{
-      //         req.io.to(`room_${userid}`).emit("notifications", { msg: "มีการแจ้งเตือนใหม่" });
-      //       });
-      //     }
-      //   });
-      //   req.body.advisors.forEach(async userid => {
-      //     if (userid != req.body.project.CreatedBy) {
-      //       template = notiTemplate.find(item => item.UserTypeID == 2);
-      //       template.TitleTemplate = template.TitleTemplate.replace("{ProjectName}", project.ProjectNameTH);
-      //       template.MessageTemplate = template.MessageTemplate.replace("{ProjectName}", project.ProjectNameTH);
-      //       await db.notifications.create({
-      //         NotiTypeID: 1,
-      //         UserID: userid,
-      //         Title: template.TitleTemplate,
-      //         Message: template.MessageTemplate,
-      //         ActionPage: template.ActionTemplate,
-      //         CreatedBy: req.body.project.CreatedBy,
-      //         UpdatedBy: req.body.project.UpdatedBy
-      //       }).then(()=>{
-      //         req.io.to(`room_${userid}`).emit("notifications", { msg: "มีการแจ้งเตือนใหม่"});
-      //       });
-      //     }
-      //   });
-      // })
-      // .then(async () => {
-      //   await transaction.commit().then(() => {
-      //     return res.status(200).send();
-      //   });
-      // });
-    });
-    await transaction.commit().then(() => {
-      return res.status(200).send();
-    });
+    await db.exam.destroy({ where: [{ ProjectID: req.body.ProjectID }] }, { transaction: transaction });
+    await db.exam
+      .create(req.body, { transaction: transaction })
+      .then(async res => {
+        await db.notification_types
+          .findAll({
+            where: { NotiTypeID: 21, UserTypeID: [2] }, //นักศึกษาและที่ปรึกษา
+            raw: true
+          })
+          .then(async notiTemplate => {
+            const project = await db.project_info.findOne({
+              where: { ProjectID: req.body.ProjectID }
+            });
+            const advisors = await db.project_advisor.findAll({ where: { ProjectID: project.ProjectID }, raw: true });
+
+            let template;
+
+            advisors.forEach(async advisor => {
+              if (advisor.UserID != req.body.CreatedBy) {
+                template = notiTemplate.find(item => item.UserTypeID == 2);
+
+                template.MessageTemplate = template.MessageTemplate.replace("{ProjectName}", project.ProjectNameTH).replace(
+                  "{OnDate}",
+                  new Date(req.body.OnDate).toLocaleString("th-TH")
+                );
+
+                req.io.to(`room_${advisor.UserID}`).emit("notifications", { msg: "มีการแจ้งเตือนใหม่" });
+                await db.notifications.create({
+                  NotiTypeID: 21,
+                  UserID: advisor.UserID,
+                  Title: template.TitleTemplate,
+                  Message: template.MessageTemplate,
+                  ActionPage: template.ActionTemplate,
+                  CreatedBy: req.body.CreatedBy,
+                  UpdatedBy: req.body.CreatedBy
+                });
+              }
+            });
+          });
+      })
+      .then(async () => {
+        await transaction.commit().then(() => {
+          return res.status(200).send();
+        });
+      });
   } catch (err) {
+    console.log(err);
     await transaction.rollback();
     res.status(500).send({
       message: err.message || "Some error occurred while creating!"
     });
   }
 });
-
-//ขอสอบ
-router.post("/request/preproject", async (req, res) => {
+router.post("/:id", async (req, res) => {
   const transaction = await db.sequelize.transaction();
   try {
-    await db.exam.destroy({ where: [{ ProjectID: req.body.ProjectID, IsProjectExam: false }] }, { transaction: transaction });
-    const ExamRequest = await db.exam.create(req.body, { transaction: transaction }).then(async res => {
-      // await db.notification_types
-      // .findAll({
-      //   where: { NotiTypeID: 1, UserTypeID: [1, 2] }, //นักศึกษาและที่ปรึกษา
-      //   raw: true
-      // })
-      // .then(notiTemplate => {
-      //   let template;
-      //   req.body.members.forEach(async userid => {
-      //     if (userid != req.body.project.CreatedBy) {
-      //       template = notiTemplate.find(item => item.UserTypeID == 1);
-      //       template.TitleTemplate = template.TitleTemplate.replace("{ProjectName}", project.ProjectNameTH);
-      //       template.MessageTemplate = template.MessageTemplate.replace("{ProjectName}", project.ProjectNameTH);
-      //       await db.notifications.create({
-      //         NotiTypeID: 1,
-      //         UserID: userid,
-      //         Title: template.TitleTemplate,
-      //         Message: template.MessageTemplate,
-      //         ActionPage: template.ActionTemplate,
-      //         CreatedBy: req.body.project.CreatedBy,
-      //         UpdatedBy: req.body.project.UpdatedBy
-      //       }).then(()=>{
-      //         req.io.to(`room_${userid}`).emit("notifications", { msg: "มีการแจ้งเตือนใหม่" });
-      //       });
-      //     }
-      //   });
-      //   req.body.advisors.forEach(async userid => {
-      //     if (userid != req.body.project.CreatedBy) {
-      //       template = notiTemplate.find(item => item.UserTypeID == 2);
-      //       template.TitleTemplate = template.TitleTemplate.replace("{ProjectName}", project.ProjectNameTH);
-      //       template.MessageTemplate = template.MessageTemplate.replace("{ProjectName}", project.ProjectNameTH);
-      //       await db.notifications.create({
-      //         NotiTypeID: 1,
-      //         UserID: userid,
-      //         Title: template.TitleTemplate,
-      //         Message: template.MessageTemplate,
-      //         ActionPage: template.ActionTemplate,
-      //         CreatedBy: req.body.project.CreatedBy,
-      //         UpdatedBy: req.body.project.UpdatedBy
-      //       }).then(()=>{
-      //         req.io.to(`room_${userid}`).emit("notifications", { msg: "มีการแจ้งเตือนใหม่"});
-      //       });
-      //     }
-      //   });
-      // })
-      // .then(async () => {
-      //   await transaction.commit().then(() => {
-      //     return res.status(200).send();
-      //   });
-      // });
-    });
-    await transaction.commit().then(() => {
-      return res.status(200).send();
-    });
+    var project;
+    var members;
+    var advisors;
+    var exam = null;
+    await db.exam
+      .update(req.body, { where: { ExamID: req.params.id } }, { transaction: transaction })
+      .then(async () => {
+        exam = await db.exam.findOne({ where: { ExamID: req.params.id }, raw: true });
+        project = await db.project_info.findOne({
+          where: { ProjectID: exam.ProjectID }
+        });
+        members = await db.project_member.findAll({ where: { ProjectID: project.ProjectID }, raw: true });
+        advisors = await db.project_advisor.findAll({ where: { ProjectID: project.ProjectID }, raw: true });
+        advisors.forEach(async advisor => {
+          await db.project_committee.create(
+            {
+              ExamID: exam.ExamID,
+              UserID: advisor.UserID,
+              CreatedBy: exam.UpdatedBy,
+              UpdatedBy: exam.UpdatedBy
+            },
+            { transaction: transaction }
+          );
+        });
+      })
+      .then(async () => {
+        //ที่ปรึกษาอนุมัติ
+        if (req.body.ExamStatusID == 2) {
+          await db.notification_types
+            .findAll({
+              where: { NotiTypeID: 21, UserTypeID: [3, 5] }, //นักศึกษาและที่ปรึกษา
+              raw: true
+            })
+            .then(async notiTemplate => {
+              const project = await db.project_info.findOne({
+                where: { ProjectID: exam.ProjectID }
+              });
+              const preProjectInstructor = await db.user_profile.findAll({ where: { UserTypeID: 3 }, raw: true });
+              const projectInstructor = await db.user_profile.findAll({ where: { UserTypeID: 5 }, raw: true });
+
+              let template;
+
+              if (!project.IsProject) {
+                preProjectInstructor.forEach(async item => {
+                  template = notiTemplate.find(item => item.UserTypeID == 3);
+
+                  template.MessageTemplate = template.MessageTemplate.replace("{ProjectName}", project.ProjectNameTH).replace(
+                    "{OnDate}",
+                    new Date(exam.OnDate).toLocaleString("th-TH")
+                  );
+                  req.io.to(`room_${item.UserID}`).emit("notifications", { msg: "มีการแจ้งเตือนใหม่" });
+                  await db.notifications.create({
+                    NotiTypeID: 21,
+                    UserID: item.UserID,
+                    Title: template.TitleTemplate,
+                    Message: template.MessageTemplate,
+                    ActionPage: template.ActionTemplate,
+                    CreatedBy: exam.UpdatedBy,
+                    UpdatedBy: exam.UpdatedBy
+                  });
+                });
+              }
+              if (project.IsProject) {
+                projectInstructor.forEach(async item => {
+                  template = notiTemplate.find(item => item.UserTypeID == 5);
+
+                  template.MessageTemplate = template.MessageTemplate.replace("{ProjectName}", project.ProjectNameTH).replace(
+                    "{OnDate}",
+                    new Date(exam.OnDate).toLocaleString("th-TH")
+                  );
+                  req.io.to(`room_${item.UserID}`).emit("notifications", { msg: "มีการแจ้งเตือนใหม่" });
+                  await db.notifications.create({
+                    NotiTypeID: 21,
+                    UserID: item.UserID,
+                    Title: template.TitleTemplate,
+                    Message: template.MessageTemplate,
+                    ActionPage: template.ActionTemplate,
+                    CreatedBy: exam.UpdatedBy,
+                    UpdatedBy: exam.UpdatedBy
+                  });
+                });
+              }
+            });
+        }
+        //ประจำวิชาอนุมัติ
+        if (req.body.ExamStatusID == 3) {
+          await db.notification_types
+            .findAll({
+              where: { NotiTypeID: 22, UserTypeID: [1, 2] }, //นักศึกษาและที่ปรึกษา
+              raw: true
+            })
+            .then(async notiTemplate => {
+              const project = await db.project_info.findOne({
+                where: { ProjectID: exam.ProjectID }
+              });
+              const members = await db.project_member.findAll({ where: { ProjectID: project.ProjectID }, raw: true });
+              const advisors = await db.project_advisor.findAll({ where: { ProjectID: project.ProjectID }, raw: true });
+
+              let template;
+
+              members.forEach(async member => {
+                template = notiTemplate.find(item => item.UserTypeID == 1);
+
+                template.MessageTemplate = template.MessageTemplate.replace("{ProjectName}", project.ProjectNameTH).replace(
+                  "{OnDate}",
+                  new Date(exam.OnDate).toLocaleString("th-TH")
+                );
+
+                req.io.to(`room_${member.UserID}`).emit("notifications", { msg: "มีการแจ้งเตือนใหม่" });
+                await db.notifications.create({
+                  NotiTypeID: 22,
+                  UserID: member.UserID,
+                  Title: template.TitleTemplate,
+                  Message: template.MessageTemplate,
+                  ActionPage: template.ActionTemplate,
+                  CreatedBy: exam.UpdatedBy,
+                  UpdatedBy: exam.UpdatedBy
+                });
+              });
+
+              advisors.forEach(async advisor => {
+                template = notiTemplate.find(item => item.UserTypeID == 2);
+
+                template.MessageTemplate = template.MessageTemplate.replace("{ProjectName}", project.ProjectNameTH).replace(
+                  "{OnDate}",
+                  new Date(exam.OnDate).toLocaleString("th-TH")
+                );
+                template.ActionTemplate = template.ActionTemplate.replace("{ProjectID}", project.ProjectID);
+
+                req.io.to(`room_${advisor.UserID}`).emit("notifications", { msg: "มีการแจ้งเตือนใหม่" });
+                await db.notifications.create({
+                  NotiTypeID: 22,
+                  UserID: advisor.UserID,
+                  Title: template.TitleTemplate,
+                  Message: template.MessageTemplate,
+                  ActionPage: template.ActionTemplate,
+                  CreatedBy: exam.UpdatedBy,
+                  UpdatedBy: exam.UpdatedBy
+                });
+              });
+            });
+        }
+        //อาจารย์ไม่อนุมัติ
+        if (req.body.ExamStatusID == 4) {
+          await db.notification_types
+            .findAll({
+              where: { NotiTypeID: 23, UserTypeID: [1, 2] }, //นักศึกษาและที่ปรึกษา
+              raw: true
+            })
+            .then(async notiTemplate => {
+              const project = await db.project_info.findOne({
+                where: { ProjectID: exam.ProjectID }
+              });
+              const members = await db.project_member.findAll({ where: { ProjectID: project.ProjectID }, raw: true });
+              const advisors = await db.project_advisor.findAll({ where: { ProjectID: project.ProjectID }, raw: true });
+
+              let template;
+
+              members.forEach(async member => {
+                template = notiTemplate.find(item => item.UserTypeID == 1);
+
+                template.MessageTemplate = template.MessageTemplate.replace("{ProjectName}", project.ProjectNameTH).replace(
+                  "{OnDate}",
+                  new Date(exam.OnDate).toLocaleString("th-TH")
+                );
+
+                req.io.to(`room_${member.UserID}`).emit("notifications", { msg: "มีการแจ้งเตือนใหม่" });
+                await db.notifications.create({
+                  NotiTypeID: 23,
+                  UserID: member.UserID,
+                  Title: template.TitleTemplate,
+                  Message: template.MessageTemplate,
+                  ActionPage: template.ActionTemplate,
+                  CreatedBy: exam.UpdatedBy,
+                  UpdatedBy: exam.UpdatedBy
+                });
+              });
+
+              advisors.forEach(async advisor => {
+                if (advisor.UserID != exam.UpdatedBy) {
+                  template = notiTemplate.find(item => item.UserTypeID == 2);
+
+                  template.MessageTemplate = template.MessageTemplate.replace("{ProjectName}", project.ProjectNameTH).replace(
+                    "{OnDate}",
+                    new Date(exam.OnDate).toLocaleString("th-TH")
+                  );
+                  template.ActionTemplate = template.ActionTemplate.replace("{ProjectID}", project.ProjectID);
+
+                  req.io.to(`room_${advisor.UserID}`).emit("notifications", { msg: "มีการแจ้งเตือนใหม่" });
+                  await db.notifications.create({
+                    NotiTypeID: 23,
+                    UserID: advisor.UserID,
+                    Title: template.TitleTemplate,
+                    Message: template.MessageTemplate,
+                    ActionPage: template.ActionTemplate,
+                    CreatedBy: exam.UpdatedBy,
+                    UpdatedBy: exam.UpdatedBy
+                  });
+                }
+              });
+            });
+        }
+      })
+      .then(async () => {
+        await transaction.commit().then(() => {
+          return res.status(200).send();
+        });
+      });
   } catch (err) {
     await transaction.rollback();
     res.status(500).send({

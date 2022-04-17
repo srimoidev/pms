@@ -46,7 +46,7 @@
               <v-card v-for="item in filteredItems" :key="item.Project_ID" class="mb-2">
                 <div class="d-flex">
                   <v-card-title style="width: 100%">
-                    <router-link :to="'/project/' + item.ProjectID" class="text-none"
+                    <router-link :to="{ path: '/project', query: { pid: item.ProjectID } }" class="text-none"
                       >{{ `${item.ProjectNameTH} (${item.ProjectNameEN})` }}
                     </router-link>
                   </v-card-title>
@@ -104,10 +104,10 @@ export default {
   computed: {
     filteredItems() {
       return this.searchResult
-        .filter((item) => {
+        .filter(item => {
           return !this.typeFilter || item.Project_Type.ProjectTypeID == this.typeFilter;
         })
-        .filter((item) => {
+        .filter(item => {
           return !this.statusFilter || item.Project_Status.ProjectStatusID == this.statusFilter;
         });
     }
@@ -116,12 +116,12 @@ export default {
     async submitSearch() {
       this.isSearch = true;
       // this.allType = [{ ProjectType_ID: 1, ProjectType_Name: "ทั้งหมด" }];
-      this.allType = await this.Project.AllType();
+      this.allType = await this.Public.AllType();
       this.allType.splice(0, 0, {
         ProjectTypeID: 0,
         ProjectTypeNameTH: "ทั้งหมด"
       });
-      this.searchResult = await this.Project.GetAll(this.searchText.trim());
+      this.searchResult = await this.Public.GetAll(this.searchText.trim());
     },
     sort(val) {
       switch (val.id) {

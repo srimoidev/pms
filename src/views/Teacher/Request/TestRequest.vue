@@ -42,13 +42,21 @@
       <template v-slot:[`item.ProjectNameTH`]="{ item }">
         {{ `${item.ProjectNameTH} (${item.ProjectNameEN})` }}
       </template>
+      <template v-slot:[`item.IsProject`]="{ item }">
+        <span v-if="item.IsProject">
+          <v-chip small style="width:100px" class="deep-purple darken-2 white--text justify-center">Project</v-chip>
+        </span>
+        <span v-else>
+          <v-chip small style="width:100px" class="teal accent-4 white--text justify-center">Pre-Project</v-chip>
+        </span>
+      </template>
       <template v-slot:[`item.Project_Type`]="{ item }">
         <v-chip class="white--text" :class="`type-${item.Project_Type.ProjectTypeID}`" small label>
           {{ allType[item.Project_Type.ProjectTypeID - 1].ProjectTypeNameTH }}
         </v-chip>
       </template>
       <template v-slot:[`item.Exam.OnDate`]="{ item }">
-        {{ new Date(item.Exam.OnDate).toLocaleString() }}
+        {{ new Date(item.Exam.OnDate).toLocaleString("th-TH") }}
       </template>
       <template v-slot:[`item.MaxMember`]="{ item }">
         {{ item.Project_Members.length }}
@@ -70,7 +78,7 @@
         </v-tooltip>
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
-            <v-icon v-bind="attrs" v-on="on" color="red darken-1" class="mr-2" @click="notApprove(item)">
+            <v-icon v-bind="attrs" v-on="on" color="red darken-1" class="mr-2" @click="NotApprove(item)">
               mdi-close
             </v-icon>
           </template>
@@ -123,7 +131,7 @@ export default {
           value: "ProjectNameTH",
           width: 300
         },
-
+        { text: "วิชา", value: "IsProject", sortable: true },
         { text: "ประเภท", value: "Project_Type", sortable: false },
         // { text: "สมาชิก", value: "MaxMember", sortable: false },
         // { text: "Section", value: "Project_Section" },
@@ -220,7 +228,7 @@ export default {
         })
         .then(result => {
           if (result.isConfirmed) {
-            this.Project.UpdateExam(item.Exam.ExamID, this.user.UserID, this.isAdvisor ? 5 : 6).then(() => {
+            this.Project.UpdateExam(item.Exam.ExamID, this.user.UserID, 4).then(() => {
               this.loadData();
             });
           }

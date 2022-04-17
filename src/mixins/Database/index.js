@@ -7,6 +7,7 @@ import * as Project from "./Project";
 import * as Section from "./Section";
 import * as User from "./User";
 import * as Advisor from "./Advisor";
+import * as Public from "./Public";
 
 export default {
   install(Vue) {
@@ -19,5 +20,6 @@ export default {
     Vue.prototype.Section = Section;
     Vue.prototype.User = User;
     Vue.prototype.Advisor = Advisor;
+    Vue.prototype.Public = Public;
   }
 };

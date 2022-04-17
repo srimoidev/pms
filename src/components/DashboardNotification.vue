@@ -17,7 +17,8 @@
           <v-list-item-group>
             <v-list-item v-for="item in noti" :key="item.NotiID" @click="itemClicked(item)">
               <v-list-item-avatar>
-                <v-img :src="item.ProfileImage"></v-img>
+                <v-img v-if="item.ProfileImage" :src="item.ProfileImage"></v-img>
+                <span v-else><v-icon size="40">mdi-account-circle</v-icon></span>
               </v-list-item-avatar>
               <v-list-item-content :class="{ 'grey--text': item.IsRead }">
                 <v-list-item-title v-html="item.Title"></v-list-item-title>

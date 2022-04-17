@@ -6,24 +6,24 @@ router.get("/", async (req, res) => {
     var whereStr = [];
     if (req.query.projectid) {
       whereStr.push({
-        Committee_ProjectID: req.query.projectid
+        ProjectID: req.query.projectid
       });
     }
     if (req.query.userid) {
       whereStr.push({
-        Committee_UserID: req.query.userid
+        UserID: req.query.userid
       });
     }
-    if (req.query.roleid) {
-      whereStr.push({
-        Committee_RoleID: req.query.roleid
-      });
-    }
-    if (req.query.statusid) {
-      whereStr.push({
-        Committee_RequestStatusID: req.query.statusid
-      });
-    }
+    // if (req.query.roleid) {
+    //   whereStr.push({
+    //     Committee_RoleID: req.query.roleid
+    //   });
+    // }
+    // if (req.query.statusid) {
+    //   whereStr.push({
+    //     Committee_RequestStatusID: req.query.statusid
+    //   });
+    // }
     const data = await db.project_committee.findAll({
       where: whereStr
     });
@@ -40,7 +40,7 @@ router.get("/:id", async (req, res) => {
     const data = await db.project_committee.findAll({
       where: [
         {
-          Committee_ID: req.params.id
+          CommitteeID: req.params.id
         }
       ]
     });
@@ -74,7 +74,7 @@ router.put("/:id", async (req, res) => {
       req.body,
       {
         where: {
-          Committee_ID: req.params.id
+          CommitteeID: req.params.id
         }
       },
       { transaction: transaction }

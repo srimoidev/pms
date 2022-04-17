@@ -4,13 +4,27 @@
       <v-toolbar-title>ขออนุมัติสอบ</v-toolbar-title>
     </v-toolbar>
     <v-divider class="mx-2"></v-divider>
-    <v-container>
-      <div v-if="isExamRequest" class="text-center">
+    <v-container v-show="isLoaded">
+      <div v-if="isNotAllowToRequest" class="text-center">
+        <v-icon size="128" color="amber darken-1">mdi-alert-outline</v-icon>
+        <h1>ยังไม่อยู่ในช่วงเวลาที่เปิดให้ขอสอบ</h1>
+      </div>
+      <div v-else-if="isExamRequest.IsExist && !isExamRequest.IsRevise" class="text-center">
         <v-icon size="128" color="light-green accent-4">mdi-check-circle-outline</v-icon>
         <h1>ทำการขอสอบเรียบร้อยแล้ว</h1>
-        <h3>โปรดรอการพิจารณาจากอาจารย์ที่ปรึกษาและอาจารย์ประจำวิชา</h3>
+        <div v-if="isExamRequest.Exam.ExamStatusID == 3">
+          <h3>
+            อาจารย์อนุมัติให้สอบเรียบร้อยแล้ว ตรวจสอบรายชื่อกรรมการสอบที่หน้า <router-link to="/student/project?MenuID=2">จัดการโครงงาน</router-link>
+          </h3>
+        </div>
+        <div v-else>
+          <h3>โปรดรอการพิจารณาจากอาจารย์ที่ปรึกษาและอาจารย์ประจำวิชา</h3>
+        </div>
       </div>
       <div v-else>
+        <v-alert border="left" text type="warning" v-if="isExamRequest.IsRevise"
+          >การขอสอบวันที่ {{ new Date(isExamRequest.Exam.OnDate).toLocaleString("th-TH") }} ถูกอาจารย์ปฏิเสธ โปรดทบทวนและขอสอบใหม่</v-alert
+        >
         <v-row dense>
           <v-col cols="4" class="align-self-end text-right"><label>วิชา : </label></v-col>
           <v-col cols="4"
@@ -55,12 +69,14 @@ export default {
       data: null,
       selectedTime: null,
       isExamRequest: false,
+      isNotAllowToRequest: true,
       isProject: null,
       ProjectType: [
         { value: "1", text: "Pre-Project" },
         { value: "2", text: "Project" }
       ],
-      windowHeight: 0
+      windowHeight: 0,
+      isLoaded: false
     };
   },
   computed: {
@@ -87,12 +103,35 @@ export default {
   // },
   methods: {
     async loadData() {
+      const PreProjectExamPeriodStartDate = await this.App.Env("PreProjectExamPeriodStartDate");
+      const PreProjectExamPeriodEndDate = await this.App.Env("PreProjectExamPeriodEndDate");
+      const ProjectExamPeriodStartDate = await this.App.Env("ProjectExamPeriodStartDate");
+      const ProjectExamPeriodEndDate = await this.App.Env("ProjectExamPeriodEndDate");
+
       await this.Project.Project(this.user.ProjectID).then(res => {
         this.data = res;
         this.isProject = this.data?.IsProject != true ? this.ProjectType.find(i => i.value == 1) : this.ProjectType.find(i => i.value == 2);
       });
-      this.isExamRequest = await this.Project.IsExamRequest(this.user.ProjectID);
+      this.isExamRequest = await this.Project.IsExamRequest(this.user.ProjectID, this.data.IsProject ? 1 : 0);
+      // console.log(this.isExamRequest);
       // console.log(this.isExamRequest)
+      if (this.data.IsProject) {
+        if (new Date().getTime() > new Date(ProjectExamPeriodStartDate).getTime() && new Date().getTime() < new Date(ProjectExamPeriodEndDate)) {
+          this.isNotAllowToRequest = false;
+        } else {
+          this.isNotAllowToRequest = true;
+        }
+      } else {
+        if (
+          new Date().getTime() > new Date(PreProjectExamPeriodStartDate).getTime() &&
+          new Date().getTime() < new Date(PreProjectExamPeriodEndDate)
+        ) {
+          this.isNotAllowToRequest = false;
+        } else {
+          this.isNotAllowToRequest = true;
+        }
+      }
+      this.isLoaded = true;
     },
     submit() {
       this.$swal
@@ -105,10 +144,10 @@ export default {
           cancelButtonText: "ยกเลิก",
           confirmButtonText: "ยืนยัน!"
         })
-        .then(result => {
+        .then(async result => {
           if (result.isConfirmed) {
-            this.Project.SubmitExamRequest(this.user.ProjectID, this.selectedTime, this.data.IsProject, this.user.UserID);
-            this.isExamRequest = true;
+            await this.Project.SubmitExamRequest(this.user.ProjectID, this.selectedTime, this.data.IsProject, this.user.UserID);
+            this.isExamRequest = await this.Project.IsExamRequest(this.user.ProjectID, this.data.IsProject ? 1 : 0);
           }
         });
     },

@@ -72,6 +72,12 @@ INSERT INTO `notification_types` (`id`, `NotiTypeID`, `UserTypeID`, `NotiTypeNam
 -- อาจารย์ comment เอกสาร
 (NULL, 20, 1, 'คอมเมนต์จากอาจารย์', 'คอมเมนต์จากอาจารย์', 'คอมเมนต์เอกสาร {FormName}', '/student/form_preview?d={FormID}', NULL, NULL, NULL, NULL),
 -- นักศึกษาขอสอบ
-(NULL, 21, 2, 'นักศึกษาขอสอบ', 'นักศึกษาขอสอบ', 'กลุ่ม {ProjectName} ขอสอบในวันที่ {OnDate}', '/teacher/test_req', NULL, NULL, NULL, NULL),
-(NULL, 21, 3, 'นักศึกษาขอสอบ', 'นักศึกษาขอสอบ', 'กลุ่ม {ProjectName} ขอสอบในวันที่ {OnDate}', '/teacher/test_req', NULL, NULL, NULL, NULL),
-(NULL, 21, 5, 'นักศึกษาขอสอบ', 'นักศึกษาขอสอบ', 'กลุ่ม {ProjectName} ขอสอบในวันที่ {OnDate}', '/teacher/test_req', NULL, NULL, NULL, NULL),
+(NULL, 21, 2, 'นักศึกษาขอสอบ', 'นักศึกษาขอสอบ', 'กลุ่ม {ProjectName} ขอสอบในวันที่ {OnDate}', '/teacher/test_req?MenuID=103', NULL, NULL, NULL, NULL),
+(NULL, 21, 3, 'นักศึกษาขอสอบ', 'นักศึกษาขอสอบ', 'กลุ่ม {ProjectName} ขอสอบในวันที่ {OnDate}', '/teacher/test_req?MenuID=203', NULL, NULL, NULL, NULL),
+(NULL, 21, 5, 'นักศึกษาขอสอบ', 'นักศึกษาขอสอบ', 'กลุ่ม {ProjectName} ขอสอบในวันที่ {OnDate}', '/teacher/test_req?MenuID=203', NULL, NULL, NULL, NULL),
+-- ประจำวิชาอนุมัติสอบ
+(NULL, 22, 1, 'อนุมัติการขอสอบ', 'อนุมัติการขอสอบ', 'อาจารย์อนุมัติให้กลุ่ม {ProjectName} สอบในวันที่ {OnDate} ได้', '/student/project?MenuID=2', NULL, NULL, NULL, NULL),
+(NULL, 22, 2, 'อนุมัติการขอสอบ', 'อนุมัติการขอสอบ', 'อาจารย์ประจำวิชาอนุมัติให้กลุ่ม {ProjectName} สอบในวันที่ {OnDate}', '/teacher/project?pid={ProjectID}', NULL, NULL, NULL, NULL),
+-- ไม่อนุมัติสอบ
+(NULL, 23, 1, 'ไม่อนุมัติการขอสอบ', 'ไม่อนุมัติการขอสอบ', 'อาจารย์ไม่อนุมัติให้กลุ่ม {ProjectName} สอบในวันที่ {OnDate} ได้ โปรดทบทวนและขอสอบใหม่', '/student/exam?MenuID=2', NULL, NULL, NULL, NULL),
+(NULL, 23, 2, 'ไม่อนุมัติการขอสอบ', 'ไม่อนุมัติการขอสอบ', 'อาจารย์ประจำวิชาไม่อนุมัติให้กลุ่ม {ProjectName} สอบในวันที่ {OnDate}', '/teacher/project?pid={ProjectID}', NULL, NULL, NULL, NULL),

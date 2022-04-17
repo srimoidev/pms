@@ -19,3 +19,12 @@ export async function Env(pEnvName) {
       //
     });
 }
+export async function SetEnv(pEnvName, pEnvValue) {
+  return HTTP.post("/app_env", { EnvName: pEnvName, EnvValue: pEnvValue })
+    .then(() => {
+      // return res.data.EnvValue;
+    })
+    .catch(() => {
+      //
+    });
+}

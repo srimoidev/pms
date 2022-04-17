@@ -529,17 +529,29 @@
             <v-divider class="mb-2"></v-divider>
             <v-expansion-panel-content>
               <v-row>
-                <v-col cols="3" class="align-self-end"><label for="" class="">ช่วงเวลาที่ขอสอบได้</label></v-col>
+                <v-col cols="3" class="align-self-end"><label for="" class="">ช่วงเวลาที่ขอสอบ Pre-Project ได้</label></v-col>
                 <v-col cols="8" class="d-flex">
                   <span class="mr-2 align-self-end">ตั้งแต่ :</span>
-                  <v-text-field v-model="ExamPeriodStartDate" type="datetime-local" class="" name="datetime" hide-details></v-text-field>
+                  <v-text-field v-model="PreProjectExamPeriodStartDate" type="datetime-local" class="" name="datetime" hide-details></v-text-field>
                   <span class="ml-4 mr-2 align-self-end">ถึง :</span>
-                  <v-text-field v-model="ExamPeriodEndDate" type="datetime-local" class="" name="datetime" hide-details></v-text-field>
+                  <v-text-field v-model="PreProjectExamPeriodEndDate" type="datetime-local" class="" name="datetime" hide-details></v-text-field>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="3" class="align-self-end"><label for="" class="">ช่วงเวลาที่ขอสอบ Project ได้</label></v-col>
+                <v-col cols="8" class="d-flex">
+                  <span class="mr-2 align-self-end">ตั้งแต่ :</span>
+                  <v-text-field v-model="ProjectExamPeriodStartDate" type="datetime-local" class="" name="datetime" hide-details></v-text-field>
+                  <span class="ml-4 mr-2 align-self-end">ถึง :</span>
+                  <v-text-field v-model="ProjectExamPeriodEndDate" type="datetime-local" class="" name="datetime" hide-details></v-text-field>
                 </v-col>
               </v-row>
             </v-expansion-panel-content>
           </v-expansion-panel>
         </v-expansion-panels>
+        <div class="mt-2 text-center">
+          <v-btn class="success" @click="save()">Save</v-btn>
+        </div>
       </v-container>
     </div>
   </v-card>
@@ -632,8 +644,10 @@ export default {
     newStartTime: null,
     newEndTime: null,
     newInstructor: null,
-    ExamPeriodStartDate:null,
-    ExamPeriodEndDate:null
+    PreProjectExamPeriodStartDate: null,
+    PreProjectExamPeriodEndDate: null,
+    ProjectExamPeriodStartDate: null,
+    ProjectExamPeriodEndDate: null
   }),
   computed: {
     ...mapGetters({
@@ -697,12 +711,18 @@ export default {
         this.newDeadlines.push({ SectionID: item.SectionID, OnDate: null });
       });
       this.edited_section = JSON.parse(JSON.stringify(this.sections));
-      await this.App.Env("ExamPeriodStartDate").then((res)=>{
-        this.ExamPeriodStartDate = res ? this.Utils.ConvertISOtoLocaleDateTime(new Date(res)) : null;
-      })
-      await this.App.Env("ExamPeriodEndDate").then((res)=>{
-        this.ExamPeriodEndDate = res ? this.Utils.ConvertISOtoLocaleDateTime(new Date(res)) : null;
-      })
+      await this.App.Env("PreProjectExamPeriodStartDate").then(res => {
+        this.PreProjectExamPeriodStartDate = res ? this.Utils.ConvertISOtoLocaleDateTime(new Date(res)) : null;
+      });
+      await this.App.Env("PreProjectExamPeriodEndDate").then(res => {
+        this.PreProjectExamPeriodEndDate = res ? this.Utils.ConvertISOtoLocaleDateTime(new Date(res)) : null;
+      });
+      await this.App.Env("ProjectExamPeriodStartDate").then(res => {
+        this.ProjectExamPeriodStartDate = res ? this.Utils.ConvertISOtoLocaleDateTime(new Date(res)) : null;
+      });
+      await this.App.Env("ProjectExamPeriodEndDate").then(res => {
+        this.ProjectExamPeriodEndDate = res ? this.Utils.ConvertISOtoLocaleDateTime(new Date(res)) : null;
+      });
       this.sec_loading = false;
     },
     resetDateTime(pItem, pDeadline) {
@@ -904,6 +924,24 @@ export default {
             });
           }
         });
+    },
+    save() {
+      Promise.all([
+        this.App.SetEnv("PreProjectExamPeriodStartDate", this.PreProjectExamPeriodStartDate),
+        this.App.SetEnv("PreProjectExamPeriodEndDate", this.PreProjectExamPeriodEndDate),
+        this.App.SetEnv("ProjectExamPeriodStartDate", this.ProjectExamPeriodStartDate),
+        this.App.SetEnv("ProjectExamPeriodEndDate", this.ProjectExamPeriodEndDate)
+      ]).then(() => {
+        this.$swal.fire({
+          timer: 3000,
+          timerProgressBar: true,
+          showConfirmButton: false,
+          position: "top-end",
+          toast: true,
+          icon: "success",
+          title: "Success"
+        });
+      });
     },
     onResize() {
       //page header 64px

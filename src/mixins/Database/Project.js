@@ -144,9 +144,14 @@ export async function GetAllRequestExam() {
     return res.data;
   });
 }
-export async function IsExamRequest(pProjectID) {
-  return await HTTP.get(`project/exam/request?projectid=${pProjectID}`).then(res => {
-    return res.data.IsExist;
+export async function IsExamRequest(pProjectID, pIsProject) {
+  return await HTTP.get(`project/exam/request?projectid=${pProjectID}&isproject=${pIsProject}`).then(res => {
+    return res.data;
+  });
+}
+export async function Committee(pExamID, pUserID, pIsProject) {
+  return await HTTP.get(`project/committee?examid=${pExamID}&userid=${pUserID}&isproject=${pIsProject}`).then(res => {
+    return res.data;
   });
 }
 
@@ -263,7 +268,7 @@ export async function upload_form(fID, file, onUploadProgress) {
   });
 }
 export async function SubmitExamRequest(pProjectID, pOnDate, pIsProject, pAuthenID) {
-  return await HTTP.post(`/project/exam/request/preproject/`, {
+  return await HTTP.post(`/project/exam/request_exam`, {
     ProjectID: pProjectID,
     OnDate: pOnDate,
     IsProjectExam: pIsProject,

@@ -52,7 +52,7 @@
         </template>
         <template v-slot:[`item.UpdatedTime`]="{ item }">
           <span v-if="item.LatestForm">
-            {{ new Date(item.LatestForm.UpdatedTime).toLocaleString() }}
+            {{ new Date(item.LatestForm.UpdatedTime).toLocaleString("th-TH") }}
           </span>
         </template>
         <template v-slot:[`item.Deadline`]="{ item }">

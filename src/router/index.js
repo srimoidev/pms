@@ -6,6 +6,7 @@ import store from "../store/";
 // import Login from "../views/Login/Login.vue";
 import MainLogin from "../views/Login/MainLogin.vue";
 import Home from "../views/HomePage/Home.vue";
+import HomePage from "../components/Home.vue";
 import HomeProject from "../views/HomePage/Project.vue";
 import SearchProject from "../components/SearchProject.vue";
 
@@ -46,6 +47,7 @@ import Teacher_Documents from "../views/Teacher/ManageProject/Documents";
 import Teacher_FormCE from "../views/Teacher/ManageProject/FormCE";
 import Teacher_NewProjects from "../views/Teacher/Request/NewProjects";
 import Teacher_Exam from "../views/Teacher/Exam/Exam.vue";
+import Teacher_Exam_Score from "../views/Teacher/Exam/ExamScore";
 
 //App Environment Configuration
 import App_Configs from "../views/AppConfigurations/AppConfigurations.vue";
@@ -74,7 +76,7 @@ const routes = [
       {
         path: "",
         name: "Home",
-        component: SearchProject,
+        component: HomePage,
         meta: { title: "Home | PMS" }
       },
       {
@@ -88,15 +90,21 @@ const routes = [
         name: "Login",
         component: MainLogin,
         meta: { title: "Login | PMS" }
+      },
+      {
+        path: "/project",
+        name: "SearchResult",
+        component: HomeProject,
+        meta: { title: "Project | PMS" }
       }
     ]
   },
-  {
-    path: "/project/:id",
-    name: "Login",
-    component: HomeProject,
-    meta: { title: "Project | PMS" }
-  },
+  // {
+  //   path: "/project/:id",
+  //   name: "SearchResult",
+  //   component: HomeProject,
+  //   meta: { title: "Project | PMS" }
+  // },
   //Student
   {
     path: "/student",
@@ -318,6 +326,12 @@ const routes = [
         name: "Exam",
         component: Teacher_Exam,
         meta: { title: "Exam | PMS" }
+      },
+      {
+        path: "exam_score",
+        name: "Exam Score",
+        component: Teacher_Exam_Score,
+        meta: { title: "Exam Score | PMS" }
       }
     ]
   },
@@ -428,7 +442,7 @@ router.beforeEach((to, from, next) => {
       return next("/login");
     }
   } else {
-    const publicPages = ["/", "/search", "/login", "/about"];
+    const publicPages = ["/", "/search", "/login", "/about", "/project"];
     if (!publicPages.includes(to.path)) {
       next("/login");
     } else {

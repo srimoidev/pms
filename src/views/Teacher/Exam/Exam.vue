@@ -56,11 +56,13 @@
         </v-chip>
       </template>
       <template v-slot:[`item.Exam.OnDate`]="{ item }">
-        {{ new Date(item.Exam.OnDate).toLocaleString() }}
+        {{ new Date(item.Exam.OnDate).toLocaleString("th-TH") }}
       </template>
       <template v-slot:[`item.Exam.Project_Committees`]="{ item }">
         <ul>
-          <li v-for="committee in item.Exam.Project_Committees" :key="committee.UserIS">{{ committee.Firstname + " " + committee.Lastname }}</li>
+          <li v-for="committee in item.Exam.Project_Committees" :key="committee.UserID">
+            {{ committee.Firstname + " " + committee.Lastname + (committee.IsAdvisor ? " (ที่ปรึกษา)" : "") }}
+          </li>
           <!-- <li</li> -->
         </ul>
       </template>
@@ -68,13 +70,23 @@
         <project-status :status="item.Project_Status.ProjectStatusID"></project-status>
       </template>
       <template v-slot:[`item.actions`]="{ item }">
-        <v-tooltip bottom>
+        <v-tooltip v-if="!item.isAdviserThisProject && !item.isCommittee" bottom>
           <template v-slot:activator="{ on, attrs }">
             <v-icon v-bind="attrs" v-on="on" class="mr-2" @click="JoinCommittee(item)">
               mdi-account-arrow-right-outline
             </v-icon>
           </template>
           <span>เข้าร่วมเป็นกรรมการสอบ</span>
+        </v-tooltip>
+        <v-tooltip v-if="item.isPassOnDate" bottom>
+          <template v-slot:activator="{ on, attrs }">
+            <router-link :to="{ path: '/teacher/exam_score', query: { pid: item.ProjectID } }" class="text-none">
+              <v-icon v-bind="attrs" v-on="on" class="mr-2">
+                mdi-checkbox-marked-outline
+              </v-icon>
+            </router-link>
+          </template>
+          <span>กรอกคะแนนผลการสอบ</span>
         </v-tooltip>
       </template>
     </v-data-table>
@@ -177,6 +189,33 @@ export default {
           ProjectStatusName: "ทั้งหมด"
         });
         this.allProject = await this.Project.GetAllRequestExam();
+
+        this.allProject.map(item => {
+          item.Project_Advisors.map(teacher => {
+            if (teacher.UserID == this.user.UserID) {
+              item.isAdviserThisProject = true;
+            } else {
+              item.isAdviserThisProject = false;
+            }
+            let committee = JSON.parse(JSON.stringify(teacher));
+            committee.IsAdvisor = true;
+            item.Exam.Project_Committees.push(committee);
+          });
+
+          if (item.Exam.Project_Committees.some(item => item.UserID == this.user.UserID)) {
+            item.isCommittee = true;
+          } else {
+            item.isCommittee = false;
+          }
+          item.Exam.Project_Committees.sort(function(a) {
+            return a?.IsAdvisor == null ? 1 : -1;
+          });
+          if (new Date().getTime() > new Date(item.Exam.OnDate).getTime()) {
+            item.isPassOnDate = true;
+          } else {
+            item.isPassOnDate = false;
+          }
+        });
         this.loading = false;
       });
     },

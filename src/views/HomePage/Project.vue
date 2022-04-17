@@ -175,7 +175,7 @@ export default {
       isLoggedIn: "authentication/isLoggedIn"
     }),
     projectId() {
-      return this.$route.params.id;
+      return this.$route.query.pid;
     }
   },
   mounted() {
@@ -186,7 +186,7 @@ export default {
       this.tabState = item;
     },
     async loadData() {
-      this.item = await this.Project.Project(this.projectId);
+      this.item = await this.Public.Project(this.projectId);
     }
   }
 };
