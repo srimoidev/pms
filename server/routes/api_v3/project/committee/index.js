@@ -58,6 +58,7 @@ router.get("/all", async (req, res) => {
                 {
                   model: db.user_profile,
                   as: "Teacher",
+                  
                   attributes: { exclude: ["Username", "Password", "StudentID", "AcademicYear", "CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] }
                 }
               ],
