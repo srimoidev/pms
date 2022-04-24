@@ -78,7 +78,7 @@
           </template>
           <span>เข้าร่วมเป็นกรรมการสอบ</span>
         </v-tooltip>
-        <v-tooltip v-if="item.isPassOnDate" bottom>
+        <v-tooltip v-if="item.isPassOnDate && item.isCommittee" bottom>
           <template v-slot:activator="{ on, attrs }">
             <router-link :to="{ path: '/teacher/exam_score', query: { pid: item.ProjectID } }" class="text-none">
               <v-icon v-bind="attrs" v-on="on" class="mr-2">
@@ -191,15 +191,21 @@ export default {
         this.allProject = await this.Project.GetAllRequestExam();
 
         this.allProject.map(item => {
-          item.Project_Advisors.map(teacher => {
-            if (teacher.UserID == this.user.UserID) {
-              item.isAdviserThisProject = true;
-            } else {
-              item.isAdviserThisProject = false;
+          // item.Project_Advisors.map(teacher => {
+          //   if (teacher.UserID == this.user.UserID) {
+          //     item.isAdviserThisProject = true;
+          //   } else {
+          //     item.isAdviserThisProject = false;
+          //   }
+          //   let committee = JSON.parse(JSON.stringify(teacher));
+          //   committee.IsAdvisor = true;
+          //   item.Exam.Project_Committees.push(committee);
+          // });
+          const projectAdvisorIDs = item.Project_Advisors.map(item => item.UserID);
+          item.Exam.Project_Committees.map(item => {
+            if (projectAdvisorIDs.includes(item.UserID)) {
+              item.IsAdvisor = true;
             }
-            let committee = JSON.parse(JSON.stringify(teacher));
-            committee.IsAdvisor = true;
-            item.Exam.Project_Committees.push(committee);
           });
 
           if (item.Exam.Project_Committees.some(item => item.UserID == this.user.UserID)) {
@@ -207,6 +213,7 @@ export default {
           } else {
             item.isCommittee = false;
           }
+          
           item.Exam.Project_Committees.sort(function(a) {
             return a?.IsAdvisor == null ? 1 : -1;
           });

@@ -5,9 +5,19 @@
     </v-toolbar>
     <v-divider class="mx-2"></v-divider>
     <v-container v-show="isLoaded">
-      <div v-if="isNotAllowToRequest" class="text-center">
+      <div v-if="isNotHasGroup" class="text-center" style="height:inherit">
+        <div style="padding-top:16%">
+          <v-icon size="128">mdi-alert-circle-outline</v-icon>
+          <p>โปรดไปที่เมนู "โปรเจ็คทั้งหมด" เพื่อสร้างกลุ่มใหม่หรือเข้าร่วมกลุ่มก่อนจัดการโปรเจ็ค</p>
+        </div>
+      </div>
+      <div v-else-if="isNotAllowToRequest" class="text-center">
         <v-icon size="128" color="amber darken-1">mdi-alert-outline</v-icon>
         <h1>ยังไม่อยู่ในช่วงเวลาที่เปิดให้ขอสอบ</h1>
+      </div>
+      <div v-else-if="!isCompleteAllForm" class="text-center">
+        <v-icon size="128" color="amber darken-1">mdi-alert-outline</v-icon>
+        <h1>มีเอกสารบางรายการยังไม่ได้รับการอนุมีติโปรดตรวจสอบ</h1>
       </div>
       <div v-else-if="isExamRequest.IsExist && !isExamRequest.IsRevise" class="text-center">
         <v-icon size="128" color="light-green accent-4">mdi-check-circle-outline</v-icon>
@@ -71,6 +81,8 @@ export default {
       isExamRequest: false,
       isNotAllowToRequest: true,
       isProject: null,
+      isNotHasGroup: true,
+      isCompleteAllForm: false,
       ProjectType: [
         { value: "1", text: "Pre-Project" },
         { value: "2", text: "Project" }
@@ -107,29 +119,40 @@ export default {
       const PreProjectExamPeriodEndDate = await this.App.Env("PreProjectExamPeriodEndDate");
       const ProjectExamPeriodStartDate = await this.App.Env("ProjectExamPeriodStartDate");
       const ProjectExamPeriodEndDate = await this.App.Env("ProjectExamPeriodEndDate");
-
-      await this.Project.Project(this.user.ProjectID).then(res => {
-        this.data = res;
-        this.isProject = this.data?.IsProject != true ? this.ProjectType.find(i => i.value == 1) : this.ProjectType.find(i => i.value == 2);
-      });
-      this.isExamRequest = await this.Project.IsExamRequest(this.user.ProjectID, this.data.IsProject ? 1 : 0);
-      // console.log(this.isExamRequest);
-      // console.log(this.isExamRequest)
-      if (this.data.IsProject) {
-        if (new Date().getTime() > new Date(ProjectExamPeriodStartDate).getTime() && new Date().getTime() < new Date(ProjectExamPeriodEndDate)) {
-          this.isNotAllowToRequest = false;
-        } else {
-          this.isNotAllowToRequest = true;
-        }
+      this.isCompleteAllForm = await this.Form.IsCompleteAllForm(this.user.ProjectID);
+      console.log(this.isCompleteAllForm)
+      if (!this.user.ProjectID) {
+        this.isNotHasGroup = true;
       } else {
-        if (
-          new Date().getTime() > new Date(PreProjectExamPeriodStartDate).getTime() &&
-          new Date().getTime() < new Date(PreProjectExamPeriodEndDate)
-        ) {
-          this.isNotAllowToRequest = false;
+        if (this.isCompleteAllForm) {
+          await this.Project.Project(this.user.ProjectID).then(res => {
+            this.data = res;
+            this.isProject = this.data?.IsProject != true ? this.ProjectType.find(i => i.value == 1) : this.ProjectType.find(i => i.value == 2);
+          });
+
+          this.isExamRequest = await this.Project.IsExamRequest(this.user.ProjectID, this.data.IsProject ? 1 : 0);
+          // console.log(this.isExamRequest);
+          // console.log(this.isExamRequest)
+          if (this.data.IsProject) {
+            if (new Date().getTime() > new Date(ProjectExamPeriodStartDate).getTime() && new Date().getTime() < new Date(ProjectExamPeriodEndDate)) {
+              this.isNotAllowToRequest = false;
+            } else {
+              this.isNotAllowToRequest = true;
+            }
+          } else {
+            if (
+              new Date().getTime() > new Date(PreProjectExamPeriodStartDate).getTime() &&
+              new Date().getTime() < new Date(PreProjectExamPeriodEndDate)
+            ) {
+              this.isNotAllowToRequest = false;
+            } else {
+              this.isNotAllowToRequest = true;
+            }
+          }
         } else {
-          this.isNotAllowToRequest = true;
+          this.isNotAllowToRequest = false;
         }
+        this.isNotHasGroup = false;
       }
       this.isLoaded = true;
     },

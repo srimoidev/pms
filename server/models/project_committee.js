@@ -27,6 +27,10 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.FLOAT,
         field: "AdvisorScore"
       },
+      Comment: {
+        type: Sequelize.STRING,
+        field: "Comment"
+      },
       CreatedBy: {
         type: Sequelize.INTEGER,
         field: "CreatedBy"

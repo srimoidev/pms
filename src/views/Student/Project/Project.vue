@@ -1,6 +1,6 @@
 <template>
   <div v-if="user.ProjectID" class="d-flex ma-2">
-    <v-card class="elevation-1 mr-2" style="width: 70%" tile v-resize="onResize" :min-height="windowHeight">
+    <v-card class="elevation-1 mr-2" style="width: 70%" tile v-resize="onResize" :max-height="windowHeight">
       <v-toolbar flat color="white">
         <v-toolbar-title style="max-width: 50%">
           {{ txtHeaderNameTH }}
@@ -23,9 +23,9 @@
           ออกจากกลุ่ม
         </v-btn>
       </v-toolbar>
-      <v-container class="overflow-y-auto" :style="{ 'max-height': windowHeight - 50 + 'px' }">
+      <v-container>
         <ValidationObserver ref="observer">
-          <v-card class="ma-2 px-4 pa-2 elevation-0" outlined :height="windowHeight - 100">
+          <v-card class="ma-2 px-4 pa-2 elevation-0 overflow-y-auto" :style="{ 'max-height': windowHeight - 102 + 'px' }" outlined>
             <v-row dense v-for="item in title" :key="item.name">
               <v-col cols="3">
                 <!-- <span v-if="item.name == 'RejectRemark' && data.Project_Status.ProjectStatus_ID != 7"></span> -->
@@ -49,6 +49,20 @@
                 <div v-else-if="item.name == 'ProjectDetail'">
                   <v-textarea v-model="data[item.name]" outlined rows="5" counter no-resize :readonly="!isEdit"></v-textarea>
                 </div>
+                <div v-else-if="item.name == 'Exam'">
+                  <!-- {{data[item.name].Project_Score}} -->
+                  <v-data-table
+                    :headers="projectScoreHeader"
+                    :items="committeeScore"
+                    :loading="loading"
+                    loading-text="Loading... Please wait"
+                    hide-default-footer
+                  >
+                    <template v-slot:[`item.Teacher.Firstname`]="{ item }">
+                      {{ item.Teacher.Firstname + " " + item.Teacher.Lastname }}
+                    </template>
+                  </v-data-table>
+                </div>
                 <div v-else>
                   <ValidationProvider v-slot="{ errors }" :name="item.text" rules="required">
                     <v-text-field v-model="data[item.name]" dense outlined :readonly="!isEdit" :error-messages="errors"></v-text-field>
@@ -56,13 +70,14 @@
                 </div>
               </v-col>
             </v-row>
-            <div v-if="isEdit" class="mr-4 mb-4" style="position: absolute; right: 0; bottom: 0">
+            
+          </v-card>
+        </ValidationObserver>
+        <div v-if="isEdit" class="mr-4 mb-4" style="position: absolute; right: 0; bottom: 0">
               <v-spacer></v-spacer>
               <v-btn class="mr-2" color="success" @click="submitForm">บันทึก</v-btn>
               <v-btn class="" color="" @click="isEdit = !isEdit">ยกเลิก</v-btn>
             </div>
-          </v-card>
-        </ValidationObserver>
       </v-container>
     </v-card>
     <div style="width: 30%">
@@ -271,7 +286,8 @@ export default {
         { name: "ProjectNameEN", text: "ชื่อภาษาอังกฤษ" },
         { name: "ProjectDetail", text: "รายละเอียด" },
         { name: "Project_Section", text: "Section" },
-        { name: "Project_Status", text: "สถานะ" }
+        { name: "Project_Status", text: "สถานะ" },
+        { name: "Exam", text: "คำแนนสอบ" }
       ],
       dayText: [
         { id: 1, text: "วันอาทิตย์" },
@@ -282,6 +298,19 @@ export default {
         { id: 6, text: "วันศุกร์" },
         { id: 7, text: "วันเสาร์" }
       ],
+      projectScoreHeader: [
+        {
+          text: "ชื่อ",
+          align: "start",
+          sortable: true,
+          value: "Teacher.Firstname"
+        },
+        { text: "คะแนนการนำเสนอ", value: "PresentScore", sortable: false },
+        { text: "คะแนนการรูปเล่ม", value: "DocumentScore", sortable: false },
+        { text: "คอมเมนต์เพิ่มเติม", value: "Comment" }
+      ],
+      committeeScore: [],
+      tblloading: false,
       txtHeaderNameTH: null
     };
   },
@@ -325,16 +354,16 @@ export default {
       this.$store.dispatch("user/getLoggedInUserData").then(async () => {
         this.data = await this.Project.Project(this.user.ProjectID);
         this.txtHeaderNameTH = `Manage Project - ${this.data.ProjectNameTH}`;
-        this.data.Project_Advisors.map((item) => {
+        this.data.Project_Advisors.map(item => {
           this.selectedAdvisors.push(item.UserID);
         });
-        this.data.Project_Members.map((item) => {
+        this.data.Project_Members.map(item => {
           this.selectedMembers.push(item.UserID);
         });
 
         this.newMembers = this.data.Project_Members;
         Promise.all(
-          this.newMembers.map(async (item) => {
+          this.newMembers.map(async item => {
             item.ImgUrl = await this.User.ProfileImage(item.UserID);
           })
         ).then(() => {
@@ -343,13 +372,15 @@ export default {
 
         this.newAdvisors = this.data.Project_Advisors;
         Promise.all(
-          this.newAdvisors.map(async (item) => {
+          this.newAdvisors.map(async item => {
             item.ImgUrl = await this.User.ProfileImage(item.UserID);
           })
         ).then(() => {
           this.LoadAdvisorsImg = true;
         });
-        this.loading = true;
+        this.committeeScore = this.data.Exam.Project_Score;
+        console.log(this.committeeScore);
+        this.loading = false;
       });
       this.allTeacher = await this.User.UserTeacher();
       this.allStudent = await this.User.UserStudent();
@@ -366,7 +397,7 @@ export default {
           cancelButtonText: "ยกเลิก",
           confirmButtonText: "ยืนยัน!"
         })
-        .then((result) => {
+        .then(result => {
           if (result.isConfirmed) {
             this.Project.Leave(this.user.ProjectID, this.user.UserID);
             this.$router.push("/student/all_project");
@@ -383,11 +414,11 @@ export default {
     async saveNewAdvisors() {
       if (await this.$refs.obsAdvisors.validate()) {
         const temp = this.selectedAdvisors;
-        this.newAdvisors = this.allTeacher.filter((item) => {
+        this.newAdvisors = this.allTeacher.filter(item => {
           return temp.includes(item.UserID);
         });
         Promise.all(
-          this.newAdvisors.map(async (item) => {
+          this.newAdvisors.map(async item => {
             item.ImgUrl = await this.User.ProfileImage(item.UserID);
           })
         ).then(() => {
@@ -397,7 +428,7 @@ export default {
     },
     cancelEditTeacher() {
       this.selectedAdvisors = [];
-      this.newAdvisors.map((item) => {
+      this.newAdvisors.map(item => {
         this.selectedAdvisors.push(item.UserID);
       });
       this.editTeacher = false;
@@ -405,11 +436,11 @@ export default {
     async saveNewMember() {
       if (await this.$refs.obsAdvisors.validate()) {
         const temp = this.selectedMembers;
-        this.newMembers = this.allStudent.filter((item) => {
+        this.newMembers = this.allStudent.filter(item => {
           return temp.includes(item.UserID);
         });
         Promise.all(
-          this.newMembers.map(async (item) => {
+          this.newMembers.map(async item => {
             item.ImgUrl = await this.User.ProfileImage(item.UserID);
           })
         ).then(() => {
@@ -419,7 +450,7 @@ export default {
     },
     cancelEditMember() {
       this.selectedMembers = [];
-      this.newMembers.map((item) => {
+      this.newMembers.map(item => {
         this.selectedMembers.push(item.UserID);
       });
       this.editStudent = false;

@@ -251,6 +251,26 @@ router.get("/:id", async (req, res) => {
           model: db.user_profile,
           as: "UpdatedUser",
           attributes: { exclude: ["Username", "Password", "StudentID", "AcademicYear", "CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] }
+        },
+        {
+          model: db.exam,
+          as: "Exam",
+          attributes: { exclude: ["CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] },
+          include: [
+            {
+              model: db.project_committee,
+              as: "Project_Score",
+              include: [
+                {
+                  model: db.user_profile,
+                  as: "Teacher",
+                  
+                  attributes: { exclude: ["Username", "Password", "StudentID", "AcademicYear", "CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] }
+                }
+              ],
+              attributes: { exclude: ["CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] }
+            }
+          ]
         }
       ],
       where: { ProjectID: req.params.id },

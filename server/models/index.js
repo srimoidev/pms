@@ -190,6 +190,21 @@ db.user_profile.belongsToMany(db.exam, {
   through: db.project_committee,
   foreignKey: "UserID"
 });
+// db.project_committee.belongsToMany(db.project_info,{
+//   through: db.exam,
+//   foreignKey: "ExamID",
+//   targetKey: "ExamID"
+// })
+db.exam.hasMany(db.project_committee, {
+  as: "Project_Score",
+  foreignKey: "ExamID",
+  targetKey: "ExamID"
+});
+db.project_committee.belongsTo(db.user_profile, {
+  as: "Teacher",
+  foreignKey: "UserID",
+  // targetKey: "UserID"
+});
 //#endregion
 
 //#region Form
@@ -271,6 +286,10 @@ db.form_sent.belongsTo(db.user_profile, {
 db.form_sent.belongsTo(db.user_profile, {
   as: "UpdatedUser",
   foreignKey: "UpdatedBy"
+});
+db.form_type.hasOne(db.form_sent, {
+  as: "Form_Sent",
+  foreignKey: "FormTypeID"
 });
 //#endregion
 

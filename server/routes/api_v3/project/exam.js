@@ -181,6 +181,21 @@ router.get("/request", async (req, res) => {
     });
   }
 });
+router.post("/committee/submitscore/:id", async (req, res) => {
+  const transaction = await db.sequelize.transaction();
+  console.log(req.body,req.params.id)
+  try {
+    await db.project_committee.update(req.body, { where: { CommitteeID: req.params.id } }, { transaction: transaction }).then(async res => {});
+    await transaction.commit().then(() => {
+      return res.status(200).send();
+    });
+  } catch (err) {
+    await transaction.rollback();
+    res.status(500).send({
+      message: err.message || "Some error occurred while creating!"
+    });
+  }
+});
 router.post("/committee", async (req, res) => {
   const transaction = await db.sequelize.transaction();
   try {
@@ -309,6 +324,8 @@ router.post("/:id", async (req, res) => {
     var project;
     var members;
     var advisors;
+    // const preProjectInstructor;
+    // const projectInstructor;
     var exam = null;
     await db.exam
       .update(req.body, { where: { ExamID: req.params.id } }, { transaction: transaction })
@@ -319,17 +336,21 @@ router.post("/:id", async (req, res) => {
         });
         members = await db.project_member.findAll({ where: { ProjectID: project.ProjectID }, raw: true });
         advisors = await db.project_advisor.findAll({ where: { ProjectID: project.ProjectID }, raw: true });
-        advisors.forEach(async advisor => {
-          await db.project_committee.create(
-            {
-              ExamID: exam.ExamID,
-              UserID: advisor.UserID,
-              CreatedBy: exam.UpdatedBy,
-              UpdatedBy: exam.UpdatedBy
-            },
-            { transaction: transaction }
-          );
-        });
+        // preProjectInstructor = await db.user_profile.findAll({ where: { UserTypeID: 3 }, raw: true });
+        // projectInstructor =await db.user_profile.findAll({ where: { UserTypeID: 5 }, raw: true });
+        if (req.body.ExamStatusID == 3) {
+          advisors.forEach(async advisor => {
+            await db.project_committee.create(
+              {
+                ExamID: exam.ExamID,
+                UserID: advisor.UserID,
+                CreatedBy: exam.UpdatedBy,
+                UpdatedBy: exam.UpdatedBy
+              },
+              { transaction: transaction }
+            );
+          });
+        }
       })
       .then(async () => {
         //ที่ปรึกษาอนุมัติ

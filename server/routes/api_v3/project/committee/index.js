@@ -25,6 +25,48 @@ router.get("/", async (req, res) => {
     //   });
     // }
     const data = await db.project_committee.findAll({
+      include: [{ model: db.exam, as: "Project" }],
+      where: whereStr
+    });
+    return res.json(data);
+  } catch (error) {
+    return res.status(500).json({
+      msg: error
+    });
+  }
+});
+router.get("/all", async (req, res) => {
+  try {
+    console.log(req.query);
+    var whereStr = [];
+    if (req.query.projectid) {
+      whereStr.push({
+        ProjectID: req.query.projectid
+      });
+    }
+    const data = await db.project_info.findOne({
+      include: [
+        {
+          model: db.exam,
+          as: "Exam",
+          attributes: { exclude: ["CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] },
+          include: [
+            {
+              model: db.project_committee,
+              as: "Project_Score",
+              include: [
+                {
+                  model: db.user_profile,
+                  as: "Teacher",
+                  attributes: { exclude: ["Username", "Password", "StudentID", "AcademicYear", "CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] }
+                }
+              ],
+              attributes: { exclude: ["CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] }
+            }
+          ]
+        }
+      ],
+      attributes: { exclude: ["CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] },
       where: whereStr
     });
     return res.json(data);

@@ -1,7 +1,9 @@
 const router = require("express").Router();
+const { sequelize } = require("../../../models");
 const db = require("../../../models");
 const { Op } = require("sequelize");
 const fs = require("fs");
+const { QueryTypes } = require("sequelize");
 
 router.get("/", async (req, res) => {
   try {
@@ -89,6 +91,34 @@ router.get("/", async (req, res) => {
       msg: error
     });
   }
+});
+router.get("/iscompleteall", async (req, res) => {
+  console.log(" SELECT * FROM form_type "
+  + " LEFT JOIN form_sent ON form_type.FormTypeID = form_sent.FormTypeID AND form_sent.FormID IN("
+  + " SELECT MAX(FormID) FROM form_sent WHERE form_sent.FormTypeID ) AND ProjectID = " 
+  + req.query.projectid 
+  + " GROUP by form_sent.FormTypeID) WHERE form_type.isActive = 1 ")
+  await sequelize
+    .query(
+      " SELECT * FROM form_type "
+      + " LEFT JOIN form_sent ON form_type.FormTypeID = form_sent.FormTypeID AND form_sent.FormID IN("
+      + " SELECT MAX(FormID) FROM form_sent WHERE ProjectID = " 
+      + req.query.projectid 
+      + " GROUP by form_sent.FormTypeID) WHERE form_type.isActive = 1 ",
+      { raw: false, type: QueryTypes.SELECT }
+    )
+    .then(result => {
+      if (result.some(item => item.FormStatusID != 5)) {
+        res.json({ IsCompleteAllForm: false });
+      } else {
+        res.json({ IsCompleteAllForm: true });
+      }
+    })
+    .catch(err => {
+      res.json({
+        err: err.message
+      });
+    });
 });
 router.get("/:id/latest", async (req, res) => {
   await db.form_sent
@@ -190,7 +220,6 @@ router.get("/:id", async (req, res) => {
     });
   }
 });
-
 // create
 router.post("/", async (req, res) => {
   const transaction = await db.sequelize.transaction();
@@ -319,11 +348,11 @@ router.put("/:id", async (req, res) => {
       .then(async () => {
         const form = await db.form_sent.findOne({ where: { FormID: req.params.id }, raw: true });
         const formType = await db.form_type.findOne({ where: { FormTypeID: form.FormTypeID }, raw: true });
-        const project = await db.project_info.findOne({where: { ProjectID: req.body.ProjectID },raw:true});
+        const project = await db.project_info.findOne({ where: { ProjectID: req.body.ProjectID }, raw: true });
         const user = await db.user_profile.findOne({ where: { UserID: req.body.UpdatedBy } });
         await db.notification_types
           .findAll({
-            where: { NotiTypeID: notiTypeID, UserTypeID: [1,2, 3, 5] }, //นักศึกษาและที่ปรึกษา
+            where: { NotiTypeID: notiTypeID, UserTypeID: [1, 2, 3, 5] }, //นักศึกษาและที่ปรึกษา
             raw: true
           })
           .then(async notiTemplate => {
@@ -339,18 +368,20 @@ router.put("/:id", async (req, res) => {
                 template.TitleTemplate = template.TitleTemplate.replace("{FormName}", formType.FormTypeName);
                 template.MessageTemplate = template.MessageTemplate.replace("{FormName}", formType.FormTypeName);
                 template.ActionTemplate = template.ActionTemplate.replace("{FormID}", form.FormID);
-                
-                await db.notifications.create({
-                  NotiTypeID: notiTypeID,
-                  UserID: item.UserID,
-                  Title: template.TitleTemplate,
-                  Message: template.MessageTemplate,
-                  ActionPage: template.ActionTemplate,
-                  CreatedBy: user.UserID,
-                  UpdatedBy: user.UserID
-                }).then(()=>{
-                  req.io.to(`room_${item.UserID}`).emit("notifications", { msg: "มีการแจ้งเตือนใหม่" });
-                });
+
+                await db.notifications
+                  .create({
+                    NotiTypeID: notiTypeID,
+                    UserID: item.UserID,
+                    Title: template.TitleTemplate,
+                    Message: template.MessageTemplate,
+                    ActionPage: template.ActionTemplate,
+                    CreatedBy: user.UserID,
+                    UpdatedBy: user.UserID
+                  })
+                  .then(() => {
+                    req.io.to(`room_${item.UserID}`).emit("notifications", { msg: "มีการแจ้งเตือนใหม่" });
+                  });
               }
             });
             if ([12, 13].includes(notiTypeID)) {
@@ -359,83 +390,85 @@ router.put("/:id", async (req, res) => {
                   template = notiTemplate.find(item => item.UserTypeID == 2);
 
                   template.TitleTemplate = template.TitleTemplate.replace("{FormName}", formType.FormTypeName);
-                  template.MessageTemplate = template.MessageTemplate
-                                            .replace("{ProjectName}",project.ProjectNameTH)
-                                            .replace("{FormName}", formType.FormTypeName);
-                  template.ActionTemplate = template.ActionTemplate
-                                          .replace("{ProjectID}",project.ProjectID)
-                                          .replace("{FormID}", form.FormID);
-                  
-                  await db.notifications.create({
-                    NotiTypeID: notiTypeID,
-                    UserID: item.UserID,
-                    Title: template.TitleTemplate,
-                    Message: template.MessageTemplate,
-                    ActionPage: template.ActionTemplate,
-                    CreatedBy: user.UserID,
-                    UpdatedBy: user.UserID
-                  }).then(()=>{
-                    req.io.to(`room_${item.UserID}`).emit("notifications", { msg: "มีการแจ้งเตือนใหม่" });
-                  });
-                }
-              });
-            }
-            if (notiTypeID == 10) {
-              if(!project.IsProject){
-                preProjectInstructor.forEach(async item => {
-                if (item.UserID != req.body.CreatedBy) {
-                  template = notiTemplate.find(item => item.UserTypeID == 3);
+                  template.MessageTemplate = template.MessageTemplate.replace("{ProjectName}", project.ProjectNameTH).replace(
+                    "{FormName}",
+                    formType.FormTypeName
+                  );
+                  template.ActionTemplate = template.ActionTemplate.replace("{ProjectID}", project.ProjectID).replace("{FormID}", form.FormID);
 
-                  template.TitleTemplate = template.TitleTemplate
-                                          .replace("{ProjectName}",project.ProjectNameTH)
-                                          .replace("{FormName}", formType.FormTypeName);
-                  template.MessageTemplate = template.MessageTemplate.replace("{FormName}", formType.FormTypeName);
-                  template.ActionTemplate = template.ActionTemplate
-                                          .replace("{ProjectID}",project.ProjectID)
-                                          .replace("{FormID}", form.FormID);
-                  
-                  await db.notifications.create({
-                    NotiTypeID: 10,
-                    UserID: item.UserID,
-                    Title: template.TitleTemplate,
-                    Message: template.MessageTemplate,
-                    ActionPage: template.ActionTemplate,
-                    CreatedBy: user.UserID,
-                    UpdatedBy: user.UserID
-                  }).then(()=>{
-                    req.io.to(`room_${item.UserID}`).emit("notifications", { msg: "มีการแจ้งเตือนใหม่" });
-                  });
-                }
-              });
-              }
-              if(project.IsProject){
-                projectInstructor.forEach(async item => {
-                  if (item.UserID != req.body.CreatedBy) {
-                    template = notiTemplate.find(item => item.UserTypeID == 5);
-  
-                    template.TitleTemplate = template.TitleTemplate
-                                            .replace("{ProjectName}",project.ProjectNameTH)
-                                            .replace("{FormName}", formType.FormTypeName);
-                    template.MessageTemplate = template.MessageTemplate.replace("{FormName}", formType.FormTypeName);
-                    template.ActionTemplate = template.ActionTemplate
-                                            .replace("{ProjectID}",project.ProjectID)
-                                            .replace("{FormID}", form.FormID);
-                    
-                    await db.notifications.create({
-                      NotiTypeID: 10,
+                  await db.notifications
+                    .create({
+                      NotiTypeID: notiTypeID,
                       UserID: item.UserID,
                       Title: template.TitleTemplate,
                       Message: template.MessageTemplate,
                       ActionPage: template.ActionTemplate,
                       CreatedBy: user.UserID,
                       UpdatedBy: user.UserID
-                    }).then(()=>{
+                    })
+                    .then(() => {
                       req.io.to(`room_${item.UserID}`).emit("notifications", { msg: "มีการแจ้งเตือนใหม่" });
                     });
+                }
+              });
+            }
+            if (notiTypeID == 10) {
+              if (!project.IsProject) {
+                preProjectInstructor.forEach(async item => {
+                  if (item.UserID != req.body.CreatedBy) {
+                    template = notiTemplate.find(item => item.UserTypeID == 3);
+
+                    template.TitleTemplate = template.TitleTemplate.replace("{ProjectName}", project.ProjectNameTH).replace(
+                      "{FormName}",
+                      formType.FormTypeName
+                    );
+                    template.MessageTemplate = template.MessageTemplate.replace("{FormName}", formType.FormTypeName);
+                    template.ActionTemplate = template.ActionTemplate.replace("{ProjectID}", project.ProjectID).replace("{FormID}", form.FormID);
+
+                    await db.notifications
+                      .create({
+                        NotiTypeID: 10,
+                        UserID: item.UserID,
+                        Title: template.TitleTemplate,
+                        Message: template.MessageTemplate,
+                        ActionPage: template.ActionTemplate,
+                        CreatedBy: user.UserID,
+                        UpdatedBy: user.UserID
+                      })
+                      .then(() => {
+                        req.io.to(`room_${item.UserID}`).emit("notifications", { msg: "มีการแจ้งเตือนใหม่" });
+                      });
                   }
                 });
               }
-              
+              if (project.IsProject) {
+                projectInstructor.forEach(async item => {
+                  if (item.UserID != req.body.CreatedBy) {
+                    template = notiTemplate.find(item => item.UserTypeID == 5);
+
+                    template.TitleTemplate = template.TitleTemplate.replace("{ProjectName}", project.ProjectNameTH).replace(
+                      "{FormName}",
+                      formType.FormTypeName
+                    );
+                    template.MessageTemplate = template.MessageTemplate.replace("{FormName}", formType.FormTypeName);
+                    template.ActionTemplate = template.ActionTemplate.replace("{ProjectID}", project.ProjectID).replace("{FormID}", form.FormID);
+
+                    await db.notifications
+                      .create({
+                        NotiTypeID: 10,
+                        UserID: item.UserID,
+                        Title: template.TitleTemplate,
+                        Message: template.MessageTemplate,
+                        ActionPage: template.ActionTemplate,
+                        CreatedBy: user.UserID,
+                        UpdatedBy: user.UserID
+                      })
+                      .then(() => {
+                        req.io.to(`room_${item.UserID}`).emit("notifications", { msg: "มีการแจ้งเตือนใหม่" });
+                      });
+                  }
+                });
+              }
             }
           });
       })

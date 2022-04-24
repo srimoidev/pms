@@ -18,7 +18,8 @@
       </div>
       <v-data-table :headers="headers" :items="data" hide-default-footer>
         <template v-slot:[`item.Score`]="{ item }">
-          <v-text-field v-model="item.Score" outlined dense hide-details></v-text-field>
+          <v-textarea v-if="item.multiline" v-model="item.Score" outlined dense hide-details></v-textarea>
+          <v-text-field v-else v-model="item.Score" outlined dense hide-details></v-text-field>
         </template>
       </v-data-table>
       <div class="text-center my-4">
@@ -34,9 +35,12 @@ export default {
   data() {
     return {
       data: [
-        { id: 1, title: "การนำเสนอ", score: null },
-        { id: 2, title: "รูปเล่ม", score: null }
+        { id: 1, title: "การนำเสนอ", score: null, text: false },
+        { id: 2, title: "รูปเล่ม", score: null, text: false },
+        { id: 3, title: "คอมเมนต์เพิ่มเติม", score: null, multiline: true }
       ],
+      project:{},
+      committee : {},
       windowHeight: 0,
       isLoaded: false,
       headers: [
@@ -75,16 +79,33 @@ export default {
   methods: {
     async loadData() {
       this.project = await this.Project.Project(this.projectID);
-      let committee = await this.Project.Committee(this.projectID, this.user.UserID, this.project.IsProject);
-      this.data[0].score = committee.PresentScore;
-      this.data[1].score = committee.DocumentScore;
-      // this.data.map(item=>{
-      //     item.score = committee.PresentScore;
-      // })dd
-      console.log(committee);
+      this.committee = await this.Project.Committee(this.projectID, this.user.UserID, this.project.IsProject);
+      console.log(this.committee)
+      this.data[0].Score = this.committee[0].PresentScore;
+      this.data[1].Score = this.committee[0].DocumentScore;
+      this.data[2].Score = this.committee[0].Comment;
       this.isLoaded = true;
     },
-    save() {},
+    save() {
+      this.$swal
+        .fire({
+          title: "ยืนยันการให้คะแนน",
+          html: 'ยืนยันการให้คะแนนกลุ่ม<br />"' + this.project.ProjectNameTH + '"<br />หรือไม่?',
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          cancelButtonText: "ยกเลิก",
+          confirmButtonText: "ยืนยัน!"
+        })
+        .then(result => {
+          if (result.isConfirmed) {
+            this.Project.SubmitScore(this.committee[0].CommitteeID, this.user.UserID, this.data[0].Score,this.data[1].Score,this.data[2].Score).then(() => {
+              this.loadData();
+            });
+          }
+        });
+    },
     onResize() {
       //page header 64px
       //table header 64px

@@ -12,7 +12,7 @@
         <template v-slot:top>
           <v-toolbar flat>
             <v-toolbar-title
-              >จัดการโปรเจ็ค
+              >ตรวจสอบเอกสาร
               <v-breadcrumbs :items="breadcrumbs" large class="mr-4 pa-0">
                 <template v-slot:item="{ item }">
                   <v-breadcrumbs-item :to="item.url" :disabled="item.disabled">
@@ -130,7 +130,7 @@ export default {
           url: "/teacher/project_lists"
         },
         {
-          text: "จัดการโปรเจ็ค",
+          text: "ตรวจสอบเอกสาร",
           disabled: true,
           url: `/teacher/documents`
         }

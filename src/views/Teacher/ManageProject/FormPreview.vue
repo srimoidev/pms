@@ -19,7 +19,13 @@
       <!-- <v-btn icon tile @click="$refs.pdfComponent.print()">
         <v-icon>mdi-printer</v-icon>
       </v-btn> -->
-      <v-btn class="cyan lighten-1 white--text" small :href="this.fileUrl" :download="form_export_name">Download</v-btn>
+      <div v-show="!isApprove">
+        <v-btn class="success white--text mr-2" small @click="approveOrRejectForm(true)"><v-icon>mdi-check</v-icon>Approve</v-btn>
+        <v-btn class="warning white--text mr-2" small @click="approveOrRejectForm(false)"><v-icon>mdi-undo-variant</v-icon>Reject</v-btn>
+      </div>
+      <v-btn class="cyan lighten-1 white--text" small :href="this.fileUrl" :download="form_export_name"
+        ><v-icon>mdi-content-save-outline</v-icon>Download</v-btn
+      >
     </v-toolbar>
     <div class="d-flex" style="height:inherit;padding-top:65px">
       <div v-if="form" style="width:100%" class="overflow-y-auto">
@@ -56,7 +62,7 @@
       </div>
       <v-navigation-drawer class="pr-10" :mini-variant="variant" right mini-variant-width="39" width="500">
         <div class="d-flex">
-          <div class="ml-2 font-weight-bold" style="font-size:28px">Comment</div>
+          <span class="ml-2" style="font-size:28px">COMMENT</span>
           <v-spacer></v-spacer>
           <v-btn icon @click="cancelComment" color="blue" class="mr-2">
             <v-icon>mdi-sticker-plus-outline</v-icon>
@@ -123,12 +129,12 @@
         <div>
           <v-btn icon style="float:right;z-index:10" tile @click="variant = !variant"><v-icon>mdi-comment-outline</v-icon></v-btn>
         </div>
-        <div>
+        <!-- <div>
           <v-btn icon style="float:right;z-index:10" tile @click="approveOrRejectForm(true)"><v-icon>mdi-check</v-icon></v-btn>
         </div>
         <div>
           <v-btn icon style="float:right;z-index:10" tile @click="approveOrRejectForm(false)"><v-icon>mdi-undo-variant</v-icon></v-btn>
-        </div>
+        </div> -->
       </v-navigation-drawer>
     </div>
   </div>
@@ -153,7 +159,8 @@ export default {
       commentData: [],
       variant: true,
       pdfmenu: false,
-      fileUrl: null
+      fileUrl: null,
+      isApprove: false
     };
   },
   computed: {
@@ -201,9 +208,20 @@ export default {
   },
   methods: {
     async loadData() {
+      this.project = await this.Project.Project(this.ProjectID);
       this.form = await this.Form.Form(this.FormID);
       this.fileUrl = await this.Form.FormPDF(this.FormID);
       this.commentData = await this.Form.Comment(this.FormID);
+      console.log(
+        this.form.FormStatusID,
+        this.project.Project_Advisors,
+        this.project.Project_Advisors.find(item => item.UserID == this.user.UserID)
+      );
+      if (this.form.FormStatusID != 1 && !!this.project.Project_Advisors.find(item => item.UserID == this.user.UserID)) {
+        this.isApprove = true;
+      } else if (this.form.FormStatusID != 2 && [3,5].includes(this.user.TypeID)) {
+        this.isApprove = true;
+      }
     },
     async saveNewComment() {
       await this.Form.NewComment(this.FormID, this.user.UserID, this.newCommentData);
@@ -262,21 +280,25 @@ export default {
         })
         .then(async result => {
           if (result.isConfirmed) {
-            await this.Form.ApproveOrReject(this.user.UserID, this.ProjectID, this.FormID, status).then(() => {
-              this.$swal.fire({
-                toast: true,
-                icon: "success",
-                title: "ดำเนินการเรียบร้อยแล้ว",
-                position: "top-end",
-                showConfirmButton: false,
-                timer: 2000,
-                timerProgressBar: true,
-                didOpen: toast => {
-                  toast.addEventListener("mouseenter", this.$swal.stopTimer);
-                  toast.addEventListener("mouseleave", this.$swal.resumeTimer);
-                }
+            await this.Form.ApproveOrReject(this.user.UserID, this.ProjectID, this.FormID, status)
+              .then(() => {
+                this.$swal.fire({
+                  toast: true,
+                  icon: "success",
+                  title: "ดำเนินการเรียบร้อยแล้ว",
+                  position: "top-end",
+                  showConfirmButton: false,
+                  timer: 2000,
+                  timerProgressBar: true,
+                  didOpen: toast => {
+                    toast.addEventListener("mouseenter", this.$swal.stopTimer);
+                    toast.addEventListener("mouseleave", this.$swal.resumeTimer);
+                  }
+                });
+              })
+              .then(() => {
+                this.loadData();
               });
-            });
           }
         });
     },

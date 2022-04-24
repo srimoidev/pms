@@ -25,14 +25,16 @@ function logout() {
 
 async function loggedInUserData() {
   const jwt = JSON.parse(localStorage.getItem("user"))?.token;
-  const loggedInUserID = JSON.parse(atob(jwt.split(".")[1]))?.UserID;
-  var userProfile = {};
-  userProfile = await Profile(loggedInUserID);
-  if (userProfile.ImgProfile) {
-    userProfile.ImgProfile = await ProfileImage(loggedInUserID);
+  if (jwt) {
+    const loggedInUserID = JSON.parse(atob(jwt.split(".")[1]))?.UserID;
+    var userProfile = {};
+    userProfile = await Profile(loggedInUserID);
+    if (userProfile.ImgProfile) {
+      userProfile.ImgProfile = await ProfileImage(loggedInUserID);
+    }
+    userProfile.ProjectID = await SelfProject(loggedInUserID);
+    return userProfile;
   }
-  userProfile.ProjectID = await SelfProject(loggedInUserID);
-  return userProfile;
 }
 
 export const userService = {

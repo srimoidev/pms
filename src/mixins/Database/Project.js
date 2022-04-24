@@ -149,8 +149,9 @@ export async function IsExamRequest(pProjectID, pIsProject) {
     return res.data;
   });
 }
-export async function Committee(pExamID, pUserID, pIsProject) {
-  return await HTTP.get(`project/committee?examid=${pExamID}&userid=${pUserID}&isproject=${pIsProject}`).then(res => {
+export async function Committee(pProjectID, pUserID, pIsProject) {
+  console.log(pProjectID, pUserID, pIsProject)
+  return await HTTP.get(`project/committee?projectid=${pProjectID}&userid=${pUserID}&isproject=${pIsProject}`).then(res => {
     return res.data;
   });
 }
@@ -283,10 +284,18 @@ export async function UpdateExam(pExamID, pAuthenID, pUpdateStatus) {
   });
 }
 export async function JoinCommittee(pExamID, pAuthenID) {
-  console.log(pExamID, pAuthenID);
   return await HTTP.post("/project/exam/committee", {
     ExamID: pExamID,
     UserID: pAuthenID,
+    CreatedBy: pAuthenID,
+    UpdatedBy: pAuthenID
+  });
+}
+export async function SubmitScore(pCommitteeID, pAuthenID, pPresentScore,pDocumentScore,pComment) {
+  return await HTTP.post("/project/exam/committee/submitscore/" + pCommitteeID, {
+    PresentScore: pPresentScore,
+    DocumentScore: pDocumentScore,
+    Comment: pComment,
     CreatedBy: pAuthenID,
     UpdatedBy: pAuthenID
   });
