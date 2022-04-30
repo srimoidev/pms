@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 30, 2022 at 09:23 PM
+-- Generation Time: Apr 30, 2022 at 09:42 PM
 -- Server version: 10.1.37-MariaDB
 -- PHP Version: 7.2.12
 
@@ -186,15 +186,6 @@ CREATE TABLE `deadline` (
   `UpdatedTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
---
--- Dumping data for table `deadline`
---
-
-INSERT INTO `deadline` (`DeadlineID`, `SectionID`, `FormTypeID`, `OnDate`, `CreatedBy`, `CreatedTime`, `UpdatedBy`, `UpdatedTime`) VALUES
-(304, 36, 43, '2022-02-06 19:40:00', 4296, '2022-01-13 10:37:46', 4296, '2022-02-06 12:40:16'),
-(305, 36, 44, NULL, 4296, '2022-01-13 10:37:58', 4296, '2022-01-13 10:37:58'),
-(306, 36, 45, NULL, 4296, '2022-04-24 14:12:03', 4296, '2022-04-24 14:12:03');
-
 -- --------------------------------------------------------
 
 --
@@ -289,14 +280,6 @@ CREATE TABLE `form_prerequisite` (
   `UpdatedTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
---
--- Dumping data for table `form_prerequisite`
---
-
-INSERT INTO `form_prerequisite` (`PrerequisiteID`, `FormTypeID`, `FormReqTypeID`, `CreatedBy`, `CreatedTime`, `UpdatedBy`, `UpdatedTime`) VALUES
-(37, 44, 43, NULL, '2022-01-13 10:37:58', NULL, '2022-01-13 10:37:58'),
-(50, 45, 44, NULL, '2022-04-24 14:37:55', NULL, '2022-04-24 14:37:55');
-
 -- --------------------------------------------------------
 
 --
@@ -361,15 +344,6 @@ CREATE TABLE `form_type` (
   `UpdatedBy` int(11) DEFAULT NULL,
   `UpdatedTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `form_type`
---
-
-INSERT INTO `form_type` (`FormTypeID`, `FormTypeName`, `FormTypeDetail`, `Project`, `PreProject`, `isActive`, `CreatedBy`, `CreatedTime`, `UpdatedBy`, `UpdatedTime`) VALUES
-(43, 'CE01', '', 0, 1, 1, 4296, '2022-01-13 10:37:46', 4296, '2022-01-13 10:37:46'),
-(44, 'CE02', '', NULL, 1, 1, 4296, '2022-01-13 10:37:58', 4296, '2022-01-13 10:37:58'),
-(45, 'CE03', '', 0, 1, 0, 4296, '2022-04-24 14:12:02', 4296, '2022-04-24 14:37:55');
 
 -- --------------------------------------------------------
 
@@ -649,13 +623,6 @@ CREATE TABLE `section` (
   `UpdatedBy` int(11) DEFAULT NULL,
   `UpdatedTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `section`
---
-
-INSERT INTO `section` (`SectionID`, `Subject`, `Sequence`, `Year`, `Term`, `Detail`, `Instructor`, `DayOfWeek`, `StartTime`, `EndTime`, `CreatedBy`, `CreatedTime`, `UpdatedBy`, `UpdatedTime`) VALUES
-(36, 1, 1, '2022', 1, NULL, 4296, 2, '13:00:00', '15:00:00', 4296, '2022-01-13 10:36:58', 4296, '2022-01-13 10:36:58');
 
 -- --------------------------------------------------------
 
