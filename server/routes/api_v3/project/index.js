@@ -4,7 +4,6 @@ const Op = db.Sequelize.Op;
 router.use("/advisor", require("./advisor"));
 router.use("/committee", require("./committee"));
 router.use("/member", require("./member"));
-router.use("/progress", require("./progress"));
 router.use("/status", require("./status"));
 router.use("/type", require("./type"));
 router.use("/example_files", require("./example_files"));
@@ -135,10 +134,6 @@ router.get("/", async (req, res) => {
           model: db.project_type,
           as: "Project_Type",
           attributes: { exclude: ["CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] }
-        },
-        {
-          model: db.project_progress,
-          as: "Project_Progresses"
         },
         {
           model: db.user_profile,

@@ -185,6 +185,7 @@ export default {
         ProjectStatusName: "ทั้งหมด"
       });
       this.allProject = await this.Project.GetAll();
+      console.log(this.allProject)
       this.loading = false;
     },
     async newProject(project, advisors, members) {
