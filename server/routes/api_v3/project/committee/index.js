@@ -1,34 +1,23 @@
 const router = require("express").Router();
 const db = require("../../../../models");
 router.use("/committee/role", require("./role"));
+const { sequelize } = require("../../../../models");
 router.get("/", async (req, res) => {
   try {
-    var whereStr = [];
-    if (req.query.projectid) {
-      whereStr.push({
-        ProjectID: req.query.projectid
-      });
-    }
-    if (req.query.userid) {
-      whereStr.push({
-        UserID: req.query.userid
-      });
-    }
-    // if (req.query.roleid) {
-    //   whereStr.push({
-    //     Committee_RoleID: req.query.roleid
-    //   });
-    // }
-    // if (req.query.statusid) {
-    //   whereStr.push({
-    //     Committee_RequestStatusID: req.query.statusid
-    //   });
-    // }
-    const data = await db.project_committee.findAll({
-      include: [{ model: db.exam, as: "Project" }],
-      where: whereStr
-    });
-    return res.json(data);
+    var strSql = `SELECT
+                    PC.*
+                  FROM
+                    project_committee PC
+                  INNER JOIN exam EX ON
+                      EX.ExamID = PC.ExamID
+                  INNER JOIN project_info PI ON
+                      PI.ProjectID = EX.ProjectID
+                  WHERE
+                      PI.ProjectID=${req.query.projectid} AND PC.UserID = ${req.query.userid} AND PI.IsProject=${req.query.isproject}
+                      LIMIT 1`;
+                      // console.log(strSql)
+    const data = await sequelize.query(strSql, {raw: true, type: sequelize.QueryTypes.SELECT });
+    return res.json(data[0]);
   } catch (error) {
     return res.status(500).json({
       msg: error

@@ -8,7 +8,7 @@ router.use("/progress", require("./progress"));
 router.use("/status", require("./status"));
 router.use("/type", require("./type"));
 router.use("/example_files", require("./example_files"));
-router.use("/exam",require("./exam"));
+router.use("/exam", require("./exam"));
 
 router.get("/", async (req, res) => {
   try {
@@ -264,8 +264,10 @@ router.get("/:id", async (req, res) => {
                 {
                   model: db.user_profile,
                   as: "Teacher",
-                  
-                  attributes: { exclude: ["Username", "Password", "StudentID", "AcademicYear", "CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] }
+
+                  attributes: {
+                    exclude: ["Username", "Password", "StudentID", "AcademicYear", "CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"]
+                  }
                 }
               ],
               attributes: { exclude: ["CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] }
@@ -420,8 +422,30 @@ router.post("/create", async (req, res) => {
 // update
 router.put("/:id", async (req, res) => {
   const transaction = await db.sequelize.transaction();
+  req.body.project.UpdatedBy = req.body.userid;
   try {
-    await db.project_info.update(req.body, { where: { ProjectID: req.params.id } }, { transaction: transaction });
+    await db.project_info.update(req.body.project, { where: { ProjectID: req.params.id } }, { transaction: transaction }).then(async () => {
+      if (req.body.members.length > 0) {
+        await db.project_member.destroy({ where: { ProjectID: req.params.id } }, { transaction: transaction }).then(async () => {
+          for (const item of req.body.members) {
+            await db.project_member.create(
+              { ProjectID: req.params.id, UserID: item, CreatedBy: req.body.userid, UpdatedBy: req.body.userid },
+              { transaction: transaction }
+            );
+          }
+        });
+      }
+      if (req.body.advisors.length > 0) {
+        await db.project_advisor.destroy({ where: { ProjectID: req.params.id } }, { transaction: transaction }).then(async () => {
+          for (const item of req.body.advisors) {
+            await db.project_advisor.create(
+              { ProjectID: req.params.id, UserID: item, CreatedBy: req.body.userid, UpdatedBy: req.body.userid },
+              { transaction: transaction }
+            );
+          }
+        });
+      }
+    });
     await transaction.commit().then(() => {
       return res.status(200).send();
     });

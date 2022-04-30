@@ -23,7 +23,7 @@ router.get("/", async (req, res) => {
         });
       }
       whereStr.push({
-        "$Exam.ExamStatusID$": 2
+        "$Exam.ExamStatusID$": req.query.status
       });
     }
     if (req.query.all == 1) {

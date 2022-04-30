@@ -24,7 +24,7 @@
 3,201,/teacher/approvement_req
 3,202,/teacher/new_projects
 3,203,/teacher/test_req
-3,204,/teacher/project_inprogress
+3,204,/teacher/exam_result
 3,7,/teacher/meeting
 3,10,/teacher/exam
 3,4,/teacher/project_manual
@@ -43,7 +43,7 @@
 5,201,/teacher/approvement_req
 5,202,/teacher/new_projects
 5,203,/teacher/test_req
-5,204,/teacher/project_inprogress
+5,204,/teacher/project_result
 5,7,/teacher/meeting
 5,10,/teacher/exam
 5,4,/teacher/project_manual

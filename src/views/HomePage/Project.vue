@@ -120,7 +120,7 @@
           </v-col>
         </v-row>
         <!-- Committees -->
-        <v-row v-if="selectedItem == 3">
+        <!-- <v-row v-if="selectedItem == 3">
           <v-col cols="12">
             <v-card>
               <v-toolbar color="primary" flat outlined dark dense>กรรมการสอบ</v-toolbar>
@@ -135,7 +135,7 @@
               </v-card-text>
             </v-card>
           </v-col>
-        </v-row>
+        </v-row> -->
         <!-- Download -->
         <v-row v-if="selectedItem == 4">
           <v-col cols="12">
@@ -163,7 +163,7 @@ export default {
         { text: "รายละเอียด", icon: "mdi-chevron-double-right" },
         { text: "สมาชิกกลุ่ม", icon: "mdi-chevron-double-right" },
         { text: "อาจารย์ที่ปรึกษา", icon: "mdi-chevron-double-right" },
-        { text: "กรรมการสอบ", icon: "mdi-chevron-double-right" },
+        // { text: "กรรมการสอบ", icon: "mdi-chevron-double-right" },
         { text: "ดาวน์โหลด", icon: "mdi-chevron-double-right" }
       ]
     };

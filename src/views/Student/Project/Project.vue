@@ -15,9 +15,9 @@
           >{{ txtInfoLabel }}</v-chip
         >
         <v-spacer></v-spacer>
-        <v-btn class="mr-2" :color="isEdit ? 'amber' : 'primary'" @click="editForm">
+        <!-- <v-btn class="mr-2" :color="isEdit ? 'amber' : 'primary'" @click="editForm">
           <v-icon class="mr-2">mdi-square-edit-outline</v-icon> แก้ไข
-        </v-btn>
+        </v-btn> -->
         <v-btn class="error white--text" @click="leaveProject">
           <v-icon class="mr-2">mdi-account-cancel-outline</v-icon>
           ออกจากกลุ่ม
@@ -25,7 +25,7 @@
       </v-toolbar>
       <v-container>
         <ValidationObserver ref="observer">
-          <v-card class="ma-2 px-4 pa-2 elevation-0 overflow-y-auto" :style="{ 'max-height': windowHeight - 102 + 'px' }" outlined>
+          <v-card v-if="!loading" class="ma-2 px-4 pa-2 elevation-0 overflow-y-auto" :style="{ 'max-height': windowHeight - 102 + 'px' }" outlined>
             <v-row dense v-for="item in title" :key="item.name">
               <v-col cols="3">
                 <!-- <span v-if="item.name == 'RejectRemark' && data.Project_Status.ProjectStatus_ID != 7"></span> -->
@@ -33,21 +33,14 @@
               </v-col>
               <v-col cols="9">
                 <div v-if="item.name == 'Project_Section'">
-                  {{
-                    `Sec : ${data.Project_Section.Year}/${data.Project_Section.Year} อาจารย์ : ${
-                      data.Project_Section.Section_Instructor.Fullname
-                    } คาบเรียน : ${dayText[data.Project_Section.DayOfWeek - 1].text} ${data.Project_Section.StartTime.slice(
-                      0,
-                      5
-                    )} - ${data.Project_Section.EndTime.slice(0, 5)}`
-                  }}
+                  {{ data.Project_Section.TextDetail }}
                 </div>
                 <div v-else-if="item.name == 'Project_Status'">
                   <!-- <span>{{ data.Project_Status.ProjectStatusName }}</span> -->
                   <project-status :status="data.Project_Status.ProjectStatusID"></project-status>
                 </div>
                 <div v-else-if="item.name == 'ProjectDetail'">
-                  <v-textarea v-model="data[item.name]" outlined rows="5" counter no-resize :readonly="!isEdit"></v-textarea>
+                  <v-textarea v-model="data[item.name]" outlined rows="5" counter no-resize></v-textarea>
                 </div>
                 <div v-else-if="item.name == 'Exam'">
                   <!-- {{data[item.name].Project_Score}} -->
@@ -61,23 +54,30 @@
                     <template v-slot:[`item.Teacher.Firstname`]="{ item }">
                       {{ item.Teacher.Firstname + " " + item.Teacher.Lastname }}
                     </template>
+                    <template slot="body.append">
+                      <tr class="">
+                        <th class="">รวม</th>
+                        <th class="">{{ sumField("PresentScore") }}</th>
+                        <th class="">{{ sumField("DocumentScore") }}</th>
+                        <th class="">รวมทั้งสิ้น {{ sumField("PresentScore") + sumField("DocumentScore") }}</th>
+                      </tr>
+                    </template>
                   </v-data-table>
                 </div>
                 <div v-else>
                   <ValidationProvider v-slot="{ errors }" :name="item.text" rules="required">
-                    <v-text-field v-model="data[item.name]" dense outlined :readonly="!isEdit" :error-messages="errors"></v-text-field>
+                    <v-text-field v-model="data[item.name]" dense outlined :error-messages="errors"></v-text-field>
                   </ValidationProvider>
                 </div>
               </v-col>
             </v-row>
-            
-          </v-card>
-        </ValidationObserver>
-        <div v-if="isEdit" class="mr-4 mb-4" style="position: absolute; right: 0; bottom: 0">
+            <div class="mr-4 my-4 text-center">
               <v-spacer></v-spacer>
               <v-btn class="mr-2" color="success" @click="submitForm">บันทึก</v-btn>
-              <v-btn class="" color="" @click="isEdit = !isEdit">ยกเลิก</v-btn>
+              <!-- <v-btn class="" color="">ยกเลิก</v-btn> -->
             </div>
+          </v-card>
+        </ValidationObserver>
       </v-container>
     </v-card>
     <div style="width: 30%">
@@ -85,13 +85,13 @@
         <v-card-text class="d-flex">
           <span>สมาชิก</span>
           <v-spacer></v-spacer>
-          <v-btn v-if="isEdit" icon @click="editStudent = !editStudent" small>
+          <v-btn icon @click="editStudent = !editStudent" small>
             <v-icon>mdi-square-edit-outline</v-icon>
           </v-btn>
         </v-card-text>
         <v-divider></v-divider>
         <div v-if="editStudent" class="mx-4 mt-2">
-          <ValidationObserver ref="obsAdvisors">
+          <ValidationObserver ref="obsMembers">
             <ValidationProvider v-slot="{ errors }" name="สมาชิก" rules="select_required">
               <v-autocomplete
                 :error-messages="errors"
@@ -99,7 +99,6 @@
                 :items="allStudent"
                 color="blue-grey lighten-2"
                 label="สมาชิก"
-                :item-text="Firstname + ' ' + Lastname"
                 item-value="UserID"
                 multiple
                 hide-no-data
@@ -143,7 +142,7 @@
                 <v-list-item-subtitle>{{ `รหัส : ${item.StudentID} ปีการศึกษา : ${item.AcademicYear}` }}</v-list-item-subtitle>
               </v-list-item-content>
             </v-list-item>
-            <v-divider v-if="index != selectedMembers.length - 1" class="mx-2" :key="item.UserID"></v-divider>
+            <v-divider v-if="index != selectedMembers.length - 1" class="mx-2" :key="index"></v-divider>
           </template>
         </v-list>
       </v-card>
@@ -151,7 +150,7 @@
         <v-card-text class="d-flex">
           <span class="align-self-center">อาจารย์ที่ปรึกษา</span>
           <v-spacer></v-spacer>
-          <v-btn v-if="isEdit" icon @click="editTeacher = !editTeacher" small>
+          <v-btn icon @click="editTeacher = !editTeacher" small>
             <v-icon>mdi-square-edit-outline</v-icon>
           </v-btn>
         </v-card-text>
@@ -159,14 +158,13 @@
         <v-divider></v-divider>
         <div v-if="editTeacher" class="mx-4 mt-2">
           <ValidationObserver ref="obsAdvisors">
-            <ValidationProvider v-slot="{ errors }" name="อาจารย์ที่ปรึกษา" rules="select_required|maxSelected:2">
+            <ValidationProvider v-slot="{ errors }" name="อาจารย์ที่ปรึกษา" rules="select_required">
               <v-autocomplete
                 :error-messages="errors"
                 v-model="selectedAdvisors"
                 :items="allTeacher"
                 color="blue-grey lighten-2"
                 label="อาจารย์ที่ปรึกษา"
-                :item-text="Firstname + ' ' + Lastname"
                 item-value="UserID"
                 multiple
                 hide-no-data
@@ -278,7 +276,7 @@ export default {
       selectedMembers: [],
       newAdvisors: [],
       newMembers: [],
-      isEdit: false,
+      // isEdit: false,
       loadMembersImg: false,
       LoadAdvisorsImg: false,
       title: [
@@ -352,35 +350,44 @@ export default {
   methods: {
     async loadData() {
       this.$store.dispatch("user/getLoggedInUserData").then(async () => {
-        this.data = await this.Project.Project(this.user.ProjectID);
-        this.txtHeaderNameTH = `Manage Project - ${this.data.ProjectNameTH}`;
-        this.data.Project_Advisors.map(item => {
-          this.selectedAdvisors.push(item.UserID);
-        });
-        this.data.Project_Members.map(item => {
-          this.selectedMembers.push(item.UserID);
-        });
+        this.data = await this.Project.Project(this.user.ProjectID).then(res => {
+          res.Project_Section.TextDetail = `Sec : ${res.Project_Section.Sequence}/${res.Project_Section.Year} อาจารย์ : ${
+            res.Project_Section.Section_Instructor.Fullname
+          } คาบเรียน : ${this.dayText[res.Project_Section.DayOfWeek - 1].text} ${res.Project_Section.StartTime.slice(
+            0,
+            5
+          )} - ${res.Project_Section.EndTime.slice(0, 5)}`;
 
-        this.newMembers = this.data.Project_Members;
-        Promise.all(
-          this.newMembers.map(async item => {
-            item.ImgUrl = await this.User.ProfileImage(item.UserID);
-          })
-        ).then(() => {
-          this.loadMembersImg = true;
-        });
+          this.txtHeaderNameTH = `Manage Project - ${res.ProjectNameTH}`;
 
-        this.newAdvisors = this.data.Project_Advisors;
-        Promise.all(
-          this.newAdvisors.map(async item => {
-            item.ImgUrl = await this.User.ProfileImage(item.UserID);
-          })
-        ).then(() => {
-          this.LoadAdvisorsImg = true;
+          res.Project_Advisors.map(item => {
+            this.selectedAdvisors.push(item.UserID);
+          });
+          res.Project_Members.map(item => {
+            this.selectedMembers.push(item.UserID);
+          });
+
+          this.newMembers = res.Project_Members;
+          Promise.all(
+            this.newMembers.map(async item => {
+              item.ImgUrl = await this.User.ProfileImage(item.UserID);
+            })
+          ).then(() => {
+            this.loadMembersImg = true;
+          });
+
+          this.newAdvisors = res.Project_Advisors;
+          Promise.all(
+            this.newAdvisors.map(async item => {
+              item.ImgUrl = await this.User.ProfileImage(item.UserID);
+            })
+          ).then(() => {
+            this.LoadAdvisorsImg = true;
+          });
+          this.loading = false;
+          return res;
         });
         this.committeeScore = this.data.Exam.Project_Score;
-        console.log(this.committeeScore);
-        this.loading = false;
       });
       this.allTeacher = await this.User.UserTeacher();
       this.allStudent = await this.User.UserStudent();
@@ -434,7 +441,7 @@ export default {
       this.editTeacher = false;
     },
     async saveNewMember() {
-      if (await this.$refs.obsAdvisors.validate()) {
+      if (await this.$refs.obsMembers.validate()) {
         const temp = this.selectedMembers;
         this.newMembers = this.allStudent.filter(item => {
           return temp.includes(item.UserID);
@@ -462,17 +469,42 @@ export default {
         ProjectDetail: this.data.ProjectDetail
       };
       this.Project.Resend(this.user.UserID, this.data.ProjectID, updateObj, this.selectedAdvisors).then(() => {
+        this.selectedAdvisors = [];
+        this.selectedMembers = [];
         this.loadData();
       });
     },
     async imgUrl(pUserID) {
       return await this.User.ProfileImage(pUserID);
     },
-    editForm() {
-      this.isEdit = !this.isEdit;
+    async submitForm() {
+      const updateObj = {
+        ProjectNameTH: this.data.ProjectNameTH,
+        ProjectNameEN: this.data.ProjectNameEN,
+        ProjectDetail: this.data.ProjectDetail
+      };
+      this.Project.Update(this.user.UserID, this.data.ProjectID, updateObj, this.selectedMembers, this.selectedAdvisors).then(() => {
+        this.$swal.fire({
+          toast: true,
+          icon: "success",
+          title: "ดำเนินการเรียบร้อยแล้ว",
+          position: "top-end",
+          showConfirmButton: false,
+          timer: 2000,
+          timerProgressBar: true,
+          didOpen: toast => {
+            toast.addEventListener("mouseenter", this.$swal.stopTimer);
+            toast.addEventListener("mouseleave", this.$swal.resumeTimer);
+          }
+        });
+        this.selectedAdvisors = [];
+        this.selectedMembers = [];
+        this.loadData();
+      });
     },
-    submitForm() {
-      // test
+    sumField(key) {
+      // sum data in give key (property)
+      return this.committeeScore.reduce((a, b) => a + (b[key] || 0), 0);
     }
   }
 };

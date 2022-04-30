@@ -190,7 +190,7 @@ export default {
         if (this.isAdvisor) {
           this.allProject = await this.Project.GetAllRequestExamByAdvisor(this.user.UserID);
         } else {
-          this.allProject = await this.Project.GetAllRequestExamByInstructor(this.user.UserTypeID);
+          this.allProject = await this.Project.GetAllRequestExamByInstructor(this.user.UserTypeID,2);
         }
         console.log(this.allProject);
         this.loading = false;

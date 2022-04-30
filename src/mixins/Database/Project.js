@@ -134,8 +134,8 @@ export async function GetAllRequestExamByAdvisor(pAdvisorID) {
     return res.data;
   });
 }
-export async function GetAllRequestExamByInstructor(pInstructoType) {
-  return await HTTP.get(`project/exam?instructortype=${pInstructoType}`).then(res => {
+export async function GetAllRequestExamByInstructor(pInstructoType,pStatusID) {
+  return await HTTP.get(`project/exam?instructortype=${pInstructoType}&status=${pStatusID}`).then(res => {
     return res.data;
   });
 }
@@ -298,5 +298,10 @@ export async function SubmitScore(pCommitteeID, pAuthenID, pPresentScore,pDocume
     Comment: pComment,
     CreatedBy: pAuthenID,
     UpdatedBy: pAuthenID
+  });
+}
+export async function Update(pUserID, pProjectID, pUpdateObj,pMember, pAdvisors) {
+  await HTTP.put(`/project/${pProjectID}`, { userid: pUserID, project: pUpdateObj,members : pMember, advisors: pAdvisors }).catch(() => {
+    //
   });
 }

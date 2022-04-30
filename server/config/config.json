@@ -14,8 +14,8 @@
     "timezone": "+07:00" 
   },
   "production": {
-    "username": "projectadmin",
-    "password": "@Project1234",
+    "username": "admin",
+    "password": "N+hoQ8PW.tmxdX!}",
     "database": "project",
     "host": "127.0.0.1",
     "port":"3306",

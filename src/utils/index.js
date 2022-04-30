@@ -68,6 +68,27 @@ var Utils = {
       return Math.floor(interval) + " นาทีที่แล้ว";
     }
     return Math.floor(seconds) + " วินาทีที่แล้ว";
+  },
+  calculateGrade(score) {
+    var result = { type: "", grade: "" };
+    if (score >= 80) {
+      result = { type: "a", grade: "A" };
+    } else if (score >= 75) {
+      result = { type: "bp", grade: "B+" };
+    } else if (score >= 70) {
+      result = { type: "b", grade: "B" };
+    } else if (score >= 65) {
+      result = { type: "cp", grade: "C+" };
+    } else if (score >= 60) {
+      result = { type: "c", grade: "C" };
+    } else if (score >= 55) {
+      result = { type: "dp", grade: "D+" };
+    } else if (score >= 50) {
+      result = { type: "d", grade: "D" };
+    } else {
+      result = { type: "f", grade: "F" };
+    }
+    return result;
   }
 };
 

@@ -48,6 +48,7 @@ import Teacher_FormCE from "../views/Teacher/ManageProject/FormCE";
 import Teacher_NewProjects from "../views/Teacher/Request/NewProjects";
 import Teacher_Exam from "../views/Teacher/Exam/Exam.vue";
 import Teacher_Exam_Score from "../views/Teacher/Exam/ExamScore";
+import Teacher_Exam_Result from "../views/Teacher/Exam/ExamResult"
 
 //App Environment Configuration
 import App_Configs from "../views/AppConfigurations/AppConfigurations.vue";
@@ -90,14 +91,14 @@ const routes = [
         name: "Login",
         component: MainLogin,
         meta: { title: "Login | PMS" }
-      },
-      {
-        path: "/project",
-        name: "SearchResult",
-        component: HomeProject,
-        meta: { title: "Project | PMS" }
       }
     ]
+  },
+  {
+    path: "/project",
+    name: "SearchResult",
+    component: HomeProject,
+    meta: { title: "Project | PMS" }
   },
   // {
   //   path: "/project/:id",
@@ -332,6 +333,12 @@ const routes = [
         name: "Exam Score",
         component: Teacher_Exam_Score,
         meta: { title: "Exam Score | PMS" }
+      },
+      {
+        path: "exam_result",
+        name: "Exam Result",
+        component: Teacher_Exam_Result,
+        meta: { title: "Exam Result | PMS" }
       }
     ]
   },
