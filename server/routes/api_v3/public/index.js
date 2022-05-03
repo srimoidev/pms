@@ -139,10 +139,10 @@ router.get("/project", async (req, res) => {
           as: "Project_Type",
           attributes: { exclude: ["CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] }
         },
-        {
-          model: db.project_progress,
-          as: "Project_Progresses"
-        },
+        // {
+        //   model: db.project_progress,
+        //   as: "Project_Progresses"
+        // },
         {
           model: db.user_profile,
           as: "UpdatedUser",
@@ -246,10 +246,10 @@ router.get("/project/:id", async (req, res) => {
             as: "Project_Type",
             attributes: { exclude: ["CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] }
           },
-          {
-            model: db.project_progress,
-            as: "Project_Progresses"
-          },
+          // {
+          //   model: db.project_progress,
+          //   as: "Project_Progresses"
+          // },
           {
             model: db.user_profile,
             as: "UpdatedUser",
