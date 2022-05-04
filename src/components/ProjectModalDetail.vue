@@ -64,7 +64,7 @@
               <v-radio label="Reject" value="0"></v-radio>
             </v-radio-group>
           </ValidationProvider>
-          <ValidationProvider v-slot="{ errors }" name="Remark" :rules="comfirmOrReject == 0 ? 'required' : ''">
+          <!-- <ValidationProvider v-slot="{ errors }" name="Remark" :rules="comfirmOrReject == 0 ? 'required' : ''">
             <v-textarea
               v-if="comfirmOrReject == 0"
               v-model="txtRemark"
@@ -74,11 +74,11 @@
               label="Remark"
               background-color="amber lighten-5"
             ></v-textarea>
-          </ValidationProvider>
+          </ValidationProvider> -->
         </ValidationObserver>
       </v-card>
       <div class="d-flex mr-2 mt-2">
-        <v-checkbox v-if="bypass" v-model="isBypass" class="mt-0 ml-2" hide-details dense label="รับเป็นที่ปรึกษาและอนุมัติโปรเจ็ค"></v-checkbox>
+        <!-- <v-checkbox v-if="bypass" v-model="isBypass" class="mt-0 ml-2" hide-details dense label="รับเป็นที่ปรึกษาและอนุมัติโปรเจ็ค"></v-checkbox> -->
         <v-spacer></v-spacer>
         <div v-if="confirm">
           <v-btn class="mr-2" color="primary" @click="advisorSubmit" small>Submit</v-btn>

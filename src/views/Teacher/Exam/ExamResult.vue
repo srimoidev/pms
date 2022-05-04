@@ -77,22 +77,23 @@
             <v-row>
               <v-col cols="4">ผลการสอบ</v-col>
               <v-col cols="8">
+                {{item.Exam.Project_Committees}}
                 <v-data-table
                   :headers="projectScoreHeader"
-                  :items="committeeScore"
+                  :items="item.Exam.Project_Committees"
                   :loading="loading"
                   loading-text="Loading... Please wait"
                   hide-default-footer
                 >
-                  <template v-slot:[`item.Teacher.Firstname`]="{ item }">
-                    {{ item.Teacher.Firstname + " " + item.Teacher.Lastname }}
+                  <template v-slot:[`item.Firstname`]="{ item }">
+                    {{ item.Firstname + " " + item.Lastname }}
                   </template>
                   <template slot="body.append">
                     <tr class="">
                       <th class="">รวม</th>
-                      <th class="">{{ sumField("PresentScore") }}</th>
-                      <th class="">{{ sumField("DocumentScore") }}</th>
-                      <th class="">รวมทั้งสิ้น {{ sumField("PresentScore") + sumField("DocumentScore") }}</th>
+                      <th class="">{{ sumField(item.Exam.Project_Committees,"PresentScore") }}</th>
+                      <th class="">{{ sumField(item.Exam.Project_Committees,"DocumentScore") }}</th>
+                      <th class="">รวมทั้งสิ้น {{ sumField(item.Exam.Project_Committees,"PresentScore") + sumField(item.Exam.Project_Committees,"DocumentScore") }}</th>
                     </tr>
                   </template>
                 </v-data-table>
@@ -101,7 +102,7 @@
             <v-row>
               <v-col cols="4">เกรด</v-col>
               <v-col cols="8">
-                <span v-html="calculateGrade()"></span>
+                <span v-html="calculateGrade(item.Exam.Project_Committees)"></span>
                 <!-- <p class="title green--text">{{}}</p> -->
               </v-col>
             </v-row>
@@ -177,11 +178,11 @@ export default {
           text: "ชื่อ",
           align: "start",
           sortable: true,
-          value: "Teacher.Firstname"
+          value: "Firstname"
         },
-        { text: "คะแนนการนำเสนอ", value: "PresentScore", sortable: false },
-        { text: "คะแนนการรูปเล่ม", value: "DocumentScore", sortable: false },
-        { text: "คอมเมนต์เพิ่มเติม", value: "Comment" }
+        { text: "คะแนนการนำเสนอ", value: "Committee.PresentScore", sortable: false },
+        { text: "คะแนนการรูปเล่ม", value: "Committee.DocumentScore", sortable: false },
+        { text: "คอมเมนต์เพิ่มเติม", value: "Committee.Comment" }
       ]
     };
   },
@@ -229,6 +230,7 @@ export default {
         });
         this.allProject = await this.Project.GetAllRequestExamByInstructor(this.user.UserTypeID, 3);
         this.loading = false;
+        console.log(this.allProject);
       });
     },
     JoinCommittee(item) {
@@ -296,28 +298,29 @@ export default {
     rowStyle() {
       return "tb-row";
     },
-    sumField(key) {
+    sumField(data,key) {
+      console.log(data[0].Committee["PresentScore"],data.reduce((a, b) => a + (b.Committee[key] || 0), 0))
       // sum data in give key (property)
-      return this.committeeScore.reduce((a, b) => a + (b[key] || 0), 0);
+      return data.reduce((a, b) => a + (b.Committee[key] || 0), 0);
     },
-    async expandItem(expand, isExpanded, ProjectID) {
-      await this.Project.Project(ProjectID).then(res => {
-        this.committeeScore = res.Exam.Project_Score;
-        console.log(this.committeeScore);
-        expand(!isExpanded);
-      });
+    async expandItem(expand, isExpanded) {
+      expand(!isExpanded);
+      // await this.Project.Project(ProjectID).then(res => {
+      //   // console.log(res)
+      //   this.committeeScore = res.Exam.Project_Score;
+
+      // });
     },
     cancelEdit(item) {
       // this.edited_section = JSON.parse(JSON.stringify(this.sections));
       this.$refs["collapse_s_" + item.SectionID].$el.click();
     },
-    calculateGrade() {
-      var score = this.sumField("DocumentScore") + this.sumField("PresentScore");
+    calculateGrade(data) {
+      var score = this.sumField(data,"DocumentScore") + this.sumField(data,"PresentScore");
       var result = this.Utils.calculateGrade(score);
-      console.log(score, result, '<p class="title grade-' + result.type + '">' + result.grade + "</p>");
       return '<p class="title grade-' + result.type + '">' + result.grade + "</p>";
     },
-    submit(item){
+    submit(item) {
       this.$swal
         .fire({
           title: "ยืนยันให้สอบผ่าน",
@@ -331,11 +334,16 @@ export default {
         })
         .then(result => {
           if (result.isConfirmed) {
-            this.Project.Update(this.user.UserID,item.ProjectID,{IsProject:true},[],[]).then(()=>{
-              this.loadData();
-            })
+            this.Project.Update(this.user.UserID, item.ProjectID, { IsProject: true }, [], [])
+              .then(async () => {
+                console.log(item);
+                await this.Project.UpdateProjectExamStatus(item.ProjectID, item.IsProject ? 7 : item.ProjectStatusID, item.Exam.ExamID, 5);
+              })
+              .then(() => {
+                this.loadData();
+              });
             // this.Project.SubmitScore(this.committee.CommitteeID, this.user.UserID, this.data[0].Score,this.data[1].Score,this.data[2].Score).then(() => {
-              // this.loadData();
+            // this.loadData();
             // });
           }
         });

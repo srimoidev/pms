@@ -134,7 +134,7 @@ export async function GetAllRequestExamByAdvisor(pAdvisorID) {
     return res.data;
   });
 }
-export async function GetAllRequestExamByInstructor(pInstructoType,pStatusID) {
+export async function GetAllRequestExamByInstructor(pInstructoType, pStatusID) {
   return await HTTP.get(`project/exam?instructortype=${pInstructoType}&status=${pStatusID}`).then(res => {
     return res.data;
   });
@@ -150,7 +150,6 @@ export async function IsExamRequest(pProjectID, pIsProject) {
   });
 }
 export async function Committee(pProjectID, pUserID, pIsProject) {
-  console.log(pProjectID, pUserID, pIsProject)
   return await HTTP.get(`project/committee?projectid=${pProjectID}&userid=${pUserID}&isproject=${pIsProject}`).then(res => {
     return res.data;
   });
@@ -192,7 +191,12 @@ export async function ConfirmOrRejectProject(pUserID, pAdvisorID, pStatus, pIsBy
 }
 
 export async function InstructorConfirmOrRejectProject(pUserID, pProjectID, pStatus, pRemark) {
-  await HTTP.put(`/project/${pProjectID}`, { UpdatedBy: pUserID, ProjectStatusID: pStatus, RejectedRemark: pRemark }).catch(() => {
+  await HTTP.put(`/project/${pProjectID}`, {
+    userid: pUserID,
+    project: { UpdateBy: pUserID, ProjectStatusID: pStatus, RejectedRemark: pRemark },
+    members: [],
+    advisors: []
+  }).catch(() => {
     //
   });
 }
@@ -291,7 +295,7 @@ export async function JoinCommittee(pExamID, pAuthenID) {
     UpdatedBy: pAuthenID
   });
 }
-export async function SubmitScore(pCommitteeID, pAuthenID, pPresentScore,pDocumentScore,pComment) {
+export async function SubmitScore(pCommitteeID, pAuthenID, pPresentScore, pDocumentScore, pComment) {
   return await HTTP.post("/project/exam/committee/submitscore/" + pCommitteeID, {
     PresentScore: pPresentScore,
     DocumentScore: pDocumentScore,
@@ -300,8 +304,22 @@ export async function SubmitScore(pCommitteeID, pAuthenID, pPresentScore,pDocume
     UpdatedBy: pAuthenID
   });
 }
-export async function Update(pUserID, pProjectID, pUpdateObj,pMember, pAdvisors) {
-  await HTTP.put(`/project/${pProjectID}`, { userid: pUserID, project: pUpdateObj,members : pMember, advisors: pAdvisors }).catch(() => {
+export async function Update(pUserID, pProjectID, pUpdateObj, pMember, pAdvisors) {
+  await HTTP.put(`/project/${pProjectID}`, { userid: pUserID, project: pUpdateObj, members: pMember, advisors: pAdvisors }).catch(() => {
+    //
+  });
+}
+export async function UpdateProjectExamStatus(pProjectID, pProjectStatus, pExamID, pStatusID) {
+  console.log({
+    projectid: pProjectID,
+    projectstatus: { ProjectStatusID: pProjectStatus },
+    examstatus: { ExamStatusID: pStatusID }
+  });
+  await HTTP.post(`/project/exam/updatestatus?id=${pExamID}`, {
+    projectid : pProjectID,
+    projectstatus: { ProjectStatusID: pProjectStatus },
+    examstatus: { ExamStatusID: pStatusID }
+  }).catch(() => {
     //
   });
 }

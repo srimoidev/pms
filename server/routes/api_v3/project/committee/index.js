@@ -15,7 +15,6 @@ router.get("/", async (req, res) => {
                   WHERE
                       PI.ProjectID=${req.query.projectid} AND PC.UserID = ${req.query.userid} AND PI.IsProject=${req.query.isproject}
                       LIMIT 1`;
-                      // console.log(strSql)
     const data = await sequelize.query(strSql, {raw: true, type: sequelize.QueryTypes.SELECT });
     return res.json(data[0]);
   } catch (error) {
@@ -26,7 +25,6 @@ router.get("/", async (req, res) => {
 });
 router.get("/all", async (req, res) => {
   try {
-    console.log(req.query);
     var whereStr = [];
     if (req.query.projectid) {
       whereStr.push({

@@ -39,8 +39,8 @@ export default {
         { id: 2, title: "รูปเล่ม", score: null, text: false },
         { id: 3, title: "คอมเมนต์เพิ่มเติม", score: null, multiline: true }
       ],
-      project:{},
-      committee : {},
+      project: {},
+      committee: {},
       windowHeight: 0,
       isLoaded: false,
       headers: [
@@ -67,20 +67,18 @@ export default {
   beforeMount() {
     this.loadData(); //จับตอน เปลี่ยน route
   },
-    watch: {
-      user() {
-        this.loadData(); //จับตอน reload
-      }
-      // data: function() {
-      //   console.log(this.data)
-      //   this.isProject = this.data.IsProject != true ? this.ProjectType.find(i => i.value == 1) : this.ProjectType.find(i => i.value == 2);
-      // }
-    },
+  watch: {
+    user() {
+      this.loadData(); //จับตอน reload
+    }
+    // data: function() {
+    //   this.isProject = this.data.IsProject != true ? this.ProjectType.find(i => i.value == 1) : this.ProjectType.find(i => i.value == 2);
+    // }
+  },
   methods: {
     async loadData() {
       this.project = await this.Project.Project(this.projectID);
       this.committee = await this.Project.Committee(this.projectID, this.user.UserID, this.project.IsProject);
-      console.log(this.committee)
       this.data[0].Score = this.committee.PresentScore;
       this.data[1].Score = this.committee.DocumentScore;
       this.data[2].Score = this.committee.Comment;
@@ -100,9 +98,24 @@ export default {
         })
         .then(result => {
           if (result.isConfirmed) {
-            this.Project.SubmitScore(this.committee.CommitteeID, this.user.UserID, this.data[0].Score,this.data[1].Score,this.data[2].Score).then(() => {
-              this.loadData();
-            });
+            this.Project.SubmitScore(this.committee.CommitteeID, this.user.UserID, this.data[0].Score, this.data[1].Score, this.data[2].Score).then(
+              () => {
+                this.$swal.fire({
+                  toast: true,
+                  icon: "success",
+                  title: "ดำเนินการเรียบร้อยแล้ว",
+                  position: "top-end",
+                  showConfirmButton: false,
+                  timer: 2000,
+                  timerProgressBar: true,
+                  didOpen: toast => {
+                    toast.addEventListener("mouseenter", this.$swal.stopTimer);
+                    toast.addEventListener("mouseleave", this.$swal.resumeTimer);
+                  }
+                });
+                this.loadData();
+              }
+            );
           }
         });
     },

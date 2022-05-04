@@ -90,7 +90,7 @@ export default {
       searchText: "",
       isSearch: false,
       sortBy: [
-        { id: 1, title: "ยอดนิยม" },
+        // { id: 1, title: "ยอดนิยม" },
         { id: 2, title: "วันที่เพิ่ม (ล่าสุด)" },
         { id: 3, title: "วันที่เพิ่ม (เก่าสุด)" }
       ],

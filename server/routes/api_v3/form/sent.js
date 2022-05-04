@@ -93,11 +93,6 @@ router.get("/", async (req, res) => {
   }
 });
 router.get("/iscompleteall", async (req, res) => {
-  console.log(" SELECT * FROM form_type "
-  + " LEFT JOIN form_sent ON form_type.FormTypeID = form_sent.FormTypeID AND form_sent.FormID IN("
-  + " SELECT MAX(FormID) FROM form_sent WHERE form_sent.FormTypeID ) AND ProjectID = " 
-  + req.query.projectid 
-  + " GROUP by form_sent.FormTypeID) WHERE form_type.isActive = 1 ")
   await sequelize
     .query(
       " SELECT * FROM form_type "

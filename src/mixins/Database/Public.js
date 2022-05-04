@@ -12,7 +12,7 @@ export async function AllType() {
 
 export async function GetAll(pName = null, pTypeID = null, pSectionID = null) {
   var searchStr = "?";
-  if (pName != null) searchStr += "name=" + pName;
+  if (pName != null) searchStr += "criteria=" + pName;
   if (pTypeID != null) searchStr += "&typeid=" + pTypeID;
   if (pSectionID != null) searchStr += "&sectionid=" + pSectionID;
 

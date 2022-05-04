@@ -250,6 +250,10 @@ router.get("/:id", async (req, res) => {
         {
           model: db.exam,
           as: "Exam",
+          on: {
+            "$project_info.ProjectID$": { [Op.eq]: sequelize.col("Exam.ProjectID") },
+            // "$project_info.IsProject$": { [Op.eq]: sequelize.col("Exam.IsProjectExam") }
+          },
           attributes: { exclude: ["CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] },
           include: [
             {
@@ -417,6 +421,7 @@ router.post("/create", async (req, res) => {
 // update
 router.put("/:id", async (req, res) => {
   const transaction = await db.sequelize.transaction();
+  console.log(req.body)
   req.body.project.UpdatedBy = req.body.userid;
   try {
     await db.project_info.update(req.body.project, { where: { ProjectID: req.params.id } }, { transaction: transaction }).then(async () => {

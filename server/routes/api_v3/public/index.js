@@ -67,17 +67,27 @@ router.get("/project", async (req, res) => {
         });
       }
     }
-    if (req.query.name) {
+    if (req.query.criteria) {
       whereStr.push({
         [Op.or]: [
           {
             ProjectNameEN: {
-              [Op.like]: `%${req.query.name}%`
+              [Op.like]: `%${req.query.criteria}%`
             }
           },
           {
             ProjectNameTH: {
-              [Op.like]: `%${req.query.name}%`
+              [Op.like]: `%${req.query.criteria}%`
+            }
+          },
+          {
+            '$Project_Advisors.Firstname$': {
+              [Op.like]: `%${req.query.criteria}%`
+            }
+          },
+          {
+            '$Project_Members.Firstname$': {
+              [Op.like]: `%${req.query.criteria}%`
             }
           }
         ]

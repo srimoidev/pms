@@ -89,13 +89,13 @@ router.post("/", async (req, res) => {
       .create(req.body, { transaction: transaction })
       .then(async () => {
         const user = await db.user_profile.findOne({ where: { UserID: req.body.CreatedBy } });
-        let project = await sequelize.query(
-          "SELECT * FROM project_info as PI where EXISTS (SELECT * From project_advisor AS PM where PI.ProjectID=PM.ProjectID AND PM.UserID=" +
-            req.body.CreatedBy +
-            ")",
-          { raw: false, type: QueryTypes.SELECT }
-        );
-        project = project.length > 0 ? project[0] : {};
+        // let project = await sequelize.query(
+        //   "SELECT * FROM project_info as PI where EXISTS (SELECT * From project_advisor AS PM where PI.ProjectID=PM.ProjectID AND PM.UserID=" +
+        //     req.body.CreatedBy +
+        //     ")",
+        //   { raw: false, type: QueryTypes.SELECT }
+        // );
+        // project = project.length > 0 ? project[0] : {};
         const formSent = await db.form_sent.findOne({
           where: { FormID: req.body.FormID },
           raw: true
@@ -108,7 +108,7 @@ router.post("/", async (req, res) => {
             raw: true
           })
           .then(async notiTemplate => {
-            const members = await db.project_member.findAll({ where: { ProjectID: project.ProjectID }, raw: true });
+            const members = await db.project_member.findAll({ where: { ProjectID: formSent.ProjectID }, raw: true });
             // const advisors = await db.project_advisor.findAll({ where: { ProjectID: project.ProjectID }, raw: true });
             // const preProjectInstructor = await db.user_profile.findAll({ where: { UserTypeID: 3 }, raw: true });
             // const projectInstructor =await db.user_profile.findAll({ where: { UserTypeID: 5 }, raw: true });

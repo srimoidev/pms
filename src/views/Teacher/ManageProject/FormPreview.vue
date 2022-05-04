@@ -212,14 +212,9 @@ export default {
       this.form = await this.Form.Form(this.FormID);
       this.fileUrl = await this.Form.FormPDF(this.FormID);
       this.commentData = await this.Form.Comment(this.FormID);
-      console.log(
-        this.form.FormStatusID,
-        this.project.Project_Advisors,
-        this.project.Project_Advisors.find(item => item.UserID == this.user.UserID)
-      );
       if (this.form.FormStatusID != 1 && !!this.project.Project_Advisors.find(item => item.UserID == this.user.UserID)) {
         this.isApprove = true;
-      } else if (this.form.FormStatusID != 2 && [3,5].includes(this.user.TypeID)) {
+      } else if (this.form.FormStatusID != 2 && [3,5].includes(this.user.UserTypeID)) {
         this.isApprove = true;
       }
     },

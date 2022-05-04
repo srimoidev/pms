@@ -162,9 +162,9 @@ export default {
       items: [
         { text: "รายละเอียด", icon: "mdi-chevron-double-right" },
         { text: "สมาชิกกลุ่ม", icon: "mdi-chevron-double-right" },
-        { text: "อาจารย์ที่ปรึกษา", icon: "mdi-chevron-double-right" },
+        { text: "อาจารย์ที่ปรึกษา", icon: "mdi-chevron-double-right" }
         // { text: "กรรมการสอบ", icon: "mdi-chevron-double-right" },
-        { text: "ดาวน์โหลด", icon: "mdi-chevron-double-right" }
+        // { text: "ดาวน์โหลด", icon: "mdi-chevron-double-right" }
       ]
     };
   },

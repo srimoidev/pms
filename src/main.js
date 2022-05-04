@@ -40,7 +40,8 @@ Vue.config.productionTip = false;
 
 Vue.prototype.moment = moment;
 // Vue.use(VeeValidate);
-
+Vue.config.productionTip = false;
+Vue.config.silent = true;
 new Vue({
   Database,
   Utils,

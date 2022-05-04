@@ -192,7 +192,6 @@ export default {
         } else {
           this.allProject = await this.Project.GetAllRequestExamByInstructor(this.user.UserTypeID,2);
         }
-        console.log(this.allProject);
         this.loading = false;
       });
     },

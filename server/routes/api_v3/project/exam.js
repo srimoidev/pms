@@ -1,4 +1,5 @@
 const router = require("express").Router();
+const { sequelize } = require("../../../models");
 const db = require("../../../models");
 const Op = db.Sequelize.Op;
 
@@ -36,6 +37,12 @@ router.get("/", async (req, res) => {
         {
           model: db.exam,
           as: "Exam",
+          on: {
+            "$project_info.ProjectID$": { [Op.eq]: sequelize.col("Exam.ProjectID") },
+            "$project_info.IsProject$": { [Op.eq]: sequelize.col("Exam.IsProjectExam") }
+          },
+          // on: {'$project_info.ProjectID$' : {$col: 'Exam.ProjectID'},'$project_info.IsProject$':{$col:'Exam.IsProjectExam'}},
+          // `project_info`.`ProjectID` = `Exam`.`ProjectID` and exam.IsProjectExam=project_info.IsProject
           include: [
             {
               model: db.exam_status,
@@ -47,7 +54,7 @@ router.get("/", async (req, res) => {
               required: false,
               through: {
                 as: "Committee",
-                attributes: []
+                // attributes: []
               },
               attributes: { exclude: ["Username", "Password", "StudentID", "AcademicYear", "CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] }
             }
@@ -107,10 +114,10 @@ router.get("/", async (req, res) => {
           as: "Project_Type",
           attributes: { exclude: ["CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] }
         },
-        {
-          model: db.project_progress,
-          as: "Project_Progresses"
-        },
+        // {
+        //   model: db.project_progress,
+        //   as: "Project_Progresses"
+        // },
         {
           model: db.user_profile,
           as: "UpdatedUser",
@@ -183,7 +190,6 @@ router.get("/request", async (req, res) => {
 });
 router.post("/committee/submitscore/:id", async (req, res) => {
   const transaction = await db.sequelize.transaction();
-  console.log(req.body,req.params.id)
   try {
     await db.project_committee.update(req.body, { where: { CommitteeID: req.params.id } }, { transaction: transaction }).then(async res => {});
     await transaction.commit().then(() => {
@@ -199,7 +205,6 @@ router.post("/committee/submitscore/:id", async (req, res) => {
 router.post("/committee", async (req, res) => {
   const transaction = await db.sequelize.transaction();
   try {
-    console.log(req.body);
     await db.project_committee.create(req.body, { transaction: transaction }).then(async res => {
       // await db.notification_types
       // .findAll({
@@ -265,7 +270,7 @@ router.post("/committee", async (req, res) => {
 router.post("/request_exam", async (req, res) => {
   const transaction = await db.sequelize.transaction();
   try {
-    await db.exam.destroy({ where: [{ ProjectID: req.body.ProjectID }] }, { transaction: transaction });
+    await db.exam.destroy({ where: [{ ProjectID: req.body.ProjectID, IsProjectExam: true }] }, { transaction: transaction });
     await db.exam
       .create(req.body, { transaction: transaction })
       .then(async res => {
@@ -311,7 +316,28 @@ router.post("/request_exam", async (req, res) => {
         });
       });
   } catch (err) {
-    console.log(err);
+    await transaction.rollback();
+    res.status(500).send({
+      message: err.message || "Some error occurred while creating!"
+    });
+  }
+});
+router.post("/updatestatus", async (req, res) => {
+  const transaction = await db.sequelize.transaction();
+  console.log(req.body);
+  try {
+    await db.exam
+      .update(req.body.examstatus, { where: { ExamID: req.query.id } }, { transaction: transaction })
+      .then(async () => {
+        console.log(req.body.projectstatus,req.body.projectid)
+        await db.project_info.update(req.body.projectstatus, { where: { ProjectID: req.body.projectid } }, { transaction: transaction });
+      })
+      .then(async () => {
+        await transaction.commit().then(() => {
+          return res.status(200).send();
+        });
+      });
+  } catch (err) {
     await transaction.rollback();
     res.status(500).send({
       message: err.message || "Some error occurred while creating!"
@@ -331,6 +357,7 @@ router.post("/:id", async (req, res) => {
       .update(req.body, { where: { ExamID: req.params.id } }, { transaction: transaction })
       .then(async () => {
         exam = await db.exam.findOne({ where: { ExamID: req.params.id }, raw: true });
+        console.log(exam);
         project = await db.project_info.findOne({
           where: { ProjectID: exam.ProjectID }
         });

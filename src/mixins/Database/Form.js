@@ -103,7 +103,6 @@ export async function WaitforInstructorApprove(pUserID) {
 }
 export async function IsCompleteAllForm(pProjectID) {
   return await HTTP.get(`form/sent/iscompleteall?projectid=${pProjectID}`).then(res => {
-    console.log(res.data)
     return res.data.IsCompleteAllForm;
   });
 }

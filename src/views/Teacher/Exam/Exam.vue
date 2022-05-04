@@ -78,15 +78,16 @@
           </template>
           <span>เข้าร่วมเป็นกรรมการสอบ</span>
         </v-tooltip>
-        <v-tooltip v-if="item.isPassOnDate && item.isCommittee" bottom>
+        <v-tooltip v-if="item.isCommittee" bottom>
           <template v-slot:activator="{ on, attrs }">
-            <router-link :to="{ path: '/teacher/exam_score', query: { pid: item.ProjectID } }" class="text-none">
+            <router-link :to="{ path: '/teacher/exam_score', query: { pid: item.ProjectID } }" class="text-none" :disabled="!item.isPassOnDate" :event="item.isPassOnDate ? 'click' : ''">
               <v-icon v-bind="attrs" v-on="on" class="mr-2">
                 mdi-checkbox-marked-outline
               </v-icon>
             </router-link>
           </template>
-          <span>กรอกคะแนนผลการสอบ</span>
+          <span v-if="item.isPassOnDate" >กรอกคะแนนผลการสอบ</span>
+          <span v-else >ยังไม่ถึงวันที่นัดหมายสอบ</span>
         </v-tooltip>
       </template>
     </v-data-table>
@@ -208,7 +209,7 @@ export default {
             }
           });
 
-          if (item.Exam.Project_Committees.some(item => item.UserID == this.user.UserID)) {
+          if (item.Exam.Project_Committees.some(com => com.UserID == this.user.UserID)) {
             item.isCommittee = true;
           } else {
             item.isCommittee = false;

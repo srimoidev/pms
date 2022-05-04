@@ -73,6 +73,7 @@
             </v-row>
             <div class="mr-4 my-4 text-center">
               <v-spacer></v-spacer>
+              <v-btn v-if="data.Project_Status.ProjectStatusID == 8" class="mr-2" color="primary" @click="resend">ส่งคำขอใหม่</v-btn>
               <v-btn class="mr-2" color="success" @click="submitForm">บันทึก</v-btn>
               <!-- <v-btn class="" color="">ยกเลิก</v-btn> -->
             </div>
@@ -221,7 +222,7 @@
             <span class="text-caption mb-2">{{ "- " + data.UpdatedUser.Firstname + " " + data.UpdatedUser.Lastname }}</span>
           </div>
         </v-card> -->
-        <v-btn color="success" block @click="resend">ส่งใหม่</v-btn>
+        <!-- <v-btn color="success" block @click="resend">ส่งใหม่</v-btn> -->
       </div>
     </div>
   </div>
@@ -469,6 +470,19 @@ export default {
         ProjectDetail: this.data.ProjectDetail
       };
       this.Project.Resend(this.user.UserID, this.data.ProjectID, updateObj, this.selectedAdvisors).then(() => {
+        this.$swal.fire({
+          toast: true,
+          icon: "success",
+          title: "ดำเนินการเรียบร้อยแล้ว",
+          position: "top-end",
+          showConfirmButton: false,
+          timer: 2000,
+          timerProgressBar: true,
+          didOpen: toast => {
+            toast.addEventListener("mouseenter", this.$swal.stopTimer);
+            toast.addEventListener("mouseleave", this.$swal.resumeTimer);
+          }
+        });
         this.selectedAdvisors = [];
         this.selectedMembers = [];
         this.loadData();

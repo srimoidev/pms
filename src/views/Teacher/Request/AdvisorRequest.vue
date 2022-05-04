@@ -61,7 +61,6 @@
           @close="modal = !modal"
           confirm
           :data="selectedProject"
-          :bypass="selectedProject.isAllowBypass"
         ></project-modal-detail>
       </modal-container>
     </template>
@@ -144,14 +143,14 @@ export default {
         this.allType = await this.Project.AllType();
         //โปรเจ็ครอรับเป็นที่ปรึกษา
         this.data = await this.Project.WaitConfirmProject(this.user.UserID, 2);
-        this.data.map(async item => {
-          await this.Project.Advisor(item.ProjectID).then(res => {
-            if (res?.length == 1) {
-              //คนอนุมัติคนสุดท้ายเป็นที่ปรึกษาและเป็นประจำวิชา
-              item.isAllowBypass = this.user.UserID == res[0].UserID && this.typeID == 3;
-            }
-          });
-        });
+        // this.data.map(async item => {
+        //   await this.Project.Advisor(item.ProjectID).then(res => {
+        //     if (res?.length == 1) {
+        //       //คนอนุมัติคนสุดท้ายเป็นที่ปรึกษาและเป็นประจำวิชา
+        //       item.isAllowBypass = this.user.UserID == res[0].UserID && this.typeID == 3;
+        //     }
+        //   });
+        // });
       }
       this.loading = false;
     },

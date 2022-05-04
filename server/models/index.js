@@ -53,7 +53,7 @@ db.project_committee = require("./project_committee")(sequelize, Sequelize);
 // db.project_committee_role = require("./project_committee_role")(sequelize, Sequelize);
 db.project_info = require("./project_info")(sequelize, Sequelize);
 db.project_member = require("./project_member")(sequelize, Sequelize);
-db.project_progress = require("./project_progress")(sequelize, Sequelize);
+// db.project_progress = require("./project_progress")(sequelize, Sequelize);
 db.project_status = require("./project_status")(sequelize, Sequelize);
 db.project_type = require("./project_type")(sequelize, Sequelize);
 db.section = require("./section")(sequelize, Sequelize);
@@ -143,10 +143,10 @@ db.project_advisor.belongsTo(db.project_info, {
 //   foreignKey: "UserID"
 // });
 //ProjectProgress
-db.project_info.hasMany(db.project_progress, {
-  foreignKey: "Progress_ProjectID",
-  as: "Project_Progresses"
-});
+// db.project_info.hasMany(db.project_progress, {
+//   foreignKey: "Progress_ProjectID",
+//   as: "Project_Progresses"
+// });
 // db.user_profile.belongsToMany(db.exam, {
 //   through: db.project_committee,
 //   foreignKey: "UserID"

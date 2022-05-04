@@ -17,7 +17,7 @@
       </div>
       <div v-else-if="!isCompleteAllForm" class="text-center">
         <v-icon size="128" color="amber darken-1">mdi-alert-outline</v-icon>
-        <h1>มีเอกสารบางรายการยังไม่ได้รับการอนุมีติโปรดตรวจสอบ</h1>
+        <h1>มีเอกสารบางรายการยังไม่ได้รับการอนุมัติโปรดตรวจสอบ</h1>
       </div>
       <div v-else-if="isExamRequest.IsExist && !isExamRequest.IsRevise" class="text-center">
         <v-icon size="128" color="light-green accent-4">mdi-check-circle-outline</v-icon>
@@ -109,7 +109,6 @@ export default {
   //   //   this.loadData(); //จับตอน reload
   //   // }
   //   data: function() {
-  //     console.log(this.data)
   //     this.isProject = this.data.IsProject != true ? this.ProjectType.find(i => i.value == 1) : this.ProjectType.find(i => i.value == 2);
   //   }
   // },
@@ -120,7 +119,6 @@ export default {
       const ProjectExamPeriodStartDate = await this.App.Env("ProjectExamPeriodStartDate");
       const ProjectExamPeriodEndDate = await this.App.Env("ProjectExamPeriodEndDate");
       this.isCompleteAllForm = await this.Form.IsCompleteAllForm(this.user.ProjectID);
-      console.log(this.isCompleteAllForm)
       if (!this.user.ProjectID) {
         this.isNotHasGroup = true;
       } else {
@@ -131,8 +129,6 @@ export default {
           });
 
           this.isExamRequest = await this.Project.IsExamRequest(this.user.ProjectID, this.data.IsProject ? 1 : 0);
-          // console.log(this.isExamRequest);
-          // console.log(this.isExamRequest)
           if (this.data.IsProject) {
             if (new Date().getTime() > new Date(ProjectExamPeriodStartDate).getTime() && new Date().getTime() < new Date(ProjectExamPeriodEndDate)) {
               this.isNotAllowToRequest = false;

@@ -22,7 +22,7 @@ import ProjectManual from "../views/ProjectManual/ProjectManual.vue";
 //student pages
 import Student_Meeting from "../views/Student/Meeting/Meeting.vue";
 import Student_MeetingDetail from "../views/Student/Meeting/MeetingDetail.vue";
-import Student_Overview from "../views/Student/Overview/Overview.vue";
+// import Student_Overview from "../views/Student/Overview/Overview.vue";
 import Student_Description from "../views/Student/ProjecDescription/Description.vue";
 
 import Student_Project from "../views/Student/Project/Project.vue";
@@ -35,7 +35,7 @@ import Student_Exam from "../views/Student/Project/Exam.vue";
 //teacher pages
 import Teacher_Meeting from "../views/Teacher/Meeting/Meeting.vue";
 import Teacher_MeetingDetail from "../views/Teacher/Meeting/MeetingDetail.vue";
-import Teacher_Overview from "../views/Teacher/Overview/Overview.vue";
+// import Teacher_Overview from "../views/Teacher/Overview/Overview.vue";
 import Teacher_AllProject from "../views/Teacher/AllProject/AllProject.vue";
 import Teacher_ProjectList from "../views/Teacher/ManageProject/ProjectList.vue";
 import Teacher_Project from "../views/Teacher/ManageProject/Project.vue";
@@ -48,7 +48,7 @@ import Teacher_FormCE from "../views/Teacher/ManageProject/FormCE";
 import Teacher_NewProjects from "../views/Teacher/Request/NewProjects";
 import Teacher_Exam from "../views/Teacher/Exam/Exam.vue";
 import Teacher_Exam_Score from "../views/Teacher/Exam/ExamScore";
-import Teacher_Exam_Result from "../views/Teacher/Exam/ExamResult"
+import Teacher_Exam_Result from "../views/Teacher/Exam/ExamResult";
 
 //App Environment Configuration
 import App_Configs from "../views/AppConfigurations/AppConfigurations.vue";
@@ -114,12 +114,12 @@ const routes = [
     redirect: "/student/all_project",
     meta: { is_student: true },
     children: [
-      {
-        path: "overview",
-        name: "Overview",
-        component: Student_Overview,
-        meta: { title: "Overview | PMS" }
-      },
+      // {
+      //   path: "overview",
+      //   name: "Overview",
+      //   component: Student_Overview,
+      //   meta: { title: "Overview | PMS" }
+      // },
       {
         path: "description",
         name: "Description",
@@ -200,7 +200,7 @@ const routes = [
       },
       {
         path: "form_preview",
-        name: "Form Preview",
+        name: "Student Form Preview",
         component: Student_FormPreview,
         meta: { title: "Form Preview | PMS" }
       },
@@ -226,12 +226,12 @@ const routes = [
     component: Dashboard,
     redirect: "/teacher/all_project",
     children: [
-      {
-        path: "overview",
-        name: "Overview",
-        component: Teacher_Overview,
-        meta: { title: "Overview | PMS" }
-      },
+      // {
+      //   path: "overview",
+      //   name: "Overview",
+      //   component: Teacher_Overview,
+      //   meta: { title: "Overview | PMS" }
+      // },
       {
         path: "app_configs",
         name: "App Environment Configuration",
@@ -282,19 +282,19 @@ const routes = [
       },
       {
         path: "form_preview",
-        name: "Form Preview",
+        name: "Teacher Form Preview",
         component: Teacher_FormPreview,
         meta: { title: "Form Preview | PMS" }
       },
       {
         path: "meeting",
-        name: "Meeting",
+        name: "Teacher Meeting",
         component: Teacher_Meeting,
         meta: { title: "Meeting | PMS" }
       },
       {
         path: "meeting/:id",
-        name: "MeetingDetail",
+        name: "Meeting Detail",
         component: Teacher_MeetingDetail,
         meta: { title: "MeetingDetail | PMS" }
       },
@@ -306,7 +306,7 @@ const routes = [
       },
       {
         path: "form_ce",
-        name: "Form CE",
+        name: "Teacher Form CE",
         component: Teacher_FormCE,
         meta: { title: "Form CE | PMS" }
       },
@@ -324,7 +324,7 @@ const routes = [
       },
       {
         path: "exam",
-        name: "Exam",
+        name: "Teacher Exam",
         component: Teacher_Exam,
         meta: { title: "Exam | PMS" }
       },
@@ -358,7 +358,7 @@ const routes = [
       // },
       {
         path: "app_configs",
-        name: "App Environment Configuration",
+        name: "Admin App Environment Configuration",
         component: App_Configs,
         meta: { title: "App Environment Configuration | PMS" }
       },
@@ -370,7 +370,7 @@ const routes = [
       // },
       {
         path: "project_manual",
-        name: "Project Manual",
+        name: "Admin Project Manual",
         component: ProjectManual,
         meta: { title: "Project Manual | PMS" }
       },
@@ -382,7 +382,7 @@ const routes = [
       },
       {
         path: "manage_users",
-        name: "Manage Users",
+        name: "Admin Manage Users",
         component: App_ManageUsers,
         meta: { title: "Manage Users | PMS" }
       }

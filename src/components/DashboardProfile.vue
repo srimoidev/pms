@@ -15,7 +15,7 @@
           <v-icon v-else size="96">{{ "mdi-account-circle" }}</v-icon>
         </v-avatar>
         <v-card-title class="mx-auto">{{ data.Fullname }}</v-card-title>
-        <v-card-subheader class="mx-auto">{{ data.Email }}</v-card-subheader>
+        <v-card-subtitle class="mx-auto">{{ data.Email }}</v-card-subtitle>
         <!-- <v-btn class="my-5 mx-auto" rounded small outlined color="grey" max-width="200" :to="`/student/profile`">Manage Account</v-btn> -->
         <v-divider></v-divider>
         <v-card-actions>

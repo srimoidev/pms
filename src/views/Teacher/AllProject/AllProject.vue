@@ -152,10 +152,10 @@ export default {
     }),
     filteredItems() {
       return this.allProject
-        .filter((item) => {
+        .filter(item => {
           return !this.typeFilter || item.ProjectTypeID == this.typeFilter;
         })
-        .filter((item) => {
+        .filter(item => {
           return !this.statusFilter || item.ProjectStatusID == this.statusFilter;
         });
     }
@@ -185,7 +185,6 @@ export default {
         ProjectStatusName: "ทั้งหมด"
       });
       this.allProject = await this.Project.GetAll();
-      console.log(this.allProject)
       this.loading = false;
     },
     async newProject(project, advisors, members) {
@@ -198,13 +197,13 @@ export default {
     async projectModal(pProject) {
       this.selectedProject = pProject;
       await Promise.all(
-        this.selectedProject.Project_Members.map(async (item) => {
+        this.selectedProject.Project_Members.map(async item => {
           item.ProfileImage = await this.User.ProfileImage(item.UserID);
         })
       )
         .then(async () => {
           await Promise.all(
-            this.selectedProject.Project_Advisors.map(async (item) => {
+            this.selectedProject.Project_Advisors.map(async item => {
               item.ProfileImage = await this.User.ProfileImage(item.UserID);
             })
           );
