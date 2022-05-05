@@ -154,6 +154,7 @@ router.get("/", async (req, res) => {
 });
 
 router.get("/:id", async (req, res) => {
+  console.log("asdasd")
   try {
     const data = await db.project_info.findOne({
       include: [
@@ -250,10 +251,10 @@ router.get("/:id", async (req, res) => {
         {
           model: db.exam,
           as: "Exam",
-          on: {
-            "$project_info.ProjectID$": { [Op.eq]: sequelize.col("Exam.ProjectID") },
-            // "$project_info.IsProject$": { [Op.eq]: sequelize.col("Exam.IsProjectExam") }
-          },
+          // on: {
+          //   "$project_info.ProjectID$": { [Op.eq]: sequelize.col("Exam.ProjectID") },
+          //   "$project_info.IsProject$": { [Op.eq]: sequelize.col("Exam.IsProjectExam") }
+          // },
           attributes: { exclude: ["CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] },
           include: [
             {

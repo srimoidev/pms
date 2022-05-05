@@ -118,16 +118,18 @@ export default {
       const PreProjectExamPeriodEndDate = await this.App.Env("PreProjectExamPeriodEndDate");
       const ProjectExamPeriodStartDate = await this.App.Env("ProjectExamPeriodStartDate");
       const ProjectExamPeriodEndDate = await this.App.Env("ProjectExamPeriodEndDate");
-      this.isCompleteAllForm = await this.Form.IsCompleteAllForm(this.user.ProjectID);
+
       if (!this.user.ProjectID) {
         this.isNotHasGroup = true;
       } else {
+        // if (this.isCompleteAllForm) {
+        await this.Project.Project(this.user.ProjectID).then(res => {
+          this.data = res;
+          this.isProject = this.data?.IsProject != true ? this.ProjectType.find(i => i.value == 1) : this.ProjectType.find(i => i.value == 2);
+        });
+        this.isCompleteAllForm = await this.Form.IsCompleteAllForm(this.user.ProjectID, this.data.IsProject);
+        console.log(this.isCompleteAllForm)
         if (this.isCompleteAllForm) {
-          await this.Project.Project(this.user.ProjectID).then(res => {
-            this.data = res;
-            this.isProject = this.data?.IsProject != true ? this.ProjectType.find(i => i.value == 1) : this.ProjectType.find(i => i.value == 2);
-          });
-
           this.isExamRequest = await this.Project.IsExamRequest(this.user.ProjectID, this.data.IsProject ? 1 : 0);
           if (this.data.IsProject) {
             if (new Date().getTime() > new Date(ProjectExamPeriodStartDate).getTime() && new Date().getTime() < new Date(ProjectExamPeriodEndDate)) {
@@ -145,9 +147,10 @@ export default {
               this.isNotAllowToRequest = true;
             }
           }
-        } else {
-          this.isNotAllowToRequest = false;
         }
+        // } else {
+        //   this.isNotAllowToRequest = false;
+        // }
         this.isNotHasGroup = false;
       }
       this.isLoaded = true;

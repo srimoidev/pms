@@ -93,16 +93,26 @@ router.get("/", async (req, res) => {
   }
 });
 router.get("/iscompleteall", async (req, res) => {
+  var whereStr = "";
+  console.log(req.query)
+  if(req.query.project == "true"){
+    whereStr += " AND Project = 1"
+  }
+  if(req.query.project == "false"){
+    whereStr += " AND PreProject = 1"
+  }
   await sequelize
     .query(
       " SELECT * FROM form_type "
       + " LEFT JOIN form_sent ON form_type.FormTypeID = form_sent.FormTypeID AND form_sent.FormID IN("
       + " SELECT MAX(FormID) FROM form_sent WHERE ProjectID = " 
       + req.query.projectid 
-      + " GROUP by form_sent.FormTypeID) WHERE form_type.isActive = 1 ",
+      + " GROUP by form_sent.FormTypeID) WHERE form_type.isActive = 1 "
+      + whereStr,
       { raw: false, type: QueryTypes.SELECT }
     )
     .then(result => {
+      console.log(result)
       if (result.some(item => item.FormStatusID != 5)) {
         res.json({ IsCompleteAllForm: false });
       } else {
