@@ -101,13 +101,12 @@
                 </v-data-table>
               </v-col>
             </v-row>
-            <v-row>
+            <!-- <v-row>
               <v-col cols="4">เกรด</v-col>
               <v-col cols="8">
                 <span v-html="calculateGrade(item.Exam.Project_Committees)"></span>
-                <!-- <p class="title green--text">{{}}</p> -->
               </v-col>
-            </v-row>
+            </v-row> -->
             <div class="text-center">
               <v-btn color="success" class="mr-2" small @click="submit(item)">สอบผ่าน</v-btn>
               <v-btn class="elevation-0" color="white" small @click="cancelEdit(item)">Cancel</v-btn>
