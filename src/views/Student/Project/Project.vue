@@ -48,7 +48,7 @@
                   <v-textarea v-model="data[item.name]" outlined rows="5" counter no-resize></v-textarea>
                 </div>
                 <div v-else-if="item.name == 'IsProject'">
-                  <span v-if="item.IsProject">
+                  <span v-if="data.IsProject">
                     <v-chip label style="width:100px" class="deep-purple darken-2 white--text justify-center">Project</v-chip>
                   </span>
                   <span v-else>
@@ -365,7 +365,9 @@ export default {
   methods: {
     async loadData() {
       this.$store.dispatch("user/getLoggedInUserData").then(async () => {
+        
         this.data = await this.Project.Project(this.user.ProjectID).then(res => {
+          console.log(res)
           res.Project_Section.TextDetail = `Sec : ${res.Project_Section.Sequence}/${res.Project_Section.Year} อาจารย์ : ${
             res.Project_Section.Section_Instructor.Fullname
           } คาบเรียน : ${this.dayText[res.Project_Section.DayOfWeek - 1].text} ${res.Project_Section.StartTime.slice(

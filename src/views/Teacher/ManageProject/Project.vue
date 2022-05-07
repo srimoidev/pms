@@ -363,6 +363,7 @@ export default {
     async loadData() {
       this.$store.dispatch("user/getLoggedInUserData").then(async () => {
         this.data = await this.Project.Project(this.pid).then(res => {
+          console.log(this.data)
           res.Project_Section.TextDetail = `Sec : ${res.Project_Section.Sequence}/${res.Project_Section.Year} อาจารย์ : ${
             res.Project_Section.Section_Instructor.Fullname
           } คาบเรียน : ${this.dayText[res.Project_Section.DayOfWeek - 1].text} ${res.Project_Section.StartTime.slice(
