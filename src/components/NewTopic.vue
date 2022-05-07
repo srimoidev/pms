@@ -68,7 +68,7 @@
           </v-row>
           <v-row no-gutters>
             <v-col cols="12">
-              <ValidationProvider v-slot="{ errors }" name="สมาชิก" rules="select_required">
+              <ValidationProvider v-slot="{ errors }" name="สมาชิก" :rules="`${teacher ? '' : 'select_required'}`">
                 <v-autocomplete
                   :error-messages="errors"
                   v-model="members"
@@ -251,7 +251,7 @@ export default {
     return {
       th_name: "",
       en_name: "",
-      selectedSection: {},
+      selectedSection: null,
       detail: "",
       number: 1,
       type: null,

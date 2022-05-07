@@ -45,7 +45,7 @@
         </v-toolbar>
       </template>
       <template v-slot:[`item.MaxMember`]="{ item }">
-        {{ item.Project_Members.length + " / " + item.MaxMember }}
+        {{ item.Project_Members.length }}
       </template>
       <template v-slot:[`item.Project_Type`]="{ item }">
         <v-chip class="white--text" :class="`type-${item.Project_Type.ProjectTypeID}`" small label>
@@ -82,6 +82,7 @@
           :alltype="allType"
           :students="allStudent"
           :createUser="user"
+          :sections="allSection"
           teacher
         ></new-topic>
       </modal-container>
@@ -123,6 +124,7 @@ export default {
       allProject: [],
       allTeacher: [],
       allStudent: [],
+      allSection:[],
       selectedProject: {},
       windowHeight: 0,
       data: {},
@@ -173,7 +175,8 @@ export default {
       const type = await this.Project.AllType();
       this.allStatus = await this.Project.AllStatus();
       this.allTeacher = await this.User.UserTeacher();
-      this.allStudent = await this.User.UserStudent();
+      this.allStudent = await this.User.StudentsNoGroup();
+      this.allSection = await this.Section.All(1);
       this.projectType = type.slice();
       this.allType = type.slice();
       this.projectType.push({
