@@ -44,6 +44,14 @@
                   <!-- <span>{{ data.Project_Status.ProjectStatusName }}</span> -->
                   <project-status :status="data.Project_Status.ProjectStatusID"></project-status>
                 </div>
+                <div v-else-if="item.name == 'IsProject'">
+                  <span v-if="item.IsProject">
+                    <v-chip label style="width:100px" class="deep-purple darken-2 white--text justify-center">Project</v-chip>
+                  </span>
+                  <span v-else>
+                    <v-chip label style="width:100px" class="teal accent-4 white--text justify-center">Pre-Project</v-chip>
+                  </span>
+                </div>
                 <div v-else-if="item.name == 'ProjectDetail'">
                   <v-textarea v-model="data[item.name]" outlined rows="5" counter no-resize></v-textarea>
                 </div>
@@ -280,6 +288,7 @@ export default {
       loadMembersImg: false,
       LoadAdvisorsImg: false,
       title: [
+        { name: "IsProject", text: "วิชา" },
         { name: "ProjectNameTH", text: "ชื่อภาษาไทย" },
         { name: "ProjectNameEN", text: "ชื่อภาษาอังกฤษ" },
         { name: "ProjectDetail", text: "รายละเอียด" },
