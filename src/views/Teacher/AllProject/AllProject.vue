@@ -124,7 +124,7 @@ export default {
       allProject: [],
       allTeacher: [],
       allStudent: [],
-      allSection:[],
+      allSection: [],
       selectedProject: {},
       windowHeight: 0,
       data: {},

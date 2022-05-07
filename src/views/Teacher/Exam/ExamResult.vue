@@ -9,7 +9,7 @@
       item-key="SectionID"
       :loading="sec_loading"
       loading-text="Loading... Please wait"
-      :items-per-page="-1"
+      :height="windowHeight - 64 - 59"
     >
       <template v-slot:top>
         <v-toolbar flat color="white">
@@ -77,7 +77,6 @@
             <v-row>
               <v-col cols="4">ผลการสอบ</v-col>
               <v-col cols="8">
-                {{item.Exam.Project_Committees}}
                 <v-data-table
                   :headers="projectScoreHeader"
                   :items="item.Exam.Project_Committees"
@@ -91,9 +90,12 @@
                   <template slot="body.append">
                     <tr class="">
                       <th class="">รวม</th>
-                      <th class="">{{ sumField(item.Exam.Project_Committees,"PresentScore") }}</th>
-                      <th class="">{{ sumField(item.Exam.Project_Committees,"DocumentScore") }}</th>
-                      <th class="">รวมทั้งสิ้น {{ sumField(item.Exam.Project_Committees,"PresentScore") + sumField(item.Exam.Project_Committees,"DocumentScore") }}</th>
+                      <th class="">{{ sumField(item.Exam.Project_Committees, "PresentScore") }}</th>
+                      <th class="">{{ sumField(item.Exam.Project_Committees, "DocumentScore") }}</th>
+                      <th class="">
+                        รวมทั้งสิ้น
+                        {{ sumField(item.Exam.Project_Committees, "PresentScore") + sumField(item.Exam.Project_Committees, "DocumentScore") }}
+                      </th>
                     </tr>
                   </template>
                 </v-data-table>
@@ -298,8 +300,11 @@ export default {
     rowStyle() {
       return "tb-row";
     },
-    sumField(data,key) {
-      console.log(data[0].Committee["PresentScore"],data.reduce((a, b) => a + (b.Committee[key] || 0), 0))
+    sumField(data, key) {
+      console.log(
+        data[0].Committee["PresentScore"],
+        data.reduce((a, b) => a + (b.Committee[key] || 0), 0)
+      );
       // sum data in give key (property)
       return data.reduce((a, b) => a + (b.Committee[key] || 0), 0);
     },
@@ -316,7 +321,7 @@ export default {
       this.$refs["collapse_s_" + item.SectionID].$el.click();
     },
     calculateGrade(data) {
-      var score = this.sumField(data,"DocumentScore") + this.sumField(data,"PresentScore");
+      var score = this.sumField(data, "DocumentScore") + this.sumField(data, "PresentScore");
       var result = this.Utils.calculateGrade(score);
       return '<p class="title grade-' + result.type + '">' + result.grade + "</p>";
     },
