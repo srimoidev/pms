@@ -65,7 +65,7 @@
         </v-chip>
       </template>
       <template v-slot:[`item.MeetingType`]="{ item }">
-        <v-chip class="white--text" small label>
+        <v-chip class="white--text" :class="`m-type-${item.MeetingType}`" small label>
           {{ allMeetingType[item.MeetingType].name }}
         </v-chip>
       </template>
@@ -190,13 +190,13 @@ export default {
     }),
     filteredItems() {
       return this.allMeeting
-        .filter((item) => {
+        .filter(item => {
           return !this.filterType || item.MeetingType == this.filterType;
         })
-        .filter((item) => {
+        .filter(item => {
           return !this.filterStatus || item.RequestStatus == this.filterStatus;
         })
-        .filter((item) => {
+        .filter(item => {
           return item.ProjectID == this.user.ProjectID;
         });
     }
@@ -211,7 +211,15 @@ export default {
   },
   methods: {
     async loadData() {
-      this.allMeeting = await this.Meeting.GetAll();
+      if (this.user.UserTypeID == 1) {
+        console.log("1");
+        // นักศึกษา
+        this.allMeeting = await this.Meeting.GetAll(this.user.ProjectID, null);
+      } else {
+        console.log("2");
+        // อาจารย์
+        this.allMeeting = await this.Meeting.GetAll(null, this.user.UserID);
+      }
       this.allTeacher = await this.User.UserTeacher();
       this.allProject = await this.Project.GetAll();
       this.meetingType = this.user.UserTypeID;
@@ -220,7 +228,7 @@ export default {
     },
     getEvents() {
       const events = [];
-      this.allMeeting.forEach((item) => {
+      this.allMeeting.forEach(item => {
         let onDate = new Date(item.OnDate);
         onDate = onDate = onDate.getFullYear() + "-" + (onDate.getMonth() + 1) + "-" + onDate.getDate();
         events.push({
@@ -272,7 +280,7 @@ export default {
           cancelButtonText: "ยกเลิก",
           confirmButtonText: "ยืนยัน!"
         })
-        .then((result) => {
+        .then(result => {
           if (result.isConfirmed) {
             this.Meeting.Delete(pID).then(() => {
               this.loadData();
@@ -292,7 +300,7 @@ export default {
           cancelButtonText: "ยกเลิก",
           confirmButtonText: "ยืนยัน!"
         })
-        .then((result) => {
+        .then(result => {
           if (result.isConfirmed) {
             this.Meeting.Approve(pID).then(() => {
               this.loadData();
@@ -315,7 +323,7 @@ export default {
           cancelButtonText: "ยกเลิก",
           confirmButtonText: "ยืนยัน!"
         })
-        .then((result) => {
+        .then(result => {
           if (result.isConfirmed) {
             this.Meeting.Decline(pID).then(() => {
               this.loadData();

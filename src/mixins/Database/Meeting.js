@@ -1,8 +1,15 @@
 import HTTP from "./config";
 
 //#region outbound
-export async function GetAll() {
-  return await HTTP.get("/meeting")
+export async function GetAll(pProjectID, pTeacherID) {
+  var whereStr = "";
+  if (pProjectID) {
+    whereStr += "?projectid=" + pProjectID;
+  }
+  if (pTeacherID) {
+    whereStr += "?teacherid=" + pTeacherID;
+  }
+  return await HTTP.get("/meeting" + whereStr)
     .then(res => {
       return res.data;
     })

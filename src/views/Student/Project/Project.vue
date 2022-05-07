@@ -25,7 +25,12 @@
       </v-toolbar>
       <v-container>
         <ValidationObserver ref="observer">
-          <v-card v-if="!loading" class="ma-2 px-4 pa-2 elevation-0 overflow-y-auto" :style="{ 'max-height': windowHeight - 102 + 'px' }" outlined>
+          <v-card
+            v-if="!loading"
+            class="ma-2 px-4 pa-2 elevation-0 overflow-y-auto"
+            :style="{ 'max-height': windowHeight - 102 + 'px', height: windowHeight - 102 + 'px' }"
+            outlined
+          >
             <v-row dense v-for="item in title" :key="item.name">
               <v-col cols="3">
                 <!-- <span v-if="item.name == 'RejectRemark' && data.Project_Status.ProjectStatus_ID != 7"></span> -->
