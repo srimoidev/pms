@@ -6,7 +6,7 @@ import store from "../store/";
 // import Login from "../views/Login/Login.vue";
 import MainLogin from "../views/Login/MainLogin.vue";
 import Home from "../views/HomePage/Home.vue";
-import HomePage from "../components/Home.vue";
+// import HomePage from "../components/Home.vue";
 import HomeProject from "../views/HomePage/Project.vue";
 import SearchProject from "../components/SearchProject.vue";
 
@@ -74,14 +74,14 @@ const routes = [
       ]
     },
     children: [
+      // {
+      //   path: "",
+      //   name: "Home",
+      //   component: HomePage,
+      //   meta: { title: "Home | PMS" }
+      // },
       {
         path: "",
-        name: "Home",
-        component: HomePage,
-        meta: { title: "Home | PMS" }
-      },
-      {
-        path: "search",
         name: "Search",
         component: SearchProject,
         meta: { title: "Search Project | PMS" }

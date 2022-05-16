@@ -42,7 +42,7 @@
             <v-select v-model="typeFilter" :items="allType" item-text="ProjectTypeNameTH" item-value="ProjectTypeID" solo dense> </v-select>
           </v-col>
           <v-col cols="9">
-            <div class="overflow-y-auto pr-2" style="max-height: calc(100vh - 180px)">
+            <div class="overflow-y-auto pr-2" style="max-height: calc(100vh - 200px)">
               <v-card v-for="item in filteredItems" :key="item.Project_ID" class="mb-2">
                 <div class="d-flex">
                   <v-card-title style="width: 100%">
