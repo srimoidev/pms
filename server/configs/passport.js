@@ -1,5 +1,5 @@
 const dotenv = require("dotenv");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const db = require("../models");
 
 dotenv.config();

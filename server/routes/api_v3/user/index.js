@@ -3,7 +3,7 @@ const db = require("../../../models");
 router.use("/type", require("./type"));
 const fs = require("fs");
 const Op = db.Sequelize.Op;
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const { sequelize } = require("../../../models");
 const saltRounds = 10;
 
