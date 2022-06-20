@@ -109,7 +109,8 @@ export async function Update(
   pEmail,
   pTelephoneNo,
   pIsActive,
-  pProfileImg
+  pProfileImg,
+  pUserTypeID
 ) {
   var formData = new FormData();
   formData.append("Password", pPassword);
@@ -121,6 +122,7 @@ export async function Update(
   formData.append("TelephoneNo", pTelephoneNo);
   formData.append("IsActive", pIsActive);
   formData.append("UpdatedBy", pUserID);
+  formData.append("UserTypeID", pUserTypeID);
   if (pProfileImg) {
     formData.append("file", pProfileImg);
   }

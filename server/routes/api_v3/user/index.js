@@ -211,7 +211,8 @@ router.put("/:id", async (req, res) => {
     Email: req.body.Email,
     TelephoneNo: req.body.TelephoneNo,
     IsActive: req.body.IsActive,
-    UpdatedBy: req.body.UpdatedBy
+    UpdatedBy: req.body.UpdatedBy,
+    UserTypeID: req.body.UserTypeID
   };
   if (req.body.Password) {
     user.Password = req.body.Password;

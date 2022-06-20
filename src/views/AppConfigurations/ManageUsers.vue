@@ -138,7 +138,7 @@
                   hide-details
                   outlined
                   dense
-                  :disabled="isEdit"
+                  :disabled="isEdit && selectedUserType != 2"
                 >
                 </v-select>
                 <div v-if="isEdit" class="mx-15">
@@ -339,7 +339,9 @@ export default {
       updatedUserID: null,
       isValid: null,
       rdoActive: true,
-      progress: 0
+      progress: 0,
+      selectedUserType: 0,
+      userTypeForNewUser: []
     };
   },
   computed: {
@@ -352,10 +354,10 @@ export default {
       return this.allUser?.filter(item => {
         return !this.typeFilter || item.UserTypeID == this.typeFilter;
       });
-    },
-    userTypeForNewUser() {
-      return this.userType.filter(o => o.UserTypeID != 4);
     }
+    // userTypeForNewUser() {
+    //   return this.userType.filter(o => o.UserTypeID != 4);
+    // }
   },
   beforeMount() {
     this.loadData(); //จับตอน เปลี่ยน route
@@ -369,6 +371,7 @@ export default {
     async loadData() {
       this.userType = await this.User.Type();
       this.allUser = await this.User.All();
+      this.userTypeForNewUser = this.userType;
       this.loading = false;
     },
     selectFile(event) {
@@ -509,6 +512,8 @@ export default {
       }
     },
     modalNewUserClose() {
+      this.userTypeForNewUser = this.userType;
+      this.selectedUserType = 0;
       this.isEdit = false;
       this.modalNewUser = false;
       this.txtUsername = "";
@@ -535,6 +540,12 @@ export default {
       }
     },
     async editUser(item) {
+      //แก้ Role อาจารย์ทั่วไปให้แสดงแค่ ประจำวิชา Pre หรือ Project ให้เลือกเท่านั้น
+      if (item.UserTypeID == 2) {
+        this.userTypeForNewUser = this.userType.filter(o => o.UserTypeID != 4 && o.UserTypeID != 1);
+      } 
+
+      this.selectedUserType = item.UserTypeID;
       this.isEdit = true;
       this.modalNewUser = true;
       this.updatedUserID = item.UserID;
@@ -591,7 +602,8 @@ export default {
           this.txtEmail,
           this.txtTelephoneNo,
           this.rdoActive,
-          this.selectedImg
+          this.selectedImg,
+          this.newUserType,
         ).then(() => {
           this.$swal.fire({
             timer: 3000,
