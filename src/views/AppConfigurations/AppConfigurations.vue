@@ -72,6 +72,23 @@
                             </v-col>
                           </v-row>
                           <v-row>
+                            <v-col cols="2">
+                              <span>ปีการศึกษา</span>
+                            </v-col>
+                            <v-col cols="4">
+                              <ValidationProvider v-slot="{ errors }" name="ปีการศึกษา" rules="required">
+                                <v-select
+                                  v-model="selectedYear"
+                                  :items="yearList"
+                                  :error-messages="errors"
+                                  outlined
+                                  dense
+                                  placeholder="โปรดเลือก"
+                                ></v-select>
+                              </ValidationProvider>
+                            </v-col>
+                          </v-row>
+                          <v-row>
                             <v-col cols="2"><span>อาจารย์ผู้สอน</span></v-col>
                             <v-col cols="4">
                               <ValidationProvider v-slot="{ errors }" name="อาจารย์ผู้สอน" rules="required">
@@ -194,6 +211,23 @@
                                 dense
                                 label="โปรดเลือก"
                                 :error-messages="errors"
+                              ></v-select>
+                            </ValidationProvider>
+                          </v-col>
+                        </v-row>
+                        <v-row>
+                          <v-col cols="2">
+                            <span>ปีการศึกษา</span>
+                          </v-col>
+                          <v-col cols="4">
+                            <ValidationProvider v-slot="{ errors }" name="ปีการศึกษา" rules="required">
+                              <v-select
+                                v-model="edited_section[edited_section.findIndex(o => o.SectionID == item.SectionID)].Year"
+                                :items="yearList"
+                                :error-messages="errors"
+                                outlined
+                                dense
+                                placeholder="โปรดเลือก"
                               ></v-select>
                             </ValidationProvider>
                           </v-col>
@@ -562,6 +596,8 @@ import { mapGetters } from "vuex";
 import { required } from "vee-validate/dist/rules";
 import { extend, ValidationObserver, ValidationProvider, setInteractionMode } from "vee-validate";
 
+import lodash from "lodash";
+
 import DayLabel from "@/components/DayLabel";
 
 setInteractionMode("eager");
@@ -638,6 +674,7 @@ export default {
     edited_section: [],
     // newSubject: 1,
     newTerm: 1,
+    selectedYear: null,
     newSubject: null,
     newSecDetail: null,
     newDayOfWeek: null,
@@ -654,7 +691,12 @@ export default {
       user: "user/UserData",
       typeID: "user/TypeID",
       isLoggedIn: "authentication/isLoggedIn"
-    })
+    }),
+    yearList() {
+      var startYear = 2560;
+      var maxYear = new Date().toLocaleDateString(`th-TH`, { year: `numeric` }).substring(5, 10);
+      return lodash.range(startYear, parseInt(maxYear) + 5).map(n=> String(n));
+    }
   },
 
   watch: {
@@ -831,7 +873,7 @@ export default {
     async sectionAddSubmit() {
       const newSection = {
         Subject: this.newSubject,
-        Year: new Date().getFullYear().toString(),
+        Year: this.selectedYear,
         Term: this.newTerm,
         Detail: this.newSecDetail,
         DayOfWeek: this.newDayOfWeek,
@@ -864,7 +906,8 @@ export default {
         StartTime: section_obj.StartTime,
         Instructor: section_obj.Instructor,
         Subject: section_obj.Subject,
-        Term: section_obj.Term
+        Term: section_obj.Term,
+        Year: section_obj.Year
       };
       if (await this.$refs.sectionEdit_observer.validate()) {
         this.Section.Update(this.user.UserID, item.SectionID, section_obj).then(() => {
