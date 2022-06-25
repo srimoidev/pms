@@ -45,13 +45,13 @@
               <!-- <project-status :status="data.Project_Status.ProjectStatusID"></project-status> -->
               <span>{{ data.Project_Status.ProjectStatus_Name }}</span>
             </div>
-            <div v-else-if="item.name == 'RejectedRemark' && data.Project_Status.ProjectStatusID == 8">
+            <!-- <div v-else-if="item.name == 'RejectedRemark' && data.Project_Status.ProjectStatusID == 8">
               <v-textarea v-model="data[item.name]" rows="3" background-color="amber lighten-5" outlined hide-details readonly></v-textarea>
               <div class="d-flex">
                 <v-spacer></v-spacer>
                 <span>{{ "- " + data["UpdatedUser"].Fullname }}</span>
               </div>
-            </div>
+            </div> -->
             <span v-else class="grey--text text--darken-1">{{ data[item.name] }}</span>
           </v-col>
         </v-row>
@@ -136,9 +136,9 @@ export default {
         { name: "ProjectDetail", text: "รายละเอียด" },
         { name: "Project_Members", text: "สมาชิก" },
         { name: "Project_Advisors", text: "อาจารย์ที่ปรึกษา" },
-        { name: "Project_Section", text: "Section" },
+        { name: "Project_Section", text: "Section" }
         // { name: "Project_Status", text: "สถานะ" },
-        { name: "RejectedRemark", text: "เหตุผลที่ปฏิเสธ" }
+        // { name: "RejectedRemark", text: "เหตุผลที่ปฏิเสธ" }
       ],
       dayText: [
         { id: 1, text: "วันอาทิตย์" },

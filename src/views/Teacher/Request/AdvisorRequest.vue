@@ -50,18 +50,13 @@
       </template>
       <template v-slot:[`item.actions`]="{ item }">
         <div>
-          <v-btn small outlined color="primary" @click="showDetail(item)">รายละเอียด</v-btn>
+          <v-btn small outlined color="primary" @click="showDetail(item)">อนุมัติ</v-btn>
         </div>
       </template>
     </v-data-table>
     <template>
       <modal-container :active="modal" :cancellable="1">
-        <project-modal-detail
-          @submit="Confirm"
-          @close="modal = !modal"
-          confirm
-          :data="selectedProject"
-        ></project-modal-detail>
+        <project-modal-detail @submit="Confirm" @close="modal = !modal" confirm :data="selectedProject"></project-modal-detail>
       </modal-container>
     </template>
   </v-card>

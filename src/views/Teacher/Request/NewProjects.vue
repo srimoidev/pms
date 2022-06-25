@@ -29,7 +29,7 @@
       </template>
       <template v-slot:[`item.actions`]="{ item }">
         <div>
-          <v-btn small outlined color="primary" @click="showDetail(item)">รายละเอียด</v-btn>
+          <v-btn small outlined color="primary" @click="showDetail(item)">อนุมัติ</v-btn>
         </div>
       </template>
     </v-data-table>
@@ -120,13 +120,13 @@ export default {
     async showDetail(project) {
       this.selectedProject = project;
       await Promise.all(
-        this.selectedProject.Project_Members.map(async (item) => {
+        this.selectedProject.Project_Members.map(async item => {
           item.ProfileImage = await this.User.ProfileImage(item.UserID);
         })
       )
         .then(async () => {
           await Promise.all(
-            this.selectedProject.Project_Advisors.map(async (item) => {
+            this.selectedProject.Project_Advisors.map(async item => {
               item.ProfileImage = await this.User.ProfileImage(item.UserID);
             })
           );

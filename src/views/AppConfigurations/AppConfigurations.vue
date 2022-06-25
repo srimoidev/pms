@@ -695,7 +695,7 @@ export default {
     yearList() {
       var startYear = 2560;
       var maxYear = new Date().toLocaleDateString(`th-TH`, { year: `numeric` }).substring(5, 10);
-      return lodash.range(startYear, parseInt(maxYear) + 5).map(n=> String(n));
+      return lodash.range(startYear, parseInt(maxYear) + 5).map(n => String(n));
     }
   },
 

@@ -18,7 +18,7 @@
           </v-toolbar-title>
           <v-divider class="mx-4" inset vertical></v-divider>
           <v-spacer></v-spacer>
-          <v-btn @click="upNewDoc = !upNewDoc" color="primary">ส่งเอกสาร</v-btn>
+          <v-btn v-if="!isPassForm" @click="upNewDoc = !upNewDoc" color="primary">ส่งเอกสาร</v-btn>
           <template>
             <modal-container :active="upNewDoc" :cancellable="1">
               <template>
@@ -55,7 +55,7 @@
           {{ form.FormTypeName + " Rev." + (data.length - data.indexOf(item)) }}
         </router-link>
       </template>
-      <template v-slot:[`item.actions`]="">
+      <template v-slot:[`item.actions`]>
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
             <v-btn icon v-bind="attrs" v-on="on">
@@ -71,6 +71,16 @@
       </template>
       <template v-slot:[`item.FormStatusID`]="{ item }">
         <form-status :status="item.Form_Status"></form-status>
+      </template>
+      <template v-slot:[`item.Actions`]="{ item }">
+        <v-tooltip v-if="item.FormStatusID == 1" bottom>
+          <template v-slot:activator="{ on, attrs }">
+            <v-icon v-bind="attrs" v-on="on" class="mr-2" @click="deleteForm(item)">
+              mdi-delete-outline
+            </v-icon>
+          </template>
+          <span>ลบ</span>
+        </v-tooltip>
       </template>
     </v-data-table>
   </v-card>
@@ -99,6 +109,7 @@ export default {
       data: [],
       project: {},
       comment: [],
+      isPassForm: false,
       headers: [
         { text: "ชื่อเอกสาร", value: "index" },
         {
@@ -107,7 +118,8 @@ export default {
         },
         { text: "ผู้ส่ง", value: "CreatedUser.Fullname" },
         // { text: "อัปเดตโดย", value: "UpdatedUser.Fullname", sortable: false },
-        { text: "สถานะ", value: "FormStatusID" }
+        { text: "สถานะ", value: "FormStatusID" },
+        { text: "", value: "Actions", sortable: false }
       ]
     };
   },
@@ -148,6 +160,8 @@ export default {
       this.form = await this.Form.Type(this.FormTypeID);
       this.project = await this.Project.Project(this.user.ProjectID);
       this.data = await this.Form.AllFormEachType(this.user.ProjectID, this.FormTypeID, this.project.Project_Section.SectionID);
+
+      this.isPassForm = this.data.some(item => item.FormStatusID == 5);
       // if (temp) {
       //   temp.map(async item => {
       //     // item.Comments = await DB.Project.form_comment(item.Form_ID);
@@ -194,6 +208,42 @@ export default {
     },
     apply() {
       alert("upload");
+    },
+    deleteForm(item) {
+      console.log(item);
+      this.$swal
+        .fire({
+          title: "ยืนยันที่จะลบหรือไม่?",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          cancelButtonText: "ยกเลิก",
+          confirmButtonText: "ยืนยัน!"
+        })
+        .then(async result => {
+          if (result.isConfirmed) {
+            await this.Form.Delete(item.FormID)
+              .then(() => {
+                this.$swal.fire({
+                  toast: true,
+                  icon: "success",
+                  title: "ดำเนินการเรียบร้อยแล้ว",
+                  position: "top-end",
+                  showConfirmButton: false,
+                  timer: 2000,
+                  timerProgressBar: true,
+                  didOpen: toast => {
+                    toast.addEventListener("mouseenter", this.$swal.stopTimer);
+                    toast.addEventListener("mouseleave", this.$swal.resumeTimer);
+                  }
+                });
+              })
+              .then(() => {
+                this.loadData();
+              });
+          }
+        });
     }
   }
 };
