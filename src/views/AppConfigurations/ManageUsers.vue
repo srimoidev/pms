@@ -250,7 +250,7 @@
             <v-spacer></v-spacer>
             <v-btn v-if="!isEdit" class="mr-2" color="success" @click="saveNewUser">บันทึก</v-btn>
             <v-btn v-else class="mr-2" color="success" @click="updateUser">บันทึก</v-btn>
-            <v-btn color="">ยกเลิก</v-btn>
+            <v-btn color="" @click="modalNewUserClose">ยกเลิก</v-btn>
           </div>
         </v-card>
       </template>
@@ -543,7 +543,7 @@ export default {
       //แก้ Role อาจารย์ทั่วไปให้แสดงแค่ ประจำวิชา Pre หรือ Project ให้เลือกเท่านั้น
       if (item.UserTypeID == 2) {
         this.userTypeForNewUser = this.userType.filter(o => o.UserTypeID != 4 && o.UserTypeID != 1);
-      } 
+      }
 
       this.selectedUserType = item.UserTypeID;
       this.isEdit = true;
@@ -603,7 +603,7 @@ export default {
           this.txtTelephoneNo,
           this.rdoActive,
           this.selectedImg,
-          this.newUserType,
+          this.newUserType
         ).then(() => {
           this.$swal.fire({
             timer: 3000,
