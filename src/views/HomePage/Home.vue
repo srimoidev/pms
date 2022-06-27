@@ -1,6 +1,6 @@
 <template>
   <div class="home-container">
-    <v-app-bar app height="60" color="transparent" elevate-on-scroll>
+    <v-app-bar app height="60" dark class="v-tabs-bar" elevate-on-scroll>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" v-if="$vuetify.breakpoint.mdAndDown"></v-app-bar-nav-icon>
       <v-toolbar-title class="logo d-flex" v-if="$vuetify.breakpoint.smAndUp">
         <!-- <v-avatar>
@@ -13,8 +13,8 @@
       <!-- <div :style="isLogin ? 'width:260%' : 'width:168%'"></div> -->
       <v-spacer></v-spacer>
       <div>
-        <v-tabs v-model="tab" background-color="transparent" color="blue-grey lighten-5" v-if="!$vuetify.breakpoint.mdAndDown">
-          <v-tab class="tabs" v-for="item in currentTabs" :key="item.title" :to="item.route">
+        <v-tabs v-model="tab" background-color="transparent" color="white" v-if="!$vuetify.breakpoint.mdAndDown">
+          <v-tab v-for="item in currentTabs" :key="item.title" :to="item.route">
             <span>{{ item.title }}</span>
             <v-icon class="ml-2" v-if="item.icon">{{ item.icon }}</v-icon>
           </v-tab>
@@ -24,9 +24,7 @@
       <dashboard-profile v-if="isLoggedIn" :data="user" :size="36" @logout="logout"></dashboard-profile>
     </v-app-bar>
     <v-navigation-drawer v-model="drawer" absolute temporary>
-      <div style="height:80px">
-        PMS
-      </div>
+      <div style="height: 80px">PMS</div>
       <v-divider></v-divider>
       <v-list v-for="item in tabs" :key="item.title">
         <v-list-item :to="item.route">
@@ -35,7 +33,7 @@
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
-    <v-main style="height:100%;">
+    <v-main style="height: 100%">
       <transition name="fade" mode="out-in">
         <router-view></router-view>
       </transition>
@@ -118,7 +116,7 @@ export default {
     }),
     currentTabs() {
       if (this.isLoggedIn) {
-        return this.tabs.filter(i => i.isHideOnLoggedin == false);
+        return this.tabs.filter((i) => i.isHideOnLoggedin == false);
       } else {
         return this.tabs;
       }
@@ -170,7 +168,9 @@ export default {
   /* background: -webkit-linear-gradient(to right, #ec2f4b, #009fff),
     url("../../assets/aff4cc28ca93b3507d41ba0f88ec53db.jpg");  */
   /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-  background: linear-gradient(to bottom, #009fffa0, #ec2f4ba0), url("../../assets/aff4cc28ca93b3507d41ba0f88ec53db.jpg");
+  /* background: linear-gradient(to bottom, #009fffa0, #ec2f4ba0), url("../../assets/aff4cc28ca93b3507d41ba0f88ec53db.jpg"); */
+  background: url("https://www.rmutl.ac.th/assets/img/site-bg.jpg") center center;
+  /* background: #f8f8f8; */
   background-size: cover;
 }
 .footer {
@@ -190,5 +190,6 @@ export default {
 }
 .v-tabs-bar {
   height: 60px !important;
+  background-color: #513306 !important;
 }
 </style>

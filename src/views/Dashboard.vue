@@ -13,16 +13,16 @@
             <template v-slot:activator>
               <v-list-item-content>
                 <v-list-item-title>{{ item.name }}</v-list-item-title>
-                <v-badge v-if="index == 3 && allRequest" :content="allRequest" color="red" style="right:20px;top:-3px"></v-badge>
+                <v-badge v-if="index == 3 && allRequest" :content="allRequest" color="red" style="right: 20px; top: -3px"></v-badge>
               </v-list-item-content>
             </template>
-            <v-list-item style="padding-left:40px" v-for="(child, i) in item.children" :key="i" :to="child.route">
+            <v-list-item style="padding-left: 40px" v-for="(child, i) in item.children" :key="i" :to="child.route">
               <v-list-item-action v-if="child.icon">
                 <v-icon>{{ child.icon }}</v-icon>
               </v-list-item-action>
               <v-list-item-content>
                 <v-list-item-title>{{ child.name }}</v-list-item-title>
-                <v-badge v-if="child.req" :content="child.req" color="red" style="right:20px;top:-3px"></v-badge>
+                <v-badge v-if="child.req" :content="child.req" color="red" style="right: 20px; top: -3px"></v-badge>
               </v-list-item-content>
             </v-list-item>
           </v-list-group>
@@ -93,7 +93,7 @@ export default {
       user: "user/UserData",
       typeID: "user/TypeID"
     }),
-    allRequest: function() {
+    allRequest: function () {
       return this.menu[3].children.reduce((a, b) => a + (b["req"] || 0), 0);
     }
   },
@@ -128,13 +128,13 @@ export default {
         showConfirmButton: false,
         timer: 2000,
         timerProgressBar: true,
-        didOpen: toast => {
+        didOpen: (toast) => {
           toast.addEventListener("mouseenter", this.$swal.stopTimer);
           toast.addEventListener("mouseleave", this.$swal.resumeTimer);
         }
       });
       this.notiData = await this.Notification.Notifications(this.user.UserID);
-      this.notiData.map(async item => {
+      this.notiData.map(async (item) => {
         item.ProfileImage = await this.User.ProfileImage(item.CreatedBy);
         item.TimeInterval = this.Utils.timeInterval(item.CreatedTime);
       });
@@ -154,7 +154,7 @@ export default {
         this.$socket.emit("create", this.user.UserID);
         this.menu = this.initMenu(await this.App.Menus(this.typeID));
         this.notiData = await this.Notification.Notifications(this.user.UserID);
-        this.notiData.map(async item => {
+        this.notiData.map(async (item) => {
           item.ProfileImage = await this.User.ProfileImage(item.CreatedBy);
           item.TimeInterval = this.Utils.timeInterval(item.CreatedTime);
         });
@@ -173,8 +173,8 @@ export default {
       var temp = [];
       //parent
       data
-        .filter(item => item.app_menu.ParentID == 0)
-        .forEach(element => {
+        .filter((item) => item.app_menu.ParentID == 0)
+        .forEach((element) => {
           var menuObj = {};
           menuObj.id = element.app_menu.MenuID;
           menuObj.route = element.Route + "?MenuID=" + element.app_menu.MenuID;
@@ -184,14 +184,14 @@ export default {
           temp.push(menuObj);
         });
       //กรองเอา parent node ที่ไม่ใช่ 0
-      const parentNodeID = [...new Set(data.map(x => x.app_menu.ParentID))].filter(y => y != 0);
+      const parentNodeID = [...new Set(data.map((x) => x.app_menu.ParentID))].filter((y) => y != 0);
       //map children กับ parent
-      parentNodeID.map(async nodeID => {
+      parentNodeID.map(async (nodeID) => {
         var temp2 = [];
-        const editIdx = temp.findIndex(i => i.id == nodeID);
+        const editIdx = temp.findIndex((i) => i.id == nodeID);
         data
-          .filter(item => item.app_menu.ParentID == nodeID)
-          .forEach(element => {
+          .filter((item) => item.app_menu.ParentID == nodeID)
+          .forEach((element) => {
             var menuObj = {};
             menuObj.id = element.app_menu.MenuID;
             menuObj.route = element.Route + "?MenuID=" + element.app_menu.MenuID;

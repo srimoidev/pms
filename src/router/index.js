@@ -54,6 +54,9 @@ import Teacher_Exam_Result from "../views/Teacher/Exam/ExamResult";
 import App_Configs from "../views/AppConfigurations/AppConfigurations.vue";
 import App_ManageUsers from "../views/AppConfigurations/ManageUsers.vue";
 
+// SEARCH
+import SearchPage from "../views/Search/Search.vue";
+
 Vue.use(VueRouter);
 
 const routes = [
@@ -91,6 +94,12 @@ const routes = [
         name: "Login",
         component: MainLogin,
         meta: { title: "Login | PMS" }
+      },
+      {
+        path: "/search",
+        name: "Search",
+        component: SearchPage,
+        meta: { title: "Search Page | PMS" }
       }
     ]
   },

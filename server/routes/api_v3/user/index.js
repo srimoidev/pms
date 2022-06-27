@@ -40,6 +40,7 @@ router.get("/", async (req, res) => {
     });
   }
 });
+
 router.get("/studentsnogroup", async (req, res) => {
   try {
     var strSql = `SELECT user_profile.UserID,

@@ -1,147 +1,45 @@
 <template>
-  <v-app id="inspire">
-    <v-navigation-drawer v-model="drawer" app>
-      <v-sheet class="pa-4">
-        <v-avatar class="mb-4" color="primary darken-1" size="64">
-          <v-icon color="white">mdi mdi-leaf</v-icon>
-        </v-avatar>
-        <div>{{ item.ProjectNameEN }} ({{ item.ProjectNameTH }})</div>
-        <div>{{ item.Project_Type.ProjectTypeNameEN }} ({{ item.Project_Type.ProjectTypeNameTH }})</div>
-      </v-sheet>
-      <v-divider></v-divider>
-      <v-list nav dense>
-        <v-list-item-group v-model="selectedItem" color="primary">
-          <v-list-item v-for="(item, i) in items" :key="i">
-            <v-list-item-icon>
-              <v-icon v-text="item.icon"></v-icon>
-            </v-list-item-icon>
-
-            <v-list-item-content>
-              <v-list-item-title v-text="item.text"></v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list-item-group>
-      </v-list>
-    </v-navigation-drawer>
-
-    <v-app-bar app color="primary" dark>
-      <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
+  <v-app class="app-wrapper">
+    <v-app-bar app color="#513306" dark>
       <!-- <v-toolbar-title>{{ item.ProjectNameEN }}({{ item.ProjectNameTH }})</v-toolbar-title> -->
       <v-spacer></v-spacer>
-      <v-btn text @click="$router.push('/')"><v-icon>mdi mdi-keyboard-backspace</v-icon> Back To HomePage</v-btn>
+      <v-btn text @click="$router.go(-1)"><v-icon>mdi mdi-keyboard-backspace</v-icon> Back To HomePage</v-btn>
     </v-app-bar>
 
     <v-main>
-      <v-container class="py-8 px-6 overflow-y-auto" fluid style="max-height: 100vh">
+      <v-container class="container" style="">
         <!-- Detail -->
-        <v-row v-if="selectedItem == 0">
+        <v-row>
           <v-col cols="12">
             <v-card>
-              <v-toolbar color="primary" flat outlined dark dense>ข้อมูล</v-toolbar>
-              <v-card-text>
-                <v-list>
-                  <v-list-item>
-                    <v-list-item-content>
-                      <v-list-item-title>ชื่อโครงงานภาษาไทย: {{ item.ProjectNameTH }}</v-list-item-title>
-                    </v-list-item-content>
-                  </v-list-item>
-                  <v-list-item>
-                    <v-list-item-content>
-                      <v-list-item-title>ชื่อโครงงานภาษาอังกฤษ: {{ item.ProjectNameEN }}</v-list-item-title>
-                    </v-list-item-content>
-                  </v-list-item>
-                  <v-list-item>
-                    <v-list-item-content>
-                      <v-list-item-title>ประเภทโครงงานภาษาไทย: {{ item.Project_Type.ProjectTypeNameTH }}</v-list-item-title>
-                    </v-list-item-content>
-                  </v-list-item>
-                  <v-list-item>
-                    <v-list-item-content>
-                      <v-list-item-title>ประเภทโครงภาษาอังกฤษ: {{ item.Project_Type.ProjectTypeNameEN }}</v-list-item-title>
-                    </v-list-item-content>
-                  </v-list-item>
-                  <v-list-item>
-                    <v-list-item-content>
-                      <v-list-item-title>จำนวนสมาชิก: {{ item.MaxMember }}</v-list-item-title>
-                    </v-list-item-content>
-                  </v-list-item>
-                  <v-list-item>
-                    <v-list-item-content>
-                      <v-list-item-title>ปีการศึกษา: {{ item.Project_Section.Year }}</v-list-item-title>
-                    </v-list-item-content>
-                  </v-list-item>
-                  <v-list-item>
-                    <v-list-item-content>
-                      <v-list-item-title>สถานะ: {{ item.Project_Status.ProjectStatusDetail }}</v-list-item-title>
-                    </v-list-item-content>
-                  </v-list-item>
-                  <v-list-item>
-                    <v-list-item-content>
-                      <v-list-item-title>รายละเอียด: {{ item.ProjectDetail }}</v-list-item-title>
-                    </v-list-item-content>
-                  </v-list-item>
-                </v-list>
+              <v-toolbar color="#513306" flat outlined dark dense>รายละเอียดโครงงาน</v-toolbar>
+              <v-card-text class="overflow-y-auto card">
+                <v-card-title> ชื่อโครงงานภาษาไทย </v-card-title>
+                <v-card-subtitle>{{ item.ProjectNameTH }}</v-card-subtitle>
+                <v-card-title> ชื่อโครงงานภาษาอังกฤษ </v-card-title>
+                <v-card-subtitle>{{ item.ProjectNameEN }}</v-card-subtitle>
+                <v-card-title> ประเภทโครงงานภาษาไทย </v-card-title>
+                <v-card-subtitle>{{ item.Project_Type.ProjectTypeNameTH }}</v-card-subtitle>
+                <v-card-title> ประเภทโครงภาษาอังกฤษ </v-card-title>
+                <v-card-subtitle>{{ item.Project_Type.ProjectTypeNameEN }}</v-card-subtitle>
+                <v-card-title> จำนวนสมาชิก </v-card-title>
+                <v-card-subtitle>{{ item.MaxMember }}</v-card-subtitle>
+                <v-card-title> ปีการศึกษา </v-card-title>
+                <v-card-subtitle>{{ item.Project_Section.Year }}</v-card-subtitle>
+                <v-card-title> สถานะ </v-card-title>
+                <v-card-subtitle>{{ item.Project_Status.ProjectStatusDetail }}</v-card-subtitle>
+                <v-card-title> รายละเอียด </v-card-title>
+                <v-card-subtitle>{{ item.ProjectDetail }}</v-card-subtitle>
+                <v-card-title> สมาชิก </v-card-title>
+                <v-card-subtitle v-for="(item, index) in item.Project_Members" :key="index">
+                  <div>{{ item.Fullname }}</div>
+                </v-card-subtitle>
+                <v-card-title> อาจารย์ที่ปรึกษา </v-card-title>
+                <v-card-subtitle v-for="(item, index) in item.Project_Advisors" :key="index">
+                  <div>{{ item.Fullname }}</div>
+                </v-card-subtitle>
+                <!--  -->
               </v-card-text>
-            </v-card>
-          </v-col>
-        </v-row>
-        <!-- Member -->
-        <v-row v-if="selectedItem == 1">
-          <v-col cols="12">
-            <v-card>
-              <v-toolbar color="primary" flat outlined dark dense>สมาชิก</v-toolbar>
-              <v-card-text>
-                <v-list>
-                  <v-list-item v-for="(item, index) in item.Project_Members" :key="index">
-                    <v-list-item-content>
-                      <v-list-item-title>{{ item.Fullname }}</v-list-item-title>
-                    </v-list-item-content>
-                  </v-list-item>
-                </v-list>
-              </v-card-text>
-            </v-card>
-          </v-col>
-        </v-row>
-        <!-- Advisors -->
-        <v-row v-if="selectedItem == 2">
-          <v-col cols="12">
-            <v-card>
-              <v-toolbar color="primary" flat outlined dark dense>อาจารย์ที่ปรึกษา</v-toolbar>
-              <v-card-text>
-                <v-list>
-                  <v-list-item v-for="(item, index) in item.Project_Advisors" :key="index">
-                    <v-list-item-content>
-                      <v-list-item-title>{{ item.Fullname }}</v-list-item-title>
-                    </v-list-item-content>
-                  </v-list-item>
-                </v-list>
-              </v-card-text>
-            </v-card>
-          </v-col>
-        </v-row>
-        <!-- Committees -->
-        <!-- <v-row v-if="selectedItem == 3">
-          <v-col cols="12">
-            <v-card>
-              <v-toolbar color="primary" flat outlined dark dense>กรรมการสอบ</v-toolbar>
-              <v-card-text>
-                <v-list>
-                  <v-list-item v-for="(item, index) in item.Project_Committees" :key="index">
-                    <v-list-item-content>
-                      <v-list-item-title>{{ item.Fullname }}</v-list-item-title>
-                    </v-list-item-content>
-                  </v-list-item>
-                </v-list>
-              </v-card-text>
-            </v-card>
-          </v-col>
-        </v-row> -->
-        <!-- Download -->
-        <v-row v-if="selectedItem == 4">
-          <v-col cols="12">
-            <v-card>
-              <v-toolbar color="primary" flat outlined dark dense>ดาวน์โหลด</v-toolbar>
-              <v-card-text> file </v-card-text>
             </v-card>
           </v-col>
         </v-row>
@@ -191,3 +89,20 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.app-wrapper {
+  background: url("https://www.rmutl.ac.th/assets/img/site-bg.jpg") center center;
+  /* background: #f8f8f8; */
+  background-size: cover;
+}
+.v-card__title {
+  color: #513306;
+}
+.container {
+  max-width: 1080px;
+}
+.card {
+  max-height: calc(100vh - 150px);
+}
+</style>

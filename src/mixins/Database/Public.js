@@ -9,7 +9,11 @@ export async function AllType() {
     return res.data;
   });
 }
-
+export async function teacherLists() {
+  return HTTP.get("/teacher").then(res => {
+    return res.data;
+  });
+}
 export async function GetAll(pName = null, pTypeID = null, pSectionID = null) {
   var searchStr = "?";
   if (pName != null) searchStr += "criteria=" + pName;
