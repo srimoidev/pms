@@ -119,7 +119,6 @@ export default {
   },
   beforeMount() {
     this.initial();
-    this.search();
   },
   methods: {
     async initial() {
@@ -129,6 +128,7 @@ export default {
       this.teacherSelected = parseInt(this.$route.query.teacher);
       this.yearSelected = this.$route.query.year;
       this.searchMsg = this.$route.query.q;
+      this.changeURL();
     },
     changeURL() {
       const url = new URL(window.location);
