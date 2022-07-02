@@ -101,7 +101,7 @@ router.get("/project", async (req, res) => {
           through: {
             attributes: []
           },
-          attributes: { exclude: ["Username", "Password", "StudentID", "AcademicYear", "CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] }
+          attributes: { exclude: ["Username", "Password", "AcademicYear", "CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] }
         },
         {
           model: db.user_profile,
@@ -110,7 +110,7 @@ router.get("/project", async (req, res) => {
             as: "Advisors",
             attributes: ["AdvisorID"]
           },
-          attributes: { exclude: ["Username", "Password", "StudentID", "AcademicYear", "CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] }
+          attributes: { exclude: ["Username", "Password", "AcademicYear", "CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] }
         },
         {
           model: db.project_status,
@@ -156,7 +156,7 @@ router.get("/project", async (req, res) => {
         {
           model: db.user_profile,
           as: "UpdatedUser",
-          attributes: { exclude: ["Username", "Password", "StudentID", "AcademicYear", "CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] }
+          attributes: { exclude: ["Username", "Password", "AcademicYear", "CreatedBy", "CreatedTime", "UpdatedBy", "UpdatedTime"] }
         }
       ],
       where: whereStr,

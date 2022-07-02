@@ -6,7 +6,7 @@
         <!-- <v-avatar>
           <v-icon>mdi-account-circle</v-icon>
         </v-avatar> -->
-        <v-img src="@/assets/PMS-logo3-white.png" max-height="96" max-width="96" contain></v-img>
+        <v-img src="@/assets/logo.png" max-height="160" max-width="160"></v-img>
         <!-- <v-img src="@/assets/20181114112806_98990.png" max-height="56" max-width="56" contain></v-img> -->
         <!-- <span v-t="{ path: 'APP.APP_NAME' }"></span> -->
       </v-toolbar-title>
@@ -23,8 +23,10 @@
 
       <dashboard-profile v-if="isLoggedIn" :data="user" :size="36" @logout="logout"></dashboard-profile>
     </v-app-bar>
-    <v-navigation-drawer v-model="drawer" absolute temporary>
-      <div style="height: 80px">PMS</div>
+    <v-navigation-drawer v-model="drawer" absolute dark temporary color="#513306">
+      <div class="px-5 py-5">
+        <v-img src="@/assets/logo.png"></v-img>
+      </div>
       <v-divider></v-divider>
       <v-list v-for="item in tabs" :key="item.title">
         <v-list-item :to="item.route">
@@ -169,9 +171,9 @@ export default {
     url("../../assets/aff4cc28ca93b3507d41ba0f88ec53db.jpg");  */
   /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
   /* background: linear-gradient(to bottom, #009fffa0, #ec2f4ba0), url("../../assets/aff4cc28ca93b3507d41ba0f88ec53db.jpg"); */
-  background: url("https://www.rmutl.ac.th/assets/img/site-bg.jpg") center center;
-  /* background: #f8f8f8; */
-  background-size: cover;
+  /* background: url("https://www.rmutl.ac.th/assets/img/site-bg.jpg") center center; */
+  background: #ecf0f1;
+  /* background-size: cover; */
 }
 .footer {
   background-color: #ffffff55;

@@ -50,12 +50,12 @@
             <template v-for="(item, index) in searchResult">
               <v-divider :key="index"></v-divider>
               <v-list-item :key="index">
-                <v-list-item-icon class="d-block">
-                  <v-chip class="d-block mb-2" label color="#b99f4a" text-color="white" small>
-                    [{{ item.Project_Section.Term }}/{{ item.Project_Section.Year }}]
+                <v-list-item-icon class="d-block text-center" style="width: 120px">
+                  <v-chip class="d-block mb-2 text-center" label color="#b99f4a" text-color="white" small>
+                    <span class="text-truncate"> [{{ item.Project_Section.Term }}/{{ item.Project_Section.Year }}] </span>
                   </v-chip>
-                  <v-chip class="d-block white--text" :class="`type-${item.Project_Type.ProjectTypeID}`" small label>
-                    {{ item.Project_Type.ProjectTypeNameTH }}
+                  <v-chip class="d-block white--text text-center" style="width: 120px" :class="`type-${item.Project_Type.ProjectTypeID}`" small label>
+                    <span class="text-truncate"> {{ item.Project_Type.ProjectTypeNameTH }} </span>
                   </v-chip>
                 </v-list-item-icon>
                 <v-list-item-content>
@@ -72,7 +72,7 @@
                       <v-list-item-title>สมาชิก</v-list-item-title>
                       <template v-for="(memberItem, index) in item.Project_Members">
                         <v-list-item-subtitle :key="index">
-                          {{ memberItem.Prefix }} {{ memberItem.Firstname }} {{ memberItem.Lastname }}
+                          {{ memberItem.StudentID }} {{ memberItem.Prefix }} {{ memberItem.Firstname }} {{ memberItem.Lastname }}
                         </v-list-item-subtitle>
                       </template>
                     </v-col>
@@ -164,3 +164,14 @@ export default {
 };
 </script>
 
+<style scope>
+.chip-overflow {
+  max-width: 150px;
+  padding: 2px 5px;
+  display: block;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+</style>

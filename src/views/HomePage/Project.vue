@@ -32,7 +32,7 @@
                 <v-card-subtitle>{{ item.ProjectDetail }}</v-card-subtitle>
                 <v-card-title> สมาชิก </v-card-title>
                 <v-card-subtitle v-for="(item, index) in item.Project_Members" :key="index">
-                  <div>{{ item.Fullname }}</div>
+                  <div>{{ item.StudentID }} {{ item.Fullname }}</div>
                 </v-card-subtitle>
                 <v-card-title> อาจารย์ที่ปรึกษา </v-card-title>
                 <v-card-subtitle v-for="(item, index) in item.Project_Advisors" :key="index">

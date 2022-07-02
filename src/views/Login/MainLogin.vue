@@ -1,14 +1,12 @@
 <template>
   <div>
-    <div class="text-center mt-16">
+    <!-- <div class="text-center mt-16">
       <v-icon class="blue-grey--text text--lighten-5" style="font-size:86px">
         mdi-account-group-outline
       </v-icon>
-    </div>
-    <v-card class="mx-auto elevation-0 form-container" width="400">
-      <v-card-title class="blue-grey--text text--lighten-5 justify-center">
-        Login
-      </v-card-title>
+    </div> -->
+    <v-card class="mx-auto elevation-0 form-container" width="500">
+      <v-card-title class="justify-center grey--text text--darken-3"> WELCOME BACK! </v-card-title>
       <v-container>
         <ValidationObserver ref="observer">
           <ValidationProvider v-slot="{ errors }" name="Username" rules="required">
@@ -38,7 +36,7 @@
         <v-alert v-if="!isLoggedIn && authMsg" dense type="error">
           <span v-html="authMsg"></span>
         </v-alert>
-        <v-btn dark width="100%" class="white--text cyan accent-4 elevation-1" @click="submit">Login</v-btn>
+        <v-btn dark width="100%" class="white--text elevation-1" color="#513306" @click="submit">Login</v-btn>
       </v-container>
     </v-card>
   </div>
@@ -92,7 +90,7 @@ export default {
 };
 </script>
 
-<style>
+<style scope>
 .form-container {
   border: 3px solid rgba(236, 239, 241, 0.8) !important;
   border-radius: 16px !important;
