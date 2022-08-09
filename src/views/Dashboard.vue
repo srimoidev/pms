@@ -37,7 +37,7 @@
         </template>
       </v-list>
     </v-navigation-drawer>
-    <v-app-bar :clipped-left="$vuetify.breakpoint.lgAndUp" app color="blue darken-1" dark>
+    <v-app-bar :clipped-left="$vuetify.breakpoint.lgAndUp" app class="app-bar-color-brown" dark>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       <v-toolbar-title style="width: 300px" class="ml-0 pl-4">
         <router-link to="/" class="text-none white--text"><span class="hidden-sm-and-down">ระบบบริหารและจัดการโครงงาน</span></router-link>
@@ -243,5 +243,8 @@ export default {
 }
 .main-container {
   height: 100vh;
+}
+.app-bar-color-brown {
+  background-color: #513306 !important;
 }
 </style>
