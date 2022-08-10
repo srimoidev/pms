@@ -216,7 +216,11 @@ export default {
       }
       this.allTeacher = await this.User.UserTeacher();
       this.allProject = await this.Project.GetAll();
-      this.meetingType = this.user.UserTypeID;
+      if (this.user.UserTypeID == 1) {
+        this.meetingType = 1;
+      } else if ([2, 3, 5].includes(this.user.UserTypeID)) {
+        this.meetingType = 2;
+      }
       this.loading = false;
     },
     getEvents() {
