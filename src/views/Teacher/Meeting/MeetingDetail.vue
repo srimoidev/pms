@@ -15,7 +15,7 @@
               </v-col>
               <v-col class="shrink">
                 <v-icon
-                  v-if="meetingData.MeetingType != this.user.UserTypeID && meetingData.RequestStatus == 1"
+                  v-if="meetingData.MeetingType != 2 && meetingData.RequestStatus == 1"
                   class="mr-2"
                   color="green"
                   @click="approveItem(meetingData.MeetingID)"
@@ -25,7 +25,7 @@
               </v-col>
               <v-col class="shrink">
                 <v-icon
-                  v-if="meetingData.MeetingType != this.user.UserTypeID && meetingData.RequestStatus == 1"
+                  v-if="meetingData.MeetingType != 2 && meetingData.RequestStatus == 1"
                   class="mr-2"
                   color="red"
                   @click="decilneItem(meetingData.MeetingID)"
