@@ -40,7 +40,8 @@
         </v-toolbar>
       </template>
       <template v-slot:[`item.ProjectNameTH`]="{ item }">
-        {{ `${item.ProjectNameTH} (${item.ProjectNameEN})` }}
+        <!-- {{ `${item.ProjectNameTH} (${item.ProjectNameEN})` }} -->
+        <router-link :to="`project?pid=` + item.ProjectID" class="text-none">{{ item.ProjectNameTH }}</router-link>
       </template>
       <template v-slot:[`item.IsProject`]="{ item }">
         <span v-if="item.IsProject">

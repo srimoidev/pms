@@ -13,7 +13,7 @@ router.get("/", async (req, res) => {
                   INNER JOIN project_info PI ON
                       PI.ProjectID = EX.ProjectID
                   WHERE
-                      PI.ProjectID=${req.query.projectid} AND PC.UserID = ${req.query.userid} AND PI.IsProject=${req.query.isproject}
+                      PI.ProjectID=${req.query.projectid} AND PC.UserID = ${req.query.userid} AND PI.IsProject=${req.query.isproject} AND ExamStatusID=3
                       LIMIT 1`;
     const data = await sequelize.query(strSql, {raw: true, type: sequelize.QueryTypes.SELECT });
     return res.json(data[0]);

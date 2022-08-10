@@ -22,6 +22,9 @@
           <v-btn color="error" small @click="rejectSelectedList">ไม่อนุมัติรายการที่เลือก</v-btn> -->
         </v-toolbar>
       </template>
+      <template v-slot:[`item.ProjectNameTH`]="{ item }">
+        <router-link :to="`project?pid=` + item.ProjectID" class="text-none">{{ item.ProjectNameTH }}</router-link>
+      </template>
       <template v-slot:[`item.Project_Type`]="{ item }">
         <v-chip class=" white--text" :class="`type-${item.Project_Type.ProjectTypeID}`" small label>
           {{ item.Project_Type.ProjectTypeNameTH }}

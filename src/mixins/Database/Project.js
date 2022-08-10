@@ -305,9 +305,10 @@ export async function SubmitScore(pCommitteeID, pAuthenID, pPresentScore, pDocum
   });
 }
 export async function Update(pUserID, pProjectID, pUpdateObj, pMember, pAdvisors) {
-  await HTTP.put(`/project/${pProjectID}`, { userid: pUserID, project: pUpdateObj, members: pMember, advisors: pAdvisors }).catch(() => {
+  await HTTP.put(`/project/${pProjectID}`, { userid: pUserID, project: pUpdateObj, members: pMember, advisors: pAdvisors}).catch(() => {
     //
   });
+
 }
 export async function UpdateProjectExamStatus(pProjectID, pProjectStatus, pExamID, pStatusID) {
   console.log({

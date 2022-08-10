@@ -40,7 +40,7 @@
         </v-toolbar>
       </template>
       <template v-slot:[`item.ProjectNameTH`]="{ item }">
-        {{ `${item.ProjectNameTH} (${item.ProjectNameEN})` }}
+        <router-link :to="`project?pid=` + item.ProjectID" class="text-none">{{ item.ProjectNameTH }}</router-link>
       </template>
       <template v-slot:[`item.IsProject`]="{ item }">
         <span v-if="item.IsProject">
@@ -218,7 +218,8 @@ export default {
           item.Exam.Project_Committees.sort(function(a) {
             return a?.IsAdvisor == null ? 1 : -1;
           });
-          if (new Date().getTime() > new Date(item.Exam.OnDate).getTime()) {
+          if (new Date().getDate() >= new Date(item.Exam.OnDate).getDate()) {
+            
             item.isPassOnDate = true;
           } else {
             item.isPassOnDate = false;

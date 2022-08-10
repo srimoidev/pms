@@ -79,6 +79,7 @@ export default {
     async loadData() {
       this.project = await this.Project.Project(this.projectID);
       this.committee = await this.Project.Committee(this.projectID, this.user.UserID, this.project.IsProject);
+      console.log(this.committee,this.projectID, this.user.UserID, this.project.IsProject)
       this.data[0].Score = this.committee.PresentScore;
       this.data[1].Score = this.committee.DocumentScore;
       this.data[2].Score = this.committee.Comment;

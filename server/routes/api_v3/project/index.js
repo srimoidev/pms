@@ -446,6 +446,7 @@ router.put("/:id", async (req, res) => {
           }
         });
       }
+      // await db.exam.destroy({ where: { ProjectID: req.params.id,isProjectExam: req.body.project.isProjectExam}},{transaction: transaction});
     });
     await transaction.commit().then(() => {
       return res.status(200).send();

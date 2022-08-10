@@ -270,7 +270,7 @@ router.post("/committee", async (req, res) => {
 router.post("/request_exam", async (req, res) => {
   const transaction = await db.sequelize.transaction();
   try {
-    await db.exam.destroy({ where: [{ ProjectID: req.body.ProjectID, IsProjectExam: true }] }, { transaction: transaction });
+    await db.exam.destroy({ where: [{ ProjectID: req.body.ProjectID, IsProjectExam: req.body.IsProjectExam }] }, { transaction: transaction });
     await db.exam
       .create(req.body, { transaction: transaction })
       .then(async res => {

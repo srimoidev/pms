@@ -101,12 +101,22 @@
                 </v-data-table>
               </v-col>
             </v-row>
-            <!-- <v-row>
-              <v-col cols="4">เกรด</v-col>
+            <v-row v-if="!item.IsProject">
+              <v-col cols="4">Section ใหม่</v-col>
               <v-col cols="8">
-                <span v-html="calculateGrade(item.Exam.Project_Committees)"></span>
+                <v-select
+                  v-model="selectedSection"
+                  :items="allSection"
+                  item-text="SectionName"
+                  item-value="SectionID"
+                  hide-details
+                  outlined
+                  dense
+                  label="Type"
+                  class="mr-2"
+                ></v-select>
               </v-col>
-            </v-row> -->
+            </v-row>
             <div class="text-center">
               <v-btn color="success" class="mr-2" small @click="submit(item)">สอบผ่าน</v-btn>
               <v-btn class="elevation-0" color="white" small @click="cancelEdit(item)">Cancel</v-btn>
@@ -156,6 +166,7 @@ export default {
       data: {},
       allSection: [],
       committeeScore: [],
+      selectedSection:null,
       allProjectHeaders: [
         {
           text: "ชื่อโครงงาน",
@@ -218,7 +229,13 @@ export default {
         this.allStatus = await this.Project.AllStatus();
         this.allTeacher = await this.User.UserTeacher();
         this.allStudent = await this.User.StudentsNoGroup();
-        this.allSection = await this.Section.All(1); //ดึงแค่ sec ของ Pre-Project
+        this.allSection = await this.Section.All(2); //ดึงแค่ sec ของ Project
+        this.allSection.map((item)=>{
+          item.SectionName = `Sec : ${item.Sequence}/${item.Year} อาจารย์ : ${
+            item.Section_Instructor.Fullname
+          } `;
+        })
+        console.log(this.allSection)
         this.projectType = type.slice();
         this.allType = type.slice();
         this.projectType.push({
@@ -338,7 +355,11 @@ export default {
         })
         .then(result => {
           if (result.isConfirmed) {
-            this.Project.Update(this.user.UserID, item.ProjectID, { IsProject: true }, [], [])
+            var projectObj = { IsProject: true };
+            if(!item.IsProject){
+              projectObj.SectionID = this.selectedSection;
+            }
+            this.Project.Update(this.user.UserID, item.ProjectID, projectObj, [], [])
               .then(async () => {
                 console.log(item);
                 await this.Project.UpdateProjectExamStatus(item.ProjectID, item.IsProject ? 7 : item.ProjectStatusID, item.Exam.ExamID, 5);
