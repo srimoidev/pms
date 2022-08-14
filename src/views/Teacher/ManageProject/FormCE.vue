@@ -51,7 +51,7 @@
         </v-toolbar>
       </template>
       <template v-slot:[`item.index`]="{ item }">
-        <router-link class="text-none" :to="{ path: 'form_preview', query: { pid: ProjectID, fid: item.FormID } }">
+        <router-link class="text-none" :to="{ path: 'form_preview', query: { MenuID:107,pid: ProjectID, fid: item.FormID } }">
           {{ form.FormTypeName + " Rev." + (data.length - data.indexOf(item)) }}
         </router-link>
       </template>

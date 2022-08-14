@@ -295,6 +295,12 @@ export async function JoinCommittee(pExamID, pAuthenID) {
     UpdatedBy: pAuthenID
   });
 }
+export async function CancelCommittee(pExamID, pAuthenID) {
+  return await HTTP.post("/project/exam/cancelcommittee", {
+    ExamID: pExamID,
+    UserID: pAuthenID,
+  });
+}
 export async function SubmitScore(pCommitteeID, pAuthenID, pPresentScore, pDocumentScore, pComment) {
   return await HTTP.post("/project/exam/committee/submitscore/" + pCommitteeID, {
     PresentScore: pPresentScore,

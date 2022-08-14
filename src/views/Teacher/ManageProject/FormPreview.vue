@@ -3,7 +3,7 @@
     <v-toolbar flat absolute width="100%">
       <v-toolbar-title
         >{{ form_export_name }}
-        <v-breadcrumbs :items="breadcrumbs" large class="mr-4 pa-0">
+        <v-breadcrumbs v-if="MenuID == 107" :items="breadcrumbs" large class="mr-4 pa-0">
           <template v-slot:item="{ item }">
             <v-breadcrumbs-item :to="item.url" :disabled="item.disabled">
               <span style="font-size:12px">{{ item.text }}</span>
@@ -21,7 +21,7 @@
       </v-btn> -->
       <div v-show="!isApprove">
         <v-btn class="success white--text mr-2" small @click="approveOrRejectForm(true)"><v-icon>mdi-check</v-icon>Approve</v-btn>
-        <v-btn class="warning white--text mr-2" small @click="approveOrRejectForm(false)"><v-icon>mdi-undo-variant</v-icon>Reject</v-btn>
+        <v-btn class="warning white--text mr-2" small @click="approveOrRejectForm(false)"><v-icon>mdi-undo-variant</v-icon>Revise</v-btn>
       </div>
       <v-btn class="cyan lighten-1 white--text" small :href="this.fileUrl" :download="form_export_name"
         ><v-icon>mdi-content-save-outline</v-icon>Download</v-btn
@@ -175,6 +175,9 @@ export default {
     FormID() {
       return this.$route.query.fid;
     },
+    MenuID() {
+      return this.$route.query.MenuID;
+    },
     form_export_name() {
       return `Form_${this.form?.Form_Type.FormTypeName}`;
     },
@@ -212,10 +215,15 @@ export default {
       this.form = await this.Form.Form(this.FormID);
       this.fileUrl = await this.Form.FormPDF(this.FormID);
       this.commentData = await this.Form.Comment(this.FormID);
-      if (this.form.FormStatusID != 1 && !!this.project.Project_Advisors.find(item => item.UserID == this.user.UserID)) {
+
+      if (this.MenuID == 108) {
         this.isApprove = true;
-      } else if (this.form.FormStatusID != 2 && [3,5].includes(this.user.UserTypeID)) {
-        this.isApprove = true;
+      } else {
+        if (this.form.FormStatusID != 1 && !!this.project.Project_Advisors.find(item => item.UserID == this.user.UserID)) {
+          this.isApprove = true;
+        } else if (this.form.FormStatusID != 2 && [3, 5].includes(this.user.UserTypeID)) {
+          this.isApprove = true;
+        }
       }
     },
     async saveNewComment() {

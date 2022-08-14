@@ -13,7 +13,7 @@
           <v-toolbar flat>
             <v-toolbar-title
               >ตรวจสอบเอกสาร
-              <v-breadcrumbs :items="breadcrumbs" large class="mr-4 pa-0">
+              <v-breadcrumbs v-if="MenuID == 105" :items="breadcrumbs" large class="mr-4 pa-0">
                 <template v-slot:item="{ item }">
                   <v-breadcrumbs-item :to="item.url" :disabled="item.disabled">
                     <span style="font-size:12px">{{ item.text }}</span>
@@ -40,8 +40,27 @@
           <form-status v-if="item.LatestForm" :status="item.LatestForm.Form_Status"></form-status>
           <form-status v-else></form-status>
         </template>
-        <template v-slot:[`item.FormTypeName`]="{ item }">
+        <template v-slot:[`item.LatestForm.FormID`]="{ item }">
           <router-link
+            class="text-none"
+            :to="{
+              path: 'form_preview',
+              query: { MenuID:108,pid: pid, fid: item.LatestForm.FormID }
+            }"
+          >
+            <v-tooltip v-if="!item.isCommittee" bottom>
+              <template v-slot:activator="{ on, attrs }">
+                <v-icon v-bind="attrs" v-on="on" class="mr-2">
+                  mdi-file-document-edit-outline
+                </v-icon>
+              </template>
+              <span>ตรวจสอบเอกสาร</span>
+            </v-tooltip>
+          </router-link>
+        </template>
+        <template v-slot:[`item.FormTypeName`]="{ item }">
+          <div v-if="MenuID==105">
+            <router-link 
             class="text-none"
             :to="{
               path: 'form_ce',
@@ -50,6 +69,10 @@
           >
             {{ item.FormTypeName }}
           </router-link>
+          </div>
+          <div v-else>
+            {{ item.FormTypeName }}
+          </div>
         </template>
         <template v-slot:[`item.UpdatedTime`]="{ item }">
           <span v-if="item.LatestForm">
@@ -122,6 +145,9 @@ export default {
     pid() {
       return this.$route.query.pid;
     },
+    MenuID() {
+      return this.$route.query.MenuID;
+    },
     breadcrumbs() {
       return [
         {
@@ -178,6 +204,14 @@ export default {
               });
               // element.PassPreRequisite = element.Prerequisite.filter(item => item.Status == 5).length == element.Prerequisite.length;
             });
+          }
+          if (this.MenuID == 106) {
+            this.headers = [
+              { text: "ชื่อเอกสาร", value: "FormTypeName" },
+              { text: "อัปเดตล่าสุด", value: "UpdatedTime", sortable: false },
+              { text: "สถานะ", value: "LatestForm", sortable: false },
+              { text: "ตรวจสอบเอกสาร", value: "LatestForm.FormID", sortable: false }
+            ];
           }
           this.data = initData;
           this.loading = false;

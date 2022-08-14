@@ -344,6 +344,19 @@ router.post("/updatestatus", async (req, res) => {
     });
   }
 });
+// delete
+router.post("/cancelcommittee", async (req, res) => {
+  const transaction = await db.sequelize.transaction();
+  try {
+    await db.project_committee.destroy({ where: [{ ExamID: req.body.ExamID,UserID:req.body.UserID }] }, { transaction: transaction });
+    await transaction.commit().then(() => {
+      return res.status(200).send();
+    });
+  } catch (error) {
+    await transaction.rollback();
+    res.send({ message: error.message });
+  }
+});
 router.post("/:id", async (req, res) => {
   const transaction = await db.sequelize.transaction();
   try {
