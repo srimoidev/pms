@@ -59,7 +59,7 @@
           </template>
           <span>ดูรายละเอียด</span>
         </v-tooltip>
-        <router-link :to="'/teacher/documents?pid=' + item.ProjectID" class="text-none">
+        <router-link :to="'/teacher/documents?MenuID=105&pid=' + item.ProjectID" class="text-none">
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
               <v-icon v-bind="attrs" v-on="on" class="mr-2" size="20">

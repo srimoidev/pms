@@ -40,7 +40,7 @@
         </v-toolbar>
       </template>
       <template v-slot:[`item.ProjectNameTH`]="{ item }">
-        {{ `${item.ProjectNameTH} (${item.ProjectNameEN})` }}
+        <router-link :to="`project?pid=` + item.ProjectID" class="text-none">{{ item.ProjectNameTH }}</router-link>
       </template>
       <template v-slot:[`item.IsProject`]="{ item }">
         <span v-if="item.IsProject">
@@ -55,9 +55,13 @@
           {{ allType[item.Project_Type.ProjectTypeID - 1].ProjectTypeNameTH }}
         </v-chip>
       </template>
+      <template v-slot:[`item.FormSent`]="{ item }">
+        <router-link :to="`documents?MenuID=106&pid=` + item.ProjectID" class="text-none">ตรวจสอบ</router-link>
+      </template>
       <template v-slot:[`item.Exam.OnDate`]="{ item }">
         {{ new Date(item.Exam.OnDate).toLocaleString("th-TH") }}
       </template>
+      
       <template v-slot:[`item.Exam.Project_Committees`]="{ item }">
         <ul>
           <li v-for="committee in item.Exam.Project_Committees" :key="committee.UserID">
@@ -70,7 +74,7 @@
         <project-status :status="item.Project_Status.ProjectStatusID"></project-status>
       </template>
       <template v-slot:[`item.actions`]="{ item }">
-        <v-tooltip v-if="!item.isAdviserThisProject && !item.isCommittee" bottom>
+        <v-tooltip v-if="!item.isCommittee" bottom>
           <template v-slot:activator="{ on, attrs }">
             <v-icon v-bind="attrs" v-on="on" class="mr-2" @click="JoinCommittee(item)">
               mdi-account-arrow-right-outline
@@ -88,6 +92,14 @@
           </template>
           <span v-if="item.isPassOnDate" >กรอกคะแนนผลการสอบ</span>
           <span v-else >ยังไม่ถึงวันที่นัดหมายสอบ</span>
+        </v-tooltip>
+        <v-tooltip v-if="item.isCommittee" bottom>
+          <template v-slot:activator="{ on, attrs }">
+            <v-icon v-bind="attrs" v-on="on" class="mr-2" @click="CancelCommittee(item)">
+              mdi-account-cancel-outline
+            </v-icon>
+          </template>
+          <span>ยกเลิกเป็นกรรมการสอบ</span>
         </v-tooltip>
       </template>
     </v-data-table>
@@ -138,11 +150,13 @@ export default {
         },
         { text: "วิชา", value: "IsProject", sortable: true },
         { text: "ประเภท", value: "Project_Type", sortable: false },
+        
 
         // { text: "Section", value: "Project_Section" },
         { text: "วันที่ขอสอบ", value: "Exam.OnDate" },
         // { text: "สถานะ", value: "Project_Status" },
         { text: "รายชื่อกรรมการสอบ", value: "Exam.Project_Committees" },
+        { text: "เอกสารที่ส่ง", value: "FormSent", sortable: false },
         { text: "Action", value: "actions" }
       ]
     };
@@ -218,11 +232,13 @@ export default {
           item.Exam.Project_Committees.sort(function(a) {
             return a?.IsAdvisor == null ? 1 : -1;
           });
-          if (new Date().getTime() > new Date(item.Exam.OnDate).getTime()) {
+          if (new Date().getDate() >= new Date(item.Exam.OnDate).getDate()) {
+            
             item.isPassOnDate = true;
           } else {
             item.isPassOnDate = false;
           }
+          console.log(this.allProject)
         });
         this.loading = false;
       });
@@ -242,6 +258,27 @@ export default {
         .then(result => {
           if (result.isConfirmed) {
             this.Project.JoinCommittee(item.Exam.ExamID, this.user.UserID).then(() => {
+              this.allProject = [];
+              this.loadData();
+            });
+          }
+        });
+    },
+    CancelCommittee(item) {
+      this.$swal
+        .fire({
+          title: "ยกเลิกเป็นกรรมการสอบ",
+          html: 'คุณยืนยันที่จะยกเลิกเป็นกรรมการสอบกลุ่ม<br />"' + item.ProjectNameTH + '"<br />หรือไม่?',
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          cancelButtonText: "ยกเลิก",
+          confirmButtonText: "ยืนยัน!"
+        })
+        .then(result => {
+          if (result.isConfirmed) {
+            this.Project.CancelCommittee(item.Exam.ExamID, this.user.UserID).then(() => {
               this.loadData();
             });
           }

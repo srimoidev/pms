@@ -295,6 +295,12 @@ export async function JoinCommittee(pExamID, pAuthenID) {
     UpdatedBy: pAuthenID
   });
 }
+export async function CancelCommittee(pExamID, pAuthenID) {
+  return await HTTP.post("/project/exam/cancelcommittee", {
+    ExamID: pExamID,
+    UserID: pAuthenID,
+  });
+}
 export async function SubmitScore(pCommitteeID, pAuthenID, pPresentScore, pDocumentScore, pComment) {
   return await HTTP.post("/project/exam/committee/submitscore/" + pCommitteeID, {
     PresentScore: pPresentScore,
@@ -305,9 +311,10 @@ export async function SubmitScore(pCommitteeID, pAuthenID, pPresentScore, pDocum
   });
 }
 export async function Update(pUserID, pProjectID, pUpdateObj, pMember, pAdvisors) {
-  await HTTP.put(`/project/${pProjectID}`, { userid: pUserID, project: pUpdateObj, members: pMember, advisors: pAdvisors }).catch(() => {
+  await HTTP.put(`/project/${pProjectID}`, { userid: pUserID, project: pUpdateObj, members: pMember, advisors: pAdvisors}).catch(() => {
     //
   });
+
 }
 export async function UpdateProjectExamStatus(pProjectID, pProjectStatus, pExamID, pStatusID) {
   console.log({

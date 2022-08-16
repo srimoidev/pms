@@ -87,8 +87,8 @@
             <div class="mr-4 my-4 text-center">
               <v-spacer></v-spacer>
               <v-btn v-if="data.Project_Status.ProjectStatusID == 8" class="mr-2" color="primary" @click="resend">ส่งคำขอใหม่</v-btn>
-              <v-btn class="mr-2" color="success" @click="submitForm">บันทึก</v-btn>
-              <!-- <v-btn class="" color="">ยกเลิก</v-btn> -->
+              <!-- <v-btn class="mr-2" color="success" @click="submitForm">บันทึก</v-btn> -->
+              <v-btn class="" color="" @click="back()">กลับ</v-btn>
             </div>
           </v-card>
         </ValidationObserver>
@@ -349,6 +349,9 @@ export default {
     }),
     pid() {
       return this.$route.query.pid;
+    },
+    mid() {
+      return this.$route.query.MenuID;
     }
   },
   beforeMount() {
@@ -531,6 +534,14 @@ export default {
     sumField(key) {
       // sum data in give key (property)
       return this.committeeScore.reduce((a, b) => a + (b[key] || 0), 0);
+    },
+    back(){
+      if(this.mid== 101)
+        this.$router.push('/teacher/advisor_req?MenuID=101')
+      else if(this.mid== 202)
+        this.$router.push('/teacher/new_projects?MenuID=202')
+      else 
+        history.go(-1);
     }
   }
 };

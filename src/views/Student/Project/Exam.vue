@@ -13,7 +13,7 @@
       </div>
       <div v-else-if="isNotAllowToRequest" class="text-center">
         <v-icon size="128" color="amber darken-1">mdi-alert-outline</v-icon>
-        <h1>ยังไม่อยู่ในช่วงเวลาที่เปิดให้ขอสอบ</h1>
+        <h1>ยังไม่อยู่ในช่วงเวลาที่เปิดให้ขอสอบ หรือ มีเอกสารบางรายการยังไม่ได้รับการอนุมัติโปรดตรวจสอบ</h1>
       </div>
       <div v-else-if="!isCompleteAllForm" class="text-center">
         <v-icon size="128" color="amber darken-1">mdi-alert-outline</v-icon>
