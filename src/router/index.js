@@ -8,7 +8,7 @@ import MainLogin from "../views/Login/MainLogin.vue";
 import Home from "../views/HomePage/Home.vue";
 // import HomePage from "../components/Home.vue";
 import HomeProject from "../views/HomePage/Project.vue";
-import SearchProject from "../components/SearchProject.vue";
+// import SearchProject from "../components/SearchProject.vue";
 
 //non-public, co-using pages
 import Github from "../views/Github/Github.vue";
@@ -86,7 +86,7 @@ const routes = [
       {
         path: "",
         name: "Search",
-        component: SearchProject,
+        component: SearchPage,
         meta: { title: "Search Project | PMS" }
       },
       {
